@@ -8,11 +8,8 @@
     "forceConsistentCasingInFileNames": true,
     "noImplicitAny": true,
     "strict": true,
-    "skipLibCheck": true
-  },
-  "include": [
-    "./*.js",
-    "src/**/*.ts",
-    "test/**/*.ts",
-  ],
+    "skipLibCheck": true,
+    "baseUrl": "../" /* Specify the base directory to resolve non-relative module names. */
+  }
+  // "include": ["./*.js", "src/**/*.ts", "test/**/*.ts"]
 }

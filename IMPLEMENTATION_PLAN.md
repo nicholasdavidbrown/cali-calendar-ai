@@ -30,6 +30,23 @@ Build a self-hosted calendar-to-SMS application for demonstration purposes. The 
 
 ---
 
+## Phase 1.5: Create basic data structure for storing events on dates
+
+**Goal**: We want the client web app to be able to add custom events that were'nt pulled from the calendar API. These events will be stored in MongoDB. But it is important that the calendar sync uses the same date structure.
+
+Create a new Mongoose model `CalendarEvent.js` with the following schema:
+- `userId` (ObjectId, ref to User, required)
+- `title` (String, required)
+- `description` (String)
+- `start` (Date, required)
+- `end` (Date, required)
+- `isAllDay` (Boolean, default: false)
+- Timestamps: createdAt, updatedAt
+- Indexes on `userId` and `start` for efficient querying
+- This will allow us to store both calendar events fetched from Microsoft Graph and custom events created by the user the same way and eventually extend the app to pull from other calendar providers.
+
+---
+
 ## Phase 2: Microsoft OAuth 2.0
 
 **Goal**: Allow users to sign in with Microsoft and authorize calendar access
