@@ -47,9 +47,9 @@ Create a new Mongoose model `CalendarEvent.js` with the following schema:
 
 ---
 
-## Phase 2: Microsoft OAuth 2.0
+## Phase 2: Microsoft OAuth 2.0 with JWT Authentication
 
-**Goal**: Allow users to sign in with Microsoft and authorize calendar access
+**Goal**: Allow users to sign in with Microsoft and authorize calendar access using stateless JWT authentication
 
 ### Azure AD Setup
 - Register app at https://portal.azure.com/#view/Microsoft_AAD_RegisteredApps
@@ -58,23 +58,44 @@ Create a new Mongoose model `CalendarEvent.js` with the following schema:
 - Note Client ID, Tenant ID, create Client Secret
 
 ### Server Implementation
-1. Install: `yarn workspace server add @azure/msal-node express-session`
+1. Install: `yarn workspace server add @azure/msal-node jsonwebtoken cookie-parser`
 2. Add to `server/.env`:
    ```
    MICROSOFT_CLIENT_ID=...
    MICROSOFT_CLIENT_SECRET=...
    MICROSOFT_TENANT_ID=common
-   SESSION_SECRET=demo-secret-key
    REDIRECT_URI=http://localhost:3001/auth/callback
+   JWT_SECRET=your-super-secret-jwt-key-change-this
+   JWT_EXPIRES_IN=7d
    ```
 3. Create `src/config/auth.js` - MSAL confidential client config
-4. Create `src/routes/auth.js`:
+4. Create `src/utils/jwt.js` - JWT token generation and verification utilities:
+   - `generateToken(userId)` - Creates signed JWT with user ID
+   - `verifyToken(token)` - Validates and decodes JWT
+5. Create `src/routes/auth.js`:
    - `GET /auth/login` - Initiates OAuth flow
-   - `GET /auth/callback` - Handles callback, saves tokens to MongoDB
-   - `GET /auth/logout` - Clears session
-   - `GET /auth/status` - Returns current user
-5. Create `src/middleware/auth.js` - Session check middleware
-6. Basic token encryption using `crypto` module
+   - `GET /auth/callback` - Handles callback, saves tokens to MongoDB, generates JWT, sets httpOnly cookie
+   - `GET /auth/logout` - Clears JWT cookie
+   - `GET /auth/status` - Returns current user from JWT
+6. Create `src/middleware/auth.js` - JWT verification middleware:
+   - Extracts JWT from httpOnly cookie
+   - Verifies token signature
+   - Fetches user from database
+   - Attaches user to request object
+7. Basic token encryption using `crypto` module for Microsoft tokens
+
+### Authentication Flow
+1. User clicks "Connect Microsoft Calendar" → redirects to Microsoft OAuth
+2. After successful OAuth, server saves Microsoft tokens to MongoDB
+3. Server generates JWT containing user ID and sets it in httpOnly cookie
+4. Client automatically sends cookie with subsequent requests
+5. Server middleware verifies JWT and attaches user to request
+
+### Benefits of JWT over express-session
+- **Stateless**: No server-side session storage required
+- **Scalable**: Works across multiple server instances without shared session store
+- **Performance**: No session lookup on each request
+- **Mobile-friendly**: Easier to implement in mobile apps later
 
 ---
 
@@ -186,6 +207,7 @@ Create a new Mongoose model `CalendarEvent.js` with the following schema:
    - Provides `user`, `login`, `logout`, `isAuthenticated`
 3. Create `src/api/client.js`:
    - Axios instance with base URL
+   - **Important**: Set `withCredentials: true` to send httpOnly cookies with requests
 
 ### Pages
 
@@ -344,8 +366,9 @@ NODE_ENV=development
 # Database
 MONGODB_URI=mongodb://mongodb:27017/calendar-sms
 
-# Session
-SESSION_SECRET=demo-secret-key
+# JWT Authentication
+JWT_SECRET=your-super-secret-jwt-key-change-this
+JWT_EXPIRES_IN=7d
 
 # Microsoft OAuth
 MICROSOFT_CLIENT_ID=...
