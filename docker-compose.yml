@@ -1,0 +1,55 @@
+services:
+  client:
+    container_name: client
+    build:
+      context: ./
+      dockerfile: packages/client/Dockerfile.local
+    develop:
+      watch:
+        - path: ./packages/client/src
+          action: sync
+          target: /usr/app/src
+        - path: ./packages/client/public
+          action: sync
+          target: /usr/app/public
+        - path: ./packages/client/package.json
+          action: rebuild
+    restart: always
+    env_file:
+      - path: .env
+      - path: ./packages/client/.env
+    ports:
+      - "3000:3000"
+    networks:
+      - bp-network
+
+  server:
+    container_name: server
+    build:
+      context: ./
+      dockerfile: packages/server/Dockerfile.local
+    develop:
+      watch:
+        - path: ./packages/server/src
+          action: sync
+          target: /svr/app/src
+        - path: ./packages/server/package.json
+          action: rebuild
+    restart: always
+    env_file:
+      - path: .env
+      - path: ./packages/server/.env
+    volumes:
+      - ./packages/server:/svr/app
+      - /svr/app/node_modules
+    ports:
+      - "3001:3001"
+    networks:
+      - bp-network
+
+volumes:
+  postgres_data:
+
+networks:
+  bp-network:
+    driver: bridge
