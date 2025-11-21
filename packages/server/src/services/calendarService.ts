@@ -44,7 +44,7 @@ export interface FormattedEvent {
  */
 export const getGraphClient = (accessToken: string): Client => {
   return Client.init({
-    authProvider: (done) => {
+    authProvider: (done: (error: any, token: string) => void) => {
       done(null, accessToken);
     },
   });

@@ -1,12 +1,12 @@
 import app from './app';
-// import { connectDatabase } from './config/database';
+import { connectDatabase } from './config/database';
 
 const port = process.env.PORT || 5000;
 
 const startServer = async () => {
   try {
     // Connect to MongoDB
-    // await connectDatabase();
+    await connectDatabase();
 
     // Start Express server
     app.listen(port, () => {

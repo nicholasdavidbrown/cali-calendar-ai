@@ -4,6 +4,7 @@
     "private": true,
     "scripts": {
         "dev": "docker compose up -w",
+        "dev-clean": "docker compose up -w --build --force-recreate",
         "start": "docker compose up -w --build --force-recreate",
         "stop": "docker compose down",
         "restart": "docker compose restart"
