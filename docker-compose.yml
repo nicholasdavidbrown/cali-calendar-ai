@@ -1,4 +1,15 @@
 services:
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_DATABASE=calendar-sms
+    networks:
+      - bp-network
+
   client:
     container_name: client
     build:
@@ -44,6 +55,8 @@ services:
       - /svr/app/node_modules
     ports:
       - "3001:3001"
+    depends_on:
+      - mongodb
     networks:
       - bp-network
 
