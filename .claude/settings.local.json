@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(yarn list:*)",
+      "Bash(yarn add:*)",
+      "Bash(corepack enable)",
+      "Bash(yarn workspace server add:*)",
+      "Bash(npm install:*)",
+      "Bash(npm run typecheck:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
