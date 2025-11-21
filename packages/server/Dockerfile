@@ -10,8 +10,8 @@ RUN npm run build
 
 WORKDIR /svr/app/server/dist/server/src/
 
-# set node path so shared package in scope
-ENV NODE_PATH=/svr/app/server/dist
+# Set node path
+ENV NODE_PATH=/svr/app/server/dist/server/src/
 
 # Expose port 3001
 EXPOSE 3001
