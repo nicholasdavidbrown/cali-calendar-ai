@@ -6,7 +6,7 @@ import cookieParser from 'cookie-parser';
 
 import * as middlewares from './middlewares';
 import api from './api';
-import authRoutes from './routes/auth';
+// import authRoutes from './routes/auth';
 import MessageResponse from './interfaces/MessageResponse';
 
 require('dotenv').config();
@@ -29,7 +29,7 @@ app.get<{}, MessageResponse>('/', (req, res) => {
 });
 
 // Authentication routes
-app.use('/auth', authRoutes);
+// app.use('/auth', authRoutes);
 
 // API routes
 app.use('/api/v1', api);
