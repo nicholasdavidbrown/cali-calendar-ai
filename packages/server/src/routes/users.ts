@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import User, { MessageStyle } from '../models/User';
 import { authenticateJWT } from '../middleware/auth';
+import { saveUsersToBlob } from '../services/azureBlobService';
 
 const router = Router();
 
@@ -96,6 +97,9 @@ router.put('/preferences', authenticateJWT, async (req: Request, res: Response):
     }
 
     await user.save();
+
+    // Save users to Azure Blob Storage
+    saveUsersToBlob().catch((err) => console.error('Failed to save users to blob:', err));
 
     res.json({
       success: true,

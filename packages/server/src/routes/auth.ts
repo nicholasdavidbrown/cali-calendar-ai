@@ -5,6 +5,7 @@ import { generateToken } from '../utils/jwt';
 import { encryptToken, decryptToken } from '../utils/encryption';
 import { authenticateJWT } from '../middleware/auth';
 import User from '../models/User';
+import { saveUsersToBlob } from '../services/azureBlobService';
 
 const router = Router();
 const cryptoProvider = new CryptoProvider();
@@ -164,6 +165,9 @@ router.get('/callback', async (req: Request, res: Response): Promise<void> => {
       sameSite: 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
+
+    // Save users to Azure Blob Storage
+    saveUsersToBlob().catch((err) => console.error('Failed to save users to blob:', err));
 
     console.log('✅ Authentication successful, redirecting to client');
 
