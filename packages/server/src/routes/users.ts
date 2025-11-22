@@ -1,22 +1,25 @@
 import { Router, Request, Response } from 'express';
-import User, { MessageStyle } from '../models/User';
+import { MessageStyle } from '../models/User';
 import { authenticateJWT } from '../middleware/auth';
-import { saveUsersToBlob } from '../services/azureBlobService';
+import * as userStorage from '../services/userStorageService';
 
 const router = Router();
 
 /**
  * GET /api/v1/users
- * Fetches all users from MongoDB (for demo purposes)
+ * Fetches all users from blob storage (for demo purposes)
  * In production, this would be protected and filtered
  */
 router.get('/', async (req: Request, res: Response): Promise<void> => {
   try {
-    // Fetch all users, excluding sensitive fields
-    const users = await User.find()
-      .select('-accessToken -refreshToken') // Exclude sensitive tokens
-      .sort({ createdAt: -1 }) // Sort by newest first
-      .limit(50); // Limit to 50 users
+    // Fetch all users
+    const allUsers = await userStorage.getAllUsers();
+
+    // Exclude sensitive fields and sort by newest first
+    const users = allUsers
+      .map(({ accessToken, refreshToken, ...user }) => user)
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .slice(0, 50); // Limit to 50 users
 
     res.json({
       success: true,
@@ -27,28 +30,22 @@ router.get('/', async (req: Request, res: Response): Promise<void> => {
     console.error('Error fetching users:', error);
     res.status(500).json({
       success: false,
-      error: 'Failed to fetch users from database',
+      error: 'Failed to fetch users from storage',
     });
   }
 });
 
 /**
  * GET /api/v1/users/stats
- * Returns statistics about users in the database
+ * Returns statistics about users in storage
  */
 router.get('/stats', async (req: Request, res: Response): Promise<void> => {
   try {
-    const totalUsers = await User.countDocuments();
-    const activeUsers = await User.countDocuments({ isActive: true });
-    const inactiveUsers = totalUsers - activeUsers;
+    const stats = await userStorage.getUserStats();
 
     res.json({
       success: true,
-      data: {
-        totalUsers,
-        activeUsers,
-        inactiveUsers,
-      },
+      data: stats,
     });
   } catch (error) {
     console.error('Error fetching user stats:', error);
@@ -65,26 +62,11 @@ router.get('/stats', async (req: Request, res: Response): Promise<void> => {
  */
 router.put('/preferences', authenticateJWT, async (req: Request, res: Response): Promise<void> => {
   try {
-    const userId = (req as any).user._id;
+    const userId = req.user!.id;
     const { phone, timezone, smsTime, isActive, messageStyle } = req.body;
 
-    // Find user
-    const user = await User.findById(userId);
-    if (!user) {
-      res.status(404).json({
-        success: false,
-        error: 'User not found',
-      });
-      return;
-    }
-
-    // Update fields if provided
-    if (phone !== undefined) user.phone = phone;
-    if (timezone !== undefined) user.timezone = timezone;
-    if (smsTime !== undefined) user.smsTime = smsTime;
-    if (isActive !== undefined) user.isActive = isActive;
+    // Validate messageStyle if provided
     if (messageStyle !== undefined) {
-      // Validate messageStyle
       const validStyles: MessageStyle[] = ['professional', 'witty', 'sarcastic', 'mission'];
       if (!validStyles.includes(messageStyle)) {
         res.status(400).json({
@@ -93,13 +75,26 @@ router.put('/preferences', authenticateJWT, async (req: Request, res: Response):
         });
         return;
       }
-      user.messageStyle = messageStyle;
     }
 
-    await user.save();
+    // Build updates object
+    const updates: any = {};
+    if (phone !== undefined) updates.phone = phone;
+    if (timezone !== undefined) updates.timezone = timezone;
+    if (smsTime !== undefined) updates.smsTime = smsTime;
+    if (isActive !== undefined) updates.isActive = isActive;
+    if (messageStyle !== undefined) updates.messageStyle = messageStyle;
 
-    // Save users to Azure Blob Storage
-    saveUsersToBlob().catch((err) => console.error('Failed to save users to blob:', err));
+    // Update user
+    const user = await userStorage.updateUser(userId, updates);
+
+    if (!user) {
+      res.status(404).json({
+        success: false,
+        error: 'User not found',
+      });
+      return;
+    }
 
     res.json({
       success: true,
@@ -127,9 +122,9 @@ router.put('/preferences', authenticateJWT, async (req: Request, res: Response):
  */
 router.get('/me', authenticateJWT, async (req: Request, res: Response): Promise<void> => {
   try {
-    const userId = (req as any).user._id;
+    const userId = req.user!.id;
 
-    const user = await User.findById(userId).select('-accessToken -refreshToken');
+    const user = await userStorage.findUserById(userId);
     if (!user) {
       res.status(404).json({
         success: false,
@@ -138,9 +133,12 @@ router.get('/me', authenticateJWT, async (req: Request, res: Response): Promise<
       return;
     }
 
+    // Exclude sensitive fields
+    const { accessToken, refreshToken, ...safeUser } = user;
+
     res.json({
       success: true,
-      data: user,
+      data: safeUser,
     });
   } catch (error) {
     console.error('Error fetching user profile:', error);
@@ -153,7 +151,7 @@ router.get('/me', authenticateJWT, async (req: Request, res: Response): Promise<
 
 /**
  * DELETE /api/v1/users/:id
- * Deletes a user from MongoDB and updates Azure Blob Storage
+ * Deletes a user from blob storage
  */
 router.delete('/:id', async (req: Request, res: Response): Promise<void> => {
   try {
@@ -161,10 +159,10 @@ router.delete('/:id', async (req: Request, res: Response): Promise<void> => {
 
     console.log(`🗑️  Attempting to delete user: ${userId}`);
 
-    // Find and delete the user
-    const deletedUser = await User.findByIdAndDelete(userId);
+    // Get user before deleting (to return email in response)
+    const user = await userStorage.findUserById(userId);
 
-    if (!deletedUser) {
+    if (!user) {
       res.status(404).json({
         success: false,
         error: 'User not found',
@@ -172,16 +170,24 @@ router.delete('/:id', async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    console.log(`✅ Deleted user from MongoDB: ${deletedUser.email}`);
+    // Delete the user
+    const deleted = await userStorage.deleteUser(userId);
 
-    // Update Azure Blob Storage
-    saveUsersToBlob().catch((err) => console.error('Failed to save users to blob after deletion:', err));
+    if (!deleted) {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to delete user',
+      });
+      return;
+    }
+
+    console.log(`✅ Deleted user from storage: ${user.email}`);
 
     res.json({
       success: true,
       message: 'User deleted successfully',
       data: {
-        email: deletedUser.email,
+        email: user.email,
       },
     });
   } catch (error) {

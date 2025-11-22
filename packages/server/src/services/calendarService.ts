@@ -1,7 +1,7 @@
 import { Client } from '@microsoft/microsoft-graph-client';
 import 'isomorphic-fetch';
-import { IUser } from '../models/User';
-import User from '../models/User';
+import { StoredUser } from './userStorageService';
+import * as userStorage from './userStorageService';
 import { decryptToken, encryptToken } from '../utils/encryption';
 import confidentialClientApp, { SCOPES } from '../config/auth';
 
@@ -55,7 +55,7 @@ export const getGraphClient = (accessToken: string): Client => {
  * @param user - User document with encrypted tokens
  * @returns Updated user with new access token
  */
-export const refreshAccessToken = async (user: IUser): Promise<IUser> => {
+export const refreshAccessToken = async (user: StoredUser): Promise<StoredUser> => {
   try {
     // For MSAL, we use the silent token acquisition with the account
     // Since MSAL handles refresh tokens internally, we need to use acquireTokenSilent
@@ -83,11 +83,16 @@ export const refreshAccessToken = async (user: IUser): Promise<IUser> => {
     }
 
     // Update user with new token
-    user.accessToken = encryptToken(tokenResponse.accessToken);
-    user.tokenExpiresAt = tokenResponse.expiresOn || new Date(Date.now() + 3600 * 1000);
-    await user.save();
+    const updatedUser = await userStorage.updateUser(user.id, {
+      accessToken: encryptToken(tokenResponse.accessToken),
+      tokenExpiresAt: (tokenResponse.expiresOn || new Date(Date.now() + 3600 * 1000)).toISOString(),
+    });
 
-    return user;
+    if (!updatedUser) {
+      throw new Error('Failed to update user with new token');
+    }
+
+    return updatedUser;
   } catch (error) {
     console.error('Error refreshing access token:', error);
     throw new Error('Failed to refresh access token. User may need to re-authenticate.');
@@ -99,7 +104,7 @@ export const refreshAccessToken = async (user: IUser): Promise<IUser> => {
  * @param user - User document
  * @returns User with valid access token
  */
-const ensureValidToken = async (user: IUser): Promise<IUser> => {
+const ensureValidToken = async (user: StoredUser): Promise<StoredUser> => {
   const now = new Date();
   const expiresAt = new Date(user.tokenExpiresAt);
 
@@ -116,7 +121,7 @@ const ensureValidToken = async (user: IUser): Promise<IUser> => {
  * @param user - User document with encrypted tokens
  * @returns Array of formatted calendar events
  */
-export const getEventsForNext24Hours = async (user: IUser): Promise<FormattedEvent[]> => {
+export const getEventsForNext24Hours = async (user: StoredUser): Promise<FormattedEvent[]> => {
   try {
     // Ensure token is valid
     const validUser = await ensureValidToken(user);
@@ -157,7 +162,7 @@ export const getEventsForNext24Hours = async (user: IUser): Promise<FormattedEve
  * @param user - User document with encrypted tokens
  * @returns Array of formatted calendar events
  */
-export const getEventsForNext7Days = async (user: IUser): Promise<FormattedEvent[]> => {
+export const getEventsForNext7Days = async (user: StoredUser): Promise<FormattedEvent[]> => {
   try {
     // Ensure token is valid
     const validUser = await ensureValidToken(user);

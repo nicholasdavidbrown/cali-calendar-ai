@@ -1,5 +1,6 @@
 import twilio from 'twilio';
-import { IUser } from '../models/User';
+import { StoredUser } from './userStorageService';
+import * as userStorage from './userStorageService';
 import { getEventsForNext24Hours, formatCalendarSummary } from './calendarService';
 import { generateCalendarMessage, isClaudeConfigured } from './claudeService';
 
@@ -76,7 +77,7 @@ export const sendSMS = async (to: string, message: string): Promise<string> => {
  * @returns Message SID from Twilio
  * @throws Error if fetching events or sending SMS fails
  */
-export const sendDailySummary = async (user: IUser): Promise<string> => {
+export const sendDailySummary = async (user: StoredUser): Promise<string> => {
   try {
     // Check if user has a phone number
     if (!user.phone) {
@@ -103,8 +104,9 @@ export const sendDailySummary = async (user: IUser): Promise<string> => {
     const messageSid = await sendSMS(user.phone, message);
 
     // Update last SMS sent date
-    user.lastSmsSentDate = new Date();
-    await user.save();
+    await userStorage.updateUser(user.id, {
+      lastSmsSentDate: new Date().toISOString(),
+    });
 
     console.log(`Daily summary sent to ${user.email} (${user.phone})`);
     return messageSid;

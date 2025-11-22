@@ -4,8 +4,7 @@ import confidentialClientApp, { SCOPES, REDIRECT_URI } from '../config/auth';
 import { generateToken } from '../utils/jwt';
 import { encryptToken, decryptToken } from '../utils/encryption';
 import { authenticateJWT } from '../middleware/auth';
-import User from '../models/User';
-import { saveUsersToBlob } from '../services/azureBlobService';
+import * as userStorage from '../services/userStorageService';
 
 const router = Router();
 const cryptoProvider = new CryptoProvider();
@@ -131,32 +130,44 @@ router.get('/callback', async (req: Request, res: Response): Promise<void> => {
     const encryptedRefreshToken = encryptedAccessToken;
 
     // Find or create user
-    let user = await User.findOne({ microsoftId });
+    let user = await userStorage.findUserByMicrosoftId(microsoftId);
 
     if (user) {
       // Update existing user
-      user.email = email;
-      user.accessToken = encryptedAccessToken;
-      user.refreshToken = encryptedRefreshToken;
-      user.tokenExpiresAt = expiresOn || new Date(Date.now() + 3600 * 1000);
-      await user.save();
+      console.log(`📝 Updating existing user: ${email}, ID: ${user.id}`);
+      user = await userStorage.updateUserByMicrosoftId(microsoftId, {
+        email,
+        accessToken: encryptedAccessToken,
+        refreshToken: encryptedRefreshToken,
+        tokenExpiresAt: (expiresOn || new Date(Date.now() + 3600 * 1000)).toISOString(),
+      });
+      console.log(`✅ User updated. User object:`, { id: user?.id, email: user?.email });
     } else {
       // Create new user (phone number required later)
-      user = await User.create({
+      console.log(`📝 Creating new user: ${email}`);
+      user = await userStorage.createUser({
         email,
         microsoftId,
         phone: '',
         accessToken: encryptedAccessToken,
         refreshToken: encryptedRefreshToken,
-        tokenExpiresAt: expiresOn || new Date(Date.now() + 3600 * 1000),
+        tokenExpiresAt: (expiresOn || new Date(Date.now() + 3600 * 1000)).toISOString(),
         timezone: 'Australia/Brisbane',
         smsTime: '07:00',
         isActive: true,
+        messageStyle: 'professional',
       });
+      console.log(`✅ User created. User object:`, { id: user?.id, email: user?.email });
+    }
+
+    if (!user || !user.id) {
+      console.error('❌ User or user.id is missing:', { user: user ? 'exists' : 'null', id: user?.id });
+      throw new Error('Failed to create or update user - user ID is missing');
     }
 
     // Generate JWT
-    const jwtToken = generateToken(user._id.toString());
+    console.log(`🔐 Generating JWT for user ID: ${user.id}`);
+    const jwtToken = generateToken(user.id);
 
     // Set JWT in httpOnly cookie
     res.cookie('auth_token', jwtToken, {
@@ -165,9 +176,6 @@ router.get('/callback', async (req: Request, res: Response): Promise<void> => {
       sameSite: 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
-
-    // Save users to Azure Blob Storage
-    saveUsersToBlob().catch((err) => console.error('Failed to save users to blob:', err));
 
     console.log('✅ Authentication successful, redirecting to client');
 
@@ -222,7 +230,7 @@ router.get('/status', authenticateJWT, (req: Request, res: Response): void => {
   // Return safe user data (no tokens)
   res.json({
     user: {
-      id: req.user._id,
+      id: req.user.id,
       email: req.user.email,
       phone: req.user.phone,
       timezone: req.user.timezone,

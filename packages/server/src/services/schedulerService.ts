@@ -1,5 +1,5 @@
 import cron from 'node-cron';
-import User from '../models/User';
+import * as userStorage from './userStorageService';
 import { sendDailySummary } from './smsService';
 
 /**
@@ -74,7 +74,8 @@ export const initializeScheduler = (): void => {
 
     try {
       // Find all active users
-      const users = await User.find({ isActive: true });
+      const allUsers = await userStorage.getAllUsers();
+      const users = allUsers.filter((u) => u.isActive);
       console.log(`Found ${users.length} active user(s)`);
 
       for (const user of users) {
@@ -113,7 +114,8 @@ export const runSchedulerManually = async (): Promise<void> => {
   console.log('🧪 Manual scheduler trigger initiated...');
 
   try {
-    const users = await User.find({ isActive: true });
+    const allUsers = await userStorage.getAllUsers();
+    const users = allUsers.filter((u) => u.isActive);
     console.log(`Found ${users.length} active user(s)`);
 
     for (const user of users) {

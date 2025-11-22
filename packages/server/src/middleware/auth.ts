@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { verifyToken } from '../utils/jwt';
-import User, { IUser } from '../models/User';
+import * as userStorage from '../services/userStorageService';
+import { StoredUser } from '../services/userStorageService';
 
 /**
  * JWT Authentication Middleware
@@ -13,7 +14,7 @@ import User, { IUser } from '../models/User';
 declare global {
   namespace Express {
     interface Request {
-      user?: IUser;
+      user?: StoredUser;
     }
   }
 }
@@ -42,8 +43,8 @@ export const authenticateJWT = async (
     // Verify and decode token
     const decoded = verifyToken(token);
 
-    // Fetch user from database
-    const user = await User.findById(decoded.userId);
+    // Fetch user from storage
+    const user = await userStorage.findUserById(decoded.userId);
 
     if (!user) {
       res.status(401).json({
@@ -105,7 +106,7 @@ export const optionalAuth = async (
 
     if (token) {
       const decoded = verifyToken(token);
-      const user = await User.findById(decoded.userId);
+      const user = await userStorage.findUserById(decoded.userId);
       if (user && user.isActive) {
         req.user = user;
       }

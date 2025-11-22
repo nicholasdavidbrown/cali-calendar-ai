@@ -2,8 +2,8 @@ import mongoose from 'mongoose';
 
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://mongodb:27017/calendar-sms';
 
-export const connectDatabase = async (): Promise<void> => {
-  console.log(`🔗 Connecting to MongoDB at: ${MONGODB_URI}`);
+export const connectDatabase = async (): Promise<boolean> => {
+  console.log(`🔗 Attempting to connect to MongoDB at: ${MONGODB_URI}`);
 
   try {
     await mongoose.connect(MONGODB_URI, {
@@ -16,17 +16,15 @@ export const connectDatabase = async (): Promise<void> => {
     }
     console.log(`🔗 Host: ${mongoose.connection.host}`);
     console.log(`📍 Port: ${mongoose.connection.port}`);
+    return true;
   } catch (error) {
-    console.error('❌ ========================================');
-    console.error('❌ MongoDB connection error');
-    console.error('❌ ========================================');
-    console.error('❌ Error details:', error);
-    if (error instanceof Error) {
-      console.error('❌ Error message:', error.message);
-      console.error('❌ Error stack:', error.stack);
-    }
-    console.error('❌ ========================================');
-    process.exit(1);
+    console.warn('⚠️  ========================================');
+    console.warn('⚠️  MongoDB connection failed (non-fatal)');
+    console.warn('⚠️  ========================================');
+    console.warn('⚠️  Application will use Azure Blob Storage only');
+    console.warn('⚠️  Error details:', error instanceof Error ? error.message : error);
+    console.warn('⚠️  ========================================');
+    return false;
   }
 };
 

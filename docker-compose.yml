@@ -1,30 +1,31 @@
 services:
-  mongodb:
-    image: mongo:latest
-    container_name: mongodb
-    restart: always
-    ports:
-      - "27017:27017"
-    environment:
-      - MONGO_INITDB_DATABASE=calendar-sms
-    networks:
-      - bp-network
+  # MongoDB disabled - using Azure Blob Storage as primary data store
+  # mongodb:
+  #   image: mongo:latest
+  #   container_name: mongodb
+  #   restart: always
+  #   ports:
+  #     - "27017:27017"
+  #   environment:
+  #     - MONGO_INITDB_DATABASE=calendar-sms
+  #   networks:
+  #     - bp-network
 
-  mongo-express:
-    image: mongo-express:latest
-    container_name: mongo-express
-    restart: always
-    ports:
-      - "8081:8081"
-    environment:
-      - ME_CONFIG_MONGODB_SERVER=mongodb
-      - ME_CONFIG_MONGODB_PORT=27017
-      - ME_CONFIG_BASICAUTH_USERNAME=admin
-      - ME_CONFIG_BASICAUTH_PASSWORD=admin123
-    depends_on:
-      - mongodb
-    networks:
-      - bp-network
+  # mongo-express:
+  #   image: mongo-express:latest
+  #   container_name: mongo-express
+  #   restart: always
+  #   ports:
+  #     - "8081:8081"
+  #   environment:
+  #     - ME_CONFIG_MONGODB_SERVER=mongodb
+  #     - ME_CONFIG_MONGODB_PORT=27017
+  #     - ME_CONFIG_BASICAUTH_USERNAME=admin
+  #     - ME_CONFIG_BASICAUTH_PASSWORD=admin123
+  #   depends_on:
+  #     - mongodb
+  #   networks:
+  #     - bp-network
 
   client:
     container_name: client
@@ -71,8 +72,8 @@ services:
       - /svr/app/node_modules
     ports:
       - "3001:3001"
-    depends_on:
-      - mongodb
+    # depends_on:
+    #   - mongodb  # Removed - MongoDB is optional, using Azure Blob Storage
     networks:
       - bp-network
 
