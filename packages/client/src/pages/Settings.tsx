@@ -1,5 +1,12 @@
 import { useState, useEffect } from 'react';
 import { getUserProfile, updateUserPreferences, UserProfile } from '../api/userService';
+import {
+  getFamilyMembers,
+  addFamilyMember,
+  deleteFamilyMember,
+  updateFamilyMember,
+  FamilyMember,
+} from '../api/familyService';
 import './Settings.css';
 
 type MessageStyle = 'professional' | 'witty' | 'sarcastic' | 'mission';
@@ -48,8 +55,17 @@ function Settings() {
   const [phoneNumber, setPhoneNumber] = useState<string>('');
   const [phoneError, setPhoneError] = useState<string | null>(null);
 
+  // Family members state
+  const [familyMembers, setFamilyMembers] = useState<FamilyMember[]>([]);
+  const [showAddFamily, setShowAddFamily] = useState(false);
+  const [newFamilyName, setNewFamilyName] = useState('');
+  const [newFamilyPhone, setNewFamilyPhone] = useState('');
+  const [familyError, setFamilyError] = useState<string | null>(null);
+  const [addingFamily, setAddingFamily] = useState(false);
+
   useEffect(() => {
     loadProfile();
+    loadFamilyMembers();
   }, []);
 
   const loadProfile = async () => {
@@ -65,6 +81,78 @@ function Settings() {
       console.error(err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadFamilyMembers = async () => {
+    try {
+      const members = await getFamilyMembers();
+      setFamilyMembers(members);
+    } catch (err) {
+      console.error('Failed to load family members:', err);
+    }
+  };
+
+  const handleAddFamily = async () => {
+    if (!newFamilyName.trim() || !newFamilyPhone.trim()) {
+      setFamilyError('Name and phone number are required');
+      return;
+    }
+
+    if (!validatePhoneNumber(newFamilyPhone)) {
+      setFamilyError('Please enter a valid phone number');
+      return;
+    }
+
+    setAddingFamily(true);
+    setFamilyError(null);
+
+    try {
+      await addFamilyMember({
+        name: newFamilyName.trim(),
+        phone: newFamilyPhone.trim(),
+      });
+
+      // Reload family members
+      await loadFamilyMembers();
+
+      // Reset form
+      setNewFamilyName('');
+      setNewFamilyPhone('');
+      setShowAddFamily(false);
+      setSuccessMessage('Family member added successfully!');
+      setTimeout(() => setSuccessMessage(null), 3000);
+    } catch (err) {
+      setFamilyError('Failed to add family member');
+      console.error(err);
+    } finally {
+      setAddingFamily(false);
+    }
+  };
+
+  const handleDeleteFamily = async (id: string) => {
+    if (!confirm('Are you sure you want to remove this family member?')) {
+      return;
+    }
+
+    try {
+      await deleteFamilyMember(id);
+      await loadFamilyMembers();
+      setSuccessMessage('Family member removed successfully!');
+      setTimeout(() => setSuccessMessage(null), 3000);
+    } catch (err) {
+      setError('Failed to remove family member');
+      console.error(err);
+    }
+  };
+
+  const handleToggleFamilyActive = async (member: FamilyMember) => {
+    try {
+      await updateFamilyMember(member.id, { isActive: !member.isActive });
+      await loadFamilyMembers();
+    } catch (err) {
+      setError('Failed to update family member');
+      console.error(err);
     }
   };
 
@@ -208,6 +296,105 @@ function Settings() {
             </div>
           ))}
         </div>
+        </div>
+
+        {/* Family Members Section */}
+        <div className="settings-section">
+          <h2>👨‍👩‍👧‍👦 Family Members</h2>
+          <p className="section-description">
+            Add family members to receive SMS notifications with your calendar summary
+          </p>
+
+          {familyMembers.length > 0 && (
+            <div className="family-members-list">
+              {familyMembers.map((member) => (
+                <div key={member.id} className="family-member-card">
+                  <div className="family-member-info">
+                    <h4>{member.name}</h4>
+                    <p>{member.phone}</p>
+                  </div>
+                  <div className="family-member-actions">
+                    <button
+                      className={`toggle-button ${member.isActive ? 'active' : 'inactive'}`}
+                      onClick={() => handleToggleFamilyActive(member)}
+                      title={member.isActive ? 'Disable notifications' : 'Enable notifications'}
+                    >
+                      {member.isActive ? '✓ Active' : '✗ Inactive'}
+                    </button>
+                    <button
+                      className="delete-button"
+                      onClick={() => handleDeleteFamily(member.id)}
+                      title="Remove family member"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {!showAddFamily && (
+            <button
+              className="add-family-button"
+              onClick={() => setShowAddFamily(true)}
+            >
+              + Add Family Member
+            </button>
+          )}
+
+          {showAddFamily && (
+            <div className="add-family-form">
+              <h3>Add Family Member</h3>
+              {familyError && <div className="error-message">{familyError}</div>}
+              <div className="form-group">
+                <label htmlFor="familyName">Name</label>
+                <input
+                  type="text"
+                  id="familyName"
+                  value={newFamilyName}
+                  onChange={(e) => setNewFamilyName(e.target.value)}
+                  placeholder="Enter name"
+                  className="form-input"
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="familyPhone">Phone Number</label>
+                <input
+                  type="tel"
+                  id="familyPhone"
+                  value={newFamilyPhone}
+                  onChange={(e) => setNewFamilyPhone(e.target.value)}
+                  placeholder="+1234567890"
+                  className="form-input"
+                />
+                <p className="input-hint">
+                  Include country code (e.g., +1 for US, +61 for Australia)
+                </p>
+              </div>
+              <div className="form-actions">
+                <button
+                  className="save-family-button"
+                  onClick={handleAddFamily}
+                  disabled={addingFamily}
+                >
+                  {addingFamily ? 'Adding...' : 'Add Member'}
+                </button>
+                <button
+                  className="cancel-button"
+                  onClick={() => {
+                    setShowAddFamily(false);
+                    setNewFamilyName('');
+                    setNewFamilyPhone('');
+                    setFamilyError(null);
+                  }}
+                  disabled={addingFamily}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="settings-actions">

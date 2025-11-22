@@ -2,6 +2,13 @@ import mongoose, { Schema, Document } from 'mongoose';
 
 export type MessageStyle = 'professional' | 'witty' | 'sarcastic' | 'mission';
 
+export interface FamilyMember {
+  id: string;
+  name: string;
+  phone: string;
+  isActive: boolean;
+}
+
 export interface IUser extends Document {
   email: string;
   microsoftId: string;
@@ -13,6 +20,7 @@ export interface IUser extends Document {
   smsTime: string;
   isActive: boolean;
   messageStyle: MessageStyle;
+  familyMembers: FamilyMember[];
   lastSmsSentDate?: Date;
   createdAt: Date;
   updatedAt: Date;
@@ -66,6 +74,17 @@ const UserSchema: Schema = new Schema(
       type: String,
       enum: ['professional', 'witty', 'sarcastic', 'mission'],
       default: 'professional',
+    },
+    familyMembers: {
+      type: [
+        {
+          id: { type: String, required: true },
+          name: { type: String, required: true },
+          phone: { type: String, required: true },
+          isActive: { type: Boolean, default: true },
+        },
+      ],
+      default: [],
     },
     lastSmsSentDate: {
       type: Date,

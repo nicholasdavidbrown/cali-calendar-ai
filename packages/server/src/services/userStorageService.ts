@@ -1,5 +1,5 @@
 import { BlobServiceClient } from '@azure/storage-blob';
-import { MessageStyle } from '../models/User';
+import { MessageStyle, FamilyMember } from '../models/User';
 
 const CONTAINER_NAME = 'user-backups';
 const BLOB_NAME = 'users.json';
@@ -17,6 +17,7 @@ export interface StoredUser {
   smsTime: string;
   isActive: boolean;
   messageStyle: MessageStyle;
+  familyMembers: FamilyMember[];
   lastSmsSentDate?: string; // ISO string
   createdAt: string; // ISO string
   updatedAt: string; // ISO string

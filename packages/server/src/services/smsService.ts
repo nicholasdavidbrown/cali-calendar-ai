@@ -108,15 +108,36 @@ export const sendDailySummary = async (user: StoredUser): Promise<string> => {
       message = formatCalendarSummary(events, userName);
     }
 
-    // Send the SMS
+    // Send the SMS to the main user
     const messageSid = await sendSMS(user.phone, message);
+    console.log(`📱 Daily summary sent to ${user.email} (${user.phone})`);
+
+    // Send to active family members
+    const familyMembers = user.familyMembers || [];
+    const activeFamilyMembers = familyMembers.filter((member) => member.isActive);
+
+    if (activeFamilyMembers.length > 0) {
+      console.log(`👨‍👩‍👧‍👦 Sending to ${activeFamilyMembers.length} family member(s)...`);
+
+      for (const member of activeFamilyMembers) {
+        try {
+          // Personalize message with family member's name
+          const familyMessage = message.replace(userName, member.name);
+          await sendSMS(member.phone, familyMessage);
+          console.log(`  ✅ Sent to ${member.name} (${member.phone})`);
+        } catch (error) {
+          console.error(`  ❌ Failed to send to ${member.name} (${member.phone}):`, error);
+          // Continue with other family members even if one fails
+        }
+      }
+    }
 
     // Update last SMS sent date
     await userStorage.updateUser(user.id, {
       lastSmsSentDate: new Date().toISOString(),
     });
 
-    console.log(`Daily summary sent to ${user.email} (${user.phone})`);
+    console.log(`✅ SMS notifications completed for ${user.email}`);
     return messageSid;
   } catch (error) {
     console.error(`Error sending daily summary to ${user.email}:`, error);

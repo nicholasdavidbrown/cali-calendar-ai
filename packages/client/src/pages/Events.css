@@ -88,6 +88,28 @@
   background: rgba(245, 166, 35, 0.05);
 }
 
+.invite-button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-color: #667eea;
+  color: white;
+}
+
+.invite-button:hover:not(:disabled) {
+  background: linear-gradient(135deg, #5568d3 0%, #614c8a 100%);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  transform: translateY(-2px);
+}
+
+.invite-button.generating {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.invite-icon {
+  width: 18px;
+  height: 18px;
+  transition: transform 0.3s ease;
+}
+
 .sms-button {
   background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
   border-color: #25D366;

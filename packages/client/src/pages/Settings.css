@@ -276,6 +276,202 @@
   font-weight: 500;
 }
 
+/* Family Members Styles */
+.family-members-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.family-member-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem;
+  border: 2px solid #e5e5e5;
+  border-radius: 12px;
+  background: white;
+  transition: all 0.3s ease;
+}
+
+.family-member-card:hover {
+  border-color: #f5a623;
+  box-shadow: 0 4px 12px rgba(245, 166, 35, 0.15);
+}
+
+.family-member-info h4 {
+  font-size: 1.1rem;
+  color: #333;
+  margin: 0 0 0.25rem 0;
+}
+
+.family-member-info p {
+  color: #666;
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.family-member-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.family-member-actions .toggle-button {
+  padding: 0.5rem 1rem;
+  border: 2px solid #e5e5e5;
+  border-radius: 8px;
+  background: white;
+  color: #666;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.family-member-actions .toggle-button.active {
+  background: #d4edda;
+  border-color: #28a745;
+  color: #155724;
+}
+
+.family-member-actions .toggle-button.inactive {
+  background: #f8d7da;
+  border-color: #dc3545;
+  color: #721c24;
+}
+
+.family-member-actions .delete-button {
+  padding: 0.5rem 1rem;
+  border: 2px solid #dc3545;
+  border-radius: 8px;
+  background: white;
+  color: #dc3545;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.family-member-actions .delete-button:hover {
+  background: #dc3545;
+  color: white;
+}
+
+.add-family-button {
+  padding: 0.875rem 1.5rem;
+  border: 2px dashed #f5a623;
+  border-radius: 12px;
+  background: rgba(245, 166, 35, 0.05);
+  color: #f5a623;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+}
+
+.add-family-button:hover {
+  background: rgba(245, 166, 35, 0.1);
+  border-color: #f76b1c;
+  color: #f76b1c;
+}
+
+.add-family-form {
+  border: 2px solid #f5a623;
+  border-radius: 12px;
+  padding: 1.5rem;
+  background: rgba(245, 166, 35, 0.02);
+  margin-top: 1rem;
+}
+
+.add-family-form h3 {
+  font-size: 1.25rem;
+  color: #333;
+  margin: 0 0 1rem 0;
+}
+
+.form-group {
+  margin-bottom: 1.25rem;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  border: 2px solid #e5e5e5;
+  border-radius: 12px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #f5a623;
+  box-shadow: 0 0 0 3px rgba(245, 166, 35, 0.1);
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.save-family-button {
+  flex: 1;
+  padding: 0.875rem 1.5rem;
+  background: linear-gradient(135deg, #f5a623 0%, #f76b1c 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.save-family-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(245, 166, 35, 0.4);
+}
+
+.save-family-button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.cancel-button {
+  flex: 1;
+  padding: 0.875rem 1.5rem;
+  background: white;
+  color: #666;
+  border: 2px solid #e5e5e5;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cancel-button:hover:not(:disabled) {
+  border-color: #999;
+  color: #333;
+}
+
+.cancel-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 /* Mobile Responsive */
 @media (max-width: 768px) {
   .settings-container {
@@ -310,6 +506,21 @@
 
   .settings-info strong {
     min-width: 80px;
+  }
+
+  .family-member-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .family-member-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .form-actions {
+    flex-direction: column;
   }
 }
 

@@ -156,6 +156,7 @@ router.get('/callback', async (req: Request, res: Response): Promise<void> => {
         smsTime: '07:00',
         isActive: true,
         messageStyle: 'professional',
+        familyMembers: [],
       });
       console.log(`✅ User created. User object:`, { id: user?.id, email: user?.email });
     }
