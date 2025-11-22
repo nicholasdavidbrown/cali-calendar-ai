@@ -16,28 +16,18 @@ const app = express();
 app.use(morgan('dev'));
 app.use(helmet());
 
-// CORS configuration - handle multiple origins in production
-const allowedOrigins = process.env.CLIENT_URL
-  ? process.env.CLIENT_URL.split(',').map(url => url.trim())
-  : ['http://localhost:3000'];
+// CORS configuration - fully permissive for production debugging
+console.log('🌐 CORS: Allowing all origins (permissive mode for production debugging)');
 
 app.use(cors({
-  origin: (origin, callback) => {
-    // Allow requests with no origin (like mobile apps, Postman, etc.)
-    if (!origin) return callback(null, true);
-
-    if (allowedOrigins.indexOf(origin) !== -1 || allowedOrigins.includes('*')) {
-      callback(null, true);
-    } else {
-      console.warn(`⚠️  CORS blocked origin: ${origin}`);
-      console.warn(`⚠️  Allowed origins: ${allowedOrigins.join(', ')}`);
-      callback(null, true); // Allow anyway in development, but log it
-    }
-  },
+  origin: true, // Allow all origins
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
-  exposedHeaders: ['Set-Cookie'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH', 'HEAD'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie', 'X-Requested-With', 'Accept', 'Origin'],
+  exposedHeaders: ['Set-Cookie', 'Authorization'],
+  maxAge: 86400, // Cache preflight requests for 24 hours
+  preflightContinue: false,
+  optionsSuccessStatus: 204,
 }));
 
 app.use(express.json());
