@@ -1,42 +1,555 @@
-#root {
-  max-width: 1280px;
+/* Main Container */
+.app-container {
+  width: 100%;
+  max-width: 1400px;
   margin: 0 auto;
   padding: 2rem;
+  min-height: 100vh;
+}
+
+/* Header */
+header {
+  text-align: center;
+  margin-bottom: 3rem;
+  padding-bottom: 2rem;
+  border-bottom: 2px solid #e5e5e5;
+}
+
+header h1 {
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  margin-bottom: 0.5rem;
+  color: #333;
+  font-weight: 700;
+}
+
+header p {
+  font-size: clamp(1rem, 2vw, 1.1rem);
+  color: #666;
+  margin-bottom: 0;
+}
+
+/* Authentication Section */
+.auth-section {
+  margin-top: 2rem;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.auth-loading {
+  text-align: center;
+  color: #666;
+  font-size: 0.95rem;
+  padding: 1rem;
+}
+
+.sign-in-prompt {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 16px;
+  padding: 2.5rem 2rem;
+  text-align: center;
+  color: white;
+  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+}
+
+.sign-in-prompt p {
+  margin: 0 0 1.5rem 0;
+  font-size: clamp(1rem, 2vw, 1.1rem);
+  line-height: 1.6;
+}
+
+.sign-in-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  background: white;
+  color: #333;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  min-width: 200px;
+}
+
+.sign-in-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+.sign-in-button:active {
+  transform: translateY(-1px);
+}
+
+.microsoft-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.user-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  border-radius: 16px;
+  padding: 1.5rem;
+  border: 2px solid #e5e5e5;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  gap: 1rem;
+}
+
+.user-details {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.user-icon {
+  font-size: 1.5rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 6px rgba(102, 126, 234, 0.3);
+}
+
+.user-email {
+  font-weight: 600;
+  color: #333;
+  font-size: clamp(0.95rem, 2vw, 1.1rem);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-status {
+  font-size: 0.85rem;
+  color: #28a745;
+  font-weight: 500;
+}
+
+.logout-button {
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.logout-button:hover {
+  background: #c82333;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+}
+
+/* Statistics Section */
+.stats-section {
+  margin-bottom: 3rem;
+}
+
+.stats-section h2 {
+  font-size: clamp(1.25rem, 3vw, 1.5rem);
+  margin-bottom: 1.5rem;
+  color: #333;
   text-align: center;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
+.stat-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 16px;
+  padding: 2rem;
+  text-align: center;
+  color: white;
+  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+}
+
+.stat-value {
+  font-size: clamp(2.5rem, 5vw, 3rem);
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: clamp(0.85rem, 1.5vw, 1rem);
+  opacity: 0.95;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  font-weight: 600;
+}
+
+/* Users Section */
+.users-section {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  margin-bottom: 2rem;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.section-header h2 {
+  font-size: clamp(1.25rem, 3vw, 1.5rem);
+  color: #333;
+  margin: 0;
+}
+
+.section-header button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(102, 126, 234, 0.3);
+}
+
+.section-header button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(102, 126, 234, 0.4);
+}
+
+.section-header button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Error and Loading States */
+.error-message {
+  background: #fee;
+  color: #c33;
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  border-left: 4px solid #c33;
+  font-weight: 500;
+}
+
+.loading {
+  text-align: center;
+  padding: 3rem;
+  color: #666;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #666;
+}
+
+.empty-state p {
+  margin: 0.5rem 0;
+  font-size: clamp(0.95rem, 2vw, 1.05rem);
+}
+
+.empty-hint {
+  font-size: clamp(0.85rem, 1.5vw, 0.95rem);
+  color: #999;
+  margin-top: 1rem;
+}
+
+/* Users Table */
+.users-table-container {
+  overflow-x: auto;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.users-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+  min-width: 800px;
+}
+
+.users-table thead {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+.users-table th {
+  text-align: left;
+  padding: 1rem 1.25rem;
+  font-weight: 600;
+  color: #333;
+  border-bottom: 2px solid #dee2e6;
+  white-space: nowrap;
+}
+
+.users-table td {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid #f0f0f0;
+  color: #555;
+}
+
+.users-table tbody tr {
+  transition: background-color 0.2s ease;
+}
+
+.users-table tbody tr:hover {
+  background: #f8f9fa;
+}
+
+.users-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 0.35rem 0.85rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-badge.active {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status-badge.inactive {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+/* Footer */
+footer {
+  margin-top: 4rem;
+  padding-top: 2rem;
+  border-top: 2px solid #e5e5e5;
+  text-align: center;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+footer p {
+  margin: 0.75rem 0;
+  line-height: 1.6;
+}
+
+footer code {
+  background: rgba(102, 126, 234, 0.1);
+  padding: 0.25rem 0.6rem;
+  border-radius: 6px;
+  font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+  color: #667eea;
+  font-size: 0.85rem;
+}
+
+/* Tablet Responsive (768px - 1024px) */
+@media (max-width: 1024px) {
+  .app-container {
+    max-width: 900px;
+    padding: 1.5rem;
   }
-  to {
-    transform: rotate(360deg);
+
+  .stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.25rem;
+  }
+
+  .users-table {
+    font-size: 0.9rem;
   }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
+/* Mobile Responsive (max 768px) */
+@media (max-width: 768px) {
+  .app-container {
+    padding: 1rem;
+  }
+
+  header {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+  }
+
+  .auth-section {
+    margin-top: 1.5rem;
+  }
+
+  .sign-in-prompt {
+    padding: 2rem 1.5rem;
+  }
+
+  .sign-in-button {
+    width: 100%;
+    padding: 1rem;
+  }
+
+  .user-info {
+    flex-direction: column;
+    text-align: center;
+    padding: 1.25rem;
+  }
+
+  .user-details {
+    flex-direction: column;
+    text-align: center;
+    width: 100%;
+  }
+
+  .logout-button {
+    width: 100%;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .stat-card {
+    padding: 1.5rem;
+  }
+
+  .users-section {
+    padding: 1.25rem;
+    border-radius: 12px;
+  }
+
+  .section-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+
+  .section-header button {
+    width: 100%;
+  }
+
+  .users-table-container {
+    margin: 0 -1.25rem;
+    border-radius: 0;
+  }
+
+  .users-table {
+    font-size: 0.85rem;
+    min-width: 700px;
+  }
+
+  .users-table th,
+  .users-table td {
+    padding: 0.75rem 0.85rem;
+  }
+
+  footer {
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+  }
+
+  footer code {
+    display: inline-block;
+    margin: 0.25rem 0;
   }
 }
 
-.card {
-  padding: 2em;
+/* Small Mobile (max 480px) */
+@media (max-width: 480px) {
+  .app-container {
+    padding: 0.75rem;
+  }
+
+  header h1 {
+    font-size: 1.5rem;
+  }
+
+  .sign-in-prompt {
+    padding: 1.5rem 1rem;
+    border-radius: 12px;
+  }
+
+  .user-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 1.25rem;
+  }
+
+  .stat-card {
+    padding: 1.25rem;
+  }
+
+  .stat-value {
+    font-size: 2rem;
+  }
+
+  .users-section {
+    padding: 1rem;
+  }
+
+  .users-table {
+    min-width: 650px;
+  }
+
+  .users-table th,
+  .users-table td {
+    padding: 0.65rem 0.75rem;
+    font-size: 0.8rem;
+  }
+
+  .status-badge {
+    padding: 0.25rem 0.65rem;
+    font-size: 0.7rem;
+  }
 }
 
-.read-the-docs {
-  color: #888;
+/* Extra Small (max 360px) */
+@media (max-width: 360px) {
+  .app-container {
+    padding: 0.5rem;
+  }
+
+  .sign-in-button {
+    padding: 0.875rem;
+    font-size: 0.95rem;
+  }
+
+  .users-table {
+    min-width: 600px;
+  }
 }

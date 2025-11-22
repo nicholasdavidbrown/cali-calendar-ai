@@ -18,6 +18,10 @@ const pkceStore = new Map<string, string>();
  */
 router.get('/login', async (req: Request, res: Response): Promise<void> => {
   try {
+    console.log('=== Auth Login Initiated ===');
+    console.log('Redirect URI:', REDIRECT_URI);
+    console.log('Scopes:', SCOPES);
+
     // Generate PKCE codes
     const { verifier, challenge } = await cryptoProvider.generatePkceCodes();
 
@@ -26,18 +30,21 @@ router.get('/login', async (req: Request, res: Response): Promise<void> => {
 
     // Store verifier temporarily (in production, use Redis with TTL)
     pkceStore.set(state, verifier);
+    console.log('Generated state:', state);
+    console.log('PKCE store size:', pkceStore.size);
 
     // Build authorization URL
     const authCodeUrlParameters = {
       scopes: SCOPES,
       redirectUri: REDIRECT_URI,
       codeChallenge: challenge,
-      codeChallengeMethod: 'S256',
+      codeChallengeMethod: 'S256' as 'S256',
       state,
       prompt: 'select_account',
     };
 
     const authUrl = await confidentialClientApp.getAuthCodeUrl(authCodeUrlParameters);
+    console.log('Generated auth URL:', authUrl);
 
     // Redirect user to Microsoft login
     res.redirect(authUrl);
@@ -56,12 +63,26 @@ router.get('/login', async (req: Request, res: Response): Promise<void> => {
  */
 router.get('/callback', async (req: Request, res: Response): Promise<void> => {
   try {
+    console.log('=== Auth Callback Debug ===');
+    console.log('Full URL:', req.url);
+    console.log('Query params:', req.query);
+    console.log('Code present:', !!req.query.code);
+    console.log('State present:', !!req.query.state);
+    console.log('Error in query:', req.query.error);
+    console.log('Error description:', req.query.error_description);
+
     const { code, state } = req.query;
 
     if (!code || !state) {
+      console.error('Missing required parameters');
       res.status(400).json({
         error: 'Invalid callback',
         message: 'Missing authorization code or state',
+        received: {
+          code: !!code,
+          state: !!state,
+          queryParams: Object.keys(req.query),
+        },
       });
       return;
     }
@@ -144,9 +165,11 @@ router.get('/callback', async (req: Request, res: Response): Promise<void> => {
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
-    // Redirect to frontend dashboard
+    console.log('✅ Authentication successful, redirecting to client');
+
+    // Redirect to frontend home page with success indicator
     const clientUrl = process.env.CLIENT_URL || 'http://localhost:3000';
-    res.redirect(`${clientUrl}/dashboard`);
+    res.redirect(`${clientUrl}?auth=success`);
   } catch (error) {
     console.error('Error in auth callback:', error);
     const clientUrl = process.env.CLIENT_URL || 'http://localhost:3000';

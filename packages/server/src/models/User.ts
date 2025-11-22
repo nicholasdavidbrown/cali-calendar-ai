@@ -3,7 +3,7 @@ import mongoose, { Schema, Document } from 'mongoose';
 export interface IUser extends Document {
   email: string;
   microsoftId: string;
-  phone: string;
+  phone?: string; // Optional - users can add later in settings
   accessToken: string;
   refreshToken: string;
   tokenExpiresAt: Date;
@@ -31,8 +31,9 @@ const UserSchema: Schema = new Schema(
     },
     phone: {
       type: String,
-      required: true,
+      required: false, // Optional - users add their phone number later
       trim: true,
+      default: '',
     },
     accessToken: {
       type: String,
