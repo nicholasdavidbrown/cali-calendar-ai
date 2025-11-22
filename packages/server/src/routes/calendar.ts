@@ -42,6 +42,15 @@ router.get('/events', authenticateJWT, async (req: Request, res: Response): Prom
   } catch (error) {
     console.error('Error fetching calendar events:', error);
 
+    // Handle token decryption errors (JWT_SECRET changed or corrupted tokens)
+    if (error instanceof Error && error.message.includes('TOKEN_DECRYPTION_ERROR')) {
+      res.status(401).json({
+        error: 'Authentication required',
+        message: 'Your session is invalid. Please sign in again.',
+      });
+      return;
+    }
+
     if (error instanceof Error && error.message.includes('re-authenticate')) {
       res.status(401).json({
         error: 'Token expired',
@@ -90,6 +99,15 @@ router.get('/events/week', authenticateJWT, async (req: Request, res: Response):
     });
   } catch (error) {
     console.error('Error fetching weekly calendar events:', error);
+
+    // Handle token decryption errors (JWT_SECRET changed or corrupted tokens)
+    if (error instanceof Error && error.message.includes('TOKEN_DECRYPTION_ERROR')) {
+      res.status(401).json({
+        error: 'Authentication required',
+        message: 'Your session is invalid. Please sign in again.',
+      });
+      return;
+    }
 
     if (error instanceof Error && error.message.includes('re-authenticate')) {
       res.status(401).json({

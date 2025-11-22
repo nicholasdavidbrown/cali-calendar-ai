@@ -153,6 +153,12 @@ export const getEventsForNext24Hours = async (user: StoredUser): Promise<Formatt
     return events.map((event) => formatEvent(event, validUser.timezone));
   } catch (error) {
     console.error('Error fetching 24-hour events:', error);
+
+    // Check if it's a decryption error
+    if (error instanceof Error && error.message.includes('Failed to decrypt token')) {
+      throw new Error('TOKEN_DECRYPTION_ERROR');
+    }
+
     throw new Error('Failed to fetch calendar events');
   }
 };
@@ -194,6 +200,12 @@ export const getEventsForNext7Days = async (user: StoredUser): Promise<Formatted
     return events.map((event) => formatEvent(event, validUser.timezone));
   } catch (error) {
     console.error('Error fetching 7-day events:', error);
+
+    // Check if it's a decryption error
+    if (error instanceof Error && error.message.includes('Failed to decrypt token')) {
+      throw new Error('TOKEN_DECRYPTION_ERROR');
+    }
+
     throw new Error('Failed to fetch calendar events');
   }
 };

@@ -54,6 +54,13 @@ export const decryptToken = (encryptedToken: string): string => {
 
   try {
     const parts = encryptedToken.split(':');
+
+    // If there are no colons, this might be an unencrypted token from before encryption was implemented
+    if (parts.length === 1) {
+      console.warn('⚠️ Token appears to be unencrypted. This should only happen for legacy tokens.');
+      return encryptedToken;
+    }
+
     if (parts.length !== 3) {
       throw new Error('Invalid encrypted token format');
     }
@@ -71,6 +78,16 @@ export const decryptToken = (encryptedToken: string): string => {
 
     return decrypted;
   } catch (error) {
-    throw new Error(`Failed to decrypt token: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+
+    // If decryption fails, it's likely due to:
+    // 1. JWT_SECRET changed
+    // 2. Corrupted data
+    // 3. Token encrypted with different key
+    console.error('❌ Token decryption failed:', errorMessage);
+    console.error('💡 This usually means JWT_SECRET has changed or token was encrypted with a different key');
+    console.error('💡 User needs to re-authenticate to get new tokens');
+
+    throw new Error(`Failed to decrypt token: ${errorMessage}. User must re-authenticate.`);
   }
 };
