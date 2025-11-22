@@ -3,9 +3,20 @@
 > 👍 **Disclaimer**
 > 
 > This was built in < 12 hrs as part of the [Tanda](https://www.tanda.com.au/) Gen AI hackathon. We do intend on turning it into a proper self-hosted service where you can add your own system API keys. Because we think that it's a fun product that you could leave running all the time. 
-> Please note that due to time contraints, much of the core functionality was coded by a Claude agent and has not been thoroughly tested or reviewed. 
+> Please note that due to time contraints, much of the core functionality was coded by a Claude agent and has not been thoroughly tested or reviewed.
 
-**AI-powered calendar assistant that sends personalized daily SMS notifications with your upcoming events**
+## 🚀 Roadmap
+
+I would not advise using it in it's current state, but over the next week or so I will do the following:
+- Add branch patterns for open source
+- Setup releases (version 0.x.x)
+- Correct the mongodb backend service
+- Create an admin area in the UI to put your AI API token (Anthropic claude initially) & SMS sending token (Twilio initially).
+- Create a plan to merge Timetree calendar app into the history (because I use this app shared with my parner) - This may be that we find a Timetree to Outlook merger & use that.
+- Other calendar support (or at lease make it modular enough for someone to extend it)
+- A guide for those new to self-hosting software, so you can set and forget on your own PC or deploy to your own cloud infrastructure.
+
+# AI-powered calendar assistant that sends personalized daily SMS notifications with your upcoming events
 
 Cali integrates with your Microsoft Outlook calendar to send you and your family members daily SMS summaries of upcoming events. With AI-powered message personalization powered by Claude, each notification is tailored to your chosen style—from professional to witty, sarcastic, or even themed personalities like Steve Irwin or Tanda.
 
