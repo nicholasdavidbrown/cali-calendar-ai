@@ -81,18 +81,27 @@ export async function getAllUsers(): Promise<StoredUser[]> {
     }
 
     // Migrate old MongoDB format to new format (convert _id to id if needed)
+    let needsMigration = false;
     const users = rawUsers.map((user: any) => {
       // If user has _id but not id, migrate it
       if (user._id && !user.id) {
         console.log(`🔄 Migrating user ${user.email} from MongoDB format (_id) to blob format (id)`);
+        needsMigration = true;
+        const { _id, ...rest } = user;
         return {
-          ...user,
-          id: typeof user._id === 'object' ? user._id.toString() : user._id,
-          _id: undefined, // Remove old _id field
+          ...rest,
+          id: typeof _id === 'object' ? _id.toString() : _id,
         };
       }
       return user;
     });
+
+    // Save migrated users back to blob storage
+    if (needsMigration) {
+      console.log('💾 Saving migrated users to blob storage...');
+      await saveAllUsers(users);
+      console.log('✅ Migration saved to blob storage');
+    }
 
     return users;
   } catch (error) {
