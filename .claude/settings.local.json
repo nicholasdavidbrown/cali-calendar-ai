@@ -6,7 +6,10 @@
       "Bash(corepack enable)",
       "Bash(yarn workspace server add:*)",
       "Bash(npm install:*)",
-      "Bash(npm run typecheck:*)"
+      "Bash(npm run typecheck:*)",
+      "Bash(yarn workspace:*)",
+      "Bash(yarn typecheck:*)",
+      "Bash(yarn ts-node:*)"
     ],
     "deny": [],
     "ask": []

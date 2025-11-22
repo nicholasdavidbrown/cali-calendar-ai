@@ -1,0 +1,27 @@
+### Calendar-to-SMS API Tests
+### Use with REST Client extension in VS Code or any HTTP client
+
+@baseUrl = http://localhost:3001
+@apiUrl = {{baseUrl}}/api/v1
+
+### 1. Check SMS Service Status (requires authentication)
+GET {{apiUrl}}/sms/status
+Cookie: token=YOUR_JWT_TOKEN_HERE
+
+### 2. Send Test SMS (requires authentication)
+POST {{apiUrl}}/sms/send-test
+Cookie: token=YOUR_JWT_TOKEN_HERE
+Content-Type: application/json
+
+### 3. Check if server is running
+GET {{baseUrl}}/
+
+### 4. Check API status
+GET {{apiUrl}}/
+
+### Instructions:
+### 1. First log in through the frontend (http://localhost:3000)
+### 2. Open browser dev tools → Application → Cookies
+### 3. Find the 'token' cookie value
+### 4. Replace YOUR_JWT_TOKEN_HERE with the actual token value
+### 5. Run the requests above

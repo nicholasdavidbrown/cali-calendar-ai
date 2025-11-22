@@ -30,7 +30,8 @@
     "isomorphic-fetch": "^3.0.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.20.1",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "twilio": "^5.10.6"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1",
@@ -44,6 +45,7 @@
     "@types/morgan": "^1.9.9",
     "@types/node": "^22.7.5",
     "@types/supertest": "^6.0.2",
+    "@types/twilio": "^3.19.3",
     "@typescript-eslint/eslint-plugin": "^7.16.1",
     "@typescript-eslint/parser": "^7.16.1",
     "eslint": "^8.57.0",
