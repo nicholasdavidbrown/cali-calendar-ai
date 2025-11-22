@@ -13,16 +13,34 @@ function Events() {
   const [error, setError] = useState<string | null>(null);
   const [smsMessage, setSmsMessage] = useState<string | null>(null);
   const [timeRange, setTimeRange] = useState<TimeRange>('24hours');
+  const [pollingEnabled, setPollingEnabled] = useState(true);
 
+  // Load events when time range changes
   useEffect(() => {
     loadEvents();
   }, [timeRange]);
 
-  const loadEvents = async (isRefresh = false) => {
-    if (isRefresh) {
-      setRefreshing(true);
-    } else {
-      setLoading(true);
+  // Setup polling to check for new events every 5 seconds
+  useEffect(() => {
+    if (!pollingEnabled) return;
+
+    const intervalId = setInterval(() => {
+      // Silently refresh in the background (no loading indicators)
+      loadEvents(true, true);
+    }, 5000); // 5 seconds
+
+    // Cleanup interval on component unmount or when polling is disabled
+    return () => clearInterval(intervalId);
+  }, [timeRange, pollingEnabled]);
+
+  const loadEvents = async (isRefresh = false, isSilent = false) => {
+    // Only show loading/refreshing indicators if not a silent background poll
+    if (!isSilent) {
+      if (isRefresh) {
+        setRefreshing(true);
+      } else {
+        setLoading(true);
+      }
     }
     setError(null);
     try {
@@ -30,10 +48,13 @@ function Events() {
         timeRange === '24hours' ? await fetchEvents24Hours() : await fetchEventsWeek();
       setEvents(response.events);
     } catch (err: any) {
-      if (err.response?.status === 401) {
-        setError('Your session has expired. Please sign in again.');
-      } else {
-        setError('Failed to load calendar events');
+      // Only show errors if not a silent poll
+      if (!isSilent) {
+        if (err.response?.status === 401) {
+          setError('Your session has expired. Please sign in again.');
+        } else {
+          setError('Failed to load calendar events');
+        }
       }
       console.error('Error loading events:', err);
     } finally {
@@ -128,6 +149,12 @@ function Events() {
       <div className="events-header">
         <h1>📅 Calendar Events</h1>
         <p>Your upcoming Outlook calendar events</p>
+        {pollingEnabled && (
+          <div className="auto-refresh-indicator">
+            <span className="pulse-dot"></span>
+            Auto-refreshing every 5 seconds
+          </div>
+        )}
       </div>
 
       {/* Controls: Time Range Toggle + Refresh Button + SMS Test Button */}
