@@ -1,0 +1,258 @@
+.settings-container {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem;
+  min-height: 100vh;
+}
+
+.settings-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.settings-header h1 {
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.settings-header p {
+  font-size: clamp(1rem, 2vw, 1.1rem);
+  color: #666;
+}
+
+.settings-content {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.message-styles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.style-card {
+  border: 2px solid #e5e5e5;
+  border-radius: 12px;
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.style-card:hover {
+  border-color: #f5a623;
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(245, 166, 35, 0.2);
+}
+
+.style-card.selected {
+  border-color: #f5a623;
+  background: linear-gradient(135deg, rgba(245, 166, 35, 0.05) 0%, rgba(247, 107, 28, 0.05) 100%);
+  box-shadow: 0 8px 16px rgba(245, 166, 35, 0.3);
+}
+
+.style-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.style-header input[type="radio"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: #f5a623;
+}
+
+.style-header h3 {
+  font-size: 1.25rem;
+  color: #333;
+  margin: 0;
+}
+
+.style-description {
+  color: #666;
+  font-size: 0.95rem;
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+.style-example {
+  background: #f8f9fa;
+  border-left: 3px solid #f5a623;
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.style-example strong {
+  color: #333;
+  font-size: 0.9rem;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.style-example p {
+  color: #555;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin: 0;
+  font-style: italic;
+}
+
+.settings-actions {
+  display: flex;
+  justify-content: center;
+  margin: 2rem 0;
+  padding-top: 2rem;
+  border-top: 2px solid #e5e5e5;
+}
+
+.save-button {
+  background: linear-gradient(135deg, #f5a623 0%, #f76b1c 100%);
+  color: white;
+  border: none;
+  padding: 1rem 3rem;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(245, 166, 35, 0.3);
+}
+
+.save-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(245, 166, 35, 0.4);
+}
+
+.save-button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.current-settings {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 2px solid #e5e5e5;
+}
+
+.current-settings h3 {
+  font-size: 1.25rem;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.settings-info p {
+  color: #555;
+  font-size: 0.95rem;
+  margin: 0.75rem 0;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.settings-info strong {
+  color: #333;
+  min-width: 100px;
+}
+
+.settings-info .status {
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.settings-info .status.active {
+  background: #d4edda;
+  color: #155724;
+}
+
+.settings-info .status.inactive {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.error-message {
+  background: #fee;
+  color: #c33;
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  border-left: 4px solid #c33;
+  font-weight: 500;
+}
+
+.success-message {
+  background: #d4edda;
+  color: #155724;
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  border-left: 4px solid #28a745;
+  font-weight: 500;
+}
+
+.loading {
+  text-align: center;
+  padding: 3rem;
+  color: #666;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .settings-container {
+    padding: 1rem;
+  }
+
+  .settings-content {
+    padding: 1.5rem;
+  }
+
+  .message-styles {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .style-card {
+    padding: 1.25rem;
+  }
+
+  .save-button {
+    width: 100%;
+    padding: 1rem;
+  }
+
+  .settings-info strong {
+    min-width: 80px;
+  }
+}
+
+@media (max-width: 480px) {
+  .settings-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .style-card {
+    padding: 1rem;
+  }
+
+  .settings-info p {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .settings-info strong {
+    min-width: auto;
+  }
+}

@@ -20,6 +20,7 @@
   },
   "license": "MIT",
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.70.1",
     "@azure/msal-node": "^3.8.3",
     "@microsoft/microsoft-graph-client": "^3.0.7",
     "cookie-parser": "^1.4.7",

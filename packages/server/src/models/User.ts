@@ -1,5 +1,7 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
+export type MessageStyle = 'professional' | 'witty' | 'sarcastic' | 'mission';
+
 export interface IUser extends Document {
   email: string;
   microsoftId: string;
@@ -10,6 +12,7 @@ export interface IUser extends Document {
   timezone: string;
   smsTime: string;
   isActive: boolean;
+  messageStyle: MessageStyle;
   lastSmsSentDate?: Date;
   createdAt: Date;
   updatedAt: Date;
@@ -58,6 +61,11 @@ const UserSchema: Schema = new Schema(
     isActive: {
       type: Boolean,
       default: true,
+    },
+    messageStyle: {
+      type: String,
+      enum: ['professional', 'witty', 'sarcastic', 'mission'],
+      default: 'professional',
     },
     lastSmsSentDate: {
       type: Date,

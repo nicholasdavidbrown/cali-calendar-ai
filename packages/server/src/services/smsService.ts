@@ -1,6 +1,7 @@
 import twilio from 'twilio';
 import { IUser } from '../models/User';
 import { getEventsForNext24Hours, formatCalendarSummary } from './calendarService';
+import { generateCalendarMessage, isClaudeConfigured } from './claudeService';
 
 /**
  * SMS Service for Twilio Integration
@@ -88,8 +89,15 @@ export const sendDailySummary = async (user: IUser): Promise<string> => {
     // Get user's name from email (simple approach)
     const userName = user.email.split('@')[0];
 
-    // Format the calendar summary
-    const message = formatCalendarSummary(events, userName);
+    // Generate message using Claude AI if configured, otherwise use default formatting
+    let message: string;
+    if (isClaudeConfigured()) {
+      console.log(`Generating message with Claude for ${user.email} (style: ${user.messageStyle})`);
+      message = await generateCalendarMessage(events, userName, user.messageStyle);
+    } else {
+      console.warn('Claude API not configured, using default message format');
+      message = formatCalendarSummary(events, userName);
+    }
 
     // Send the SMS
     const messageSid = await sendSMS(user.phone, message);

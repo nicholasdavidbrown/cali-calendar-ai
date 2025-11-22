@@ -1,5 +1,7 @@
 import apiClient from './client';
 
+export type MessageStyle = 'professional' | 'witty' | 'sarcastic' | 'mission';
+
 export interface User {
   _id: string;
   email: string;
@@ -8,8 +10,13 @@ export interface User {
   timezone: string;
   smsTime: string;
   isActive: boolean;
+  messageStyle: MessageStyle;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface UserProfile extends User {
+  // Extended profile information
 }
 
 export interface UserStats {
@@ -42,5 +49,31 @@ export const fetchUsers = async (): Promise<UsersResponse> => {
  */
 export const fetchUserStats = async (): Promise<StatsResponse> => {
   const response = await apiClient.get<StatsResponse>('/api/v1/users/stats');
+  return response.data;
+};
+
+/**
+ * Get current user's profile
+ */
+export const getUserProfile = async (): Promise<UserProfile> => {
+  const response = await apiClient.get<{ success: boolean; data: UserProfile }>('/api/v1/users/me');
+  return response.data.data;
+};
+
+/**
+ * Update user preferences
+ */
+export interface UpdatePreferencesPayload {
+  phone?: string;
+  timezone?: string;
+  smsTime?: string;
+  isActive?: boolean;
+  messageStyle?: MessageStyle;
+}
+
+export const updateUserPreferences = async (
+  preferences: UpdatePreferencesPayload,
+): Promise<{ success: boolean; message: string; data: Partial<UserProfile> }> => {
+  const response = await apiClient.put('/api/v1/users/preferences', preferences);
   return response.data;
 };

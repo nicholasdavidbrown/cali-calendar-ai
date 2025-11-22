@@ -2,6 +2,10 @@ import { useState, useEffect } from 'react'
 import './App.css'
 import { fetchUsers, fetchUserStats, User, UserStats } from './api/userService'
 import { checkAuthStatus, loginWithMicrosoft, logout, AuthUser } from './api/authService'
+import logo from './assets/logo2_t.png'
+import Settings from './pages/Settings'
+
+type ViewMode = 'dashboard' | 'settings'
 
 function App() {
   const [users, setUsers] = useState<User[]>([])
@@ -10,6 +14,7 @@ function App() {
   const [error, setError] = useState<string | null>(null)
   const [currentUser, setCurrentUser] = useState<AuthUser | null>(null)
   const [authLoading, setAuthLoading] = useState(true)
+  const [viewMode, setViewMode] = useState<ViewMode>('dashboard')
 
   // Check authentication status
   const checkAuth = async () => {
@@ -88,8 +93,10 @@ function App() {
   return (
     <div className="app-container">
       <header>
-        <h1>Calendar-to-SMS Application</h1>
-        <p>MongoDB Integration Example</p>
+        <div className="header-logo">
+          <img src={logo} alt="Cali Logo" className="logo" />
+        </div>
+        <p className="tagline">Your day wrapped up</p>
 
         {/* Authentication Section */}
         <div className="auth-section">
@@ -125,8 +132,31 @@ function App() {
         </div>
       </header>
 
-      {/* Statistics Section */}
-      {stats && (
+      {/* Navigation Tabs (only show when authenticated) */}
+      {currentUser && (
+        <div className="navigation-tabs">
+          <button
+            className={`nav-tab ${viewMode === 'dashboard' ? 'active' : ''}`}
+            onClick={() => setViewMode('dashboard')}
+          >
+            Dashboard
+          </button>
+          <button
+            className={`nav-tab ${viewMode === 'settings' ? 'active' : ''}`}
+            onClick={() => setViewMode('settings')}
+          >
+            Message Style Settings
+          </button>
+        </div>
+      )}
+
+      {/* Conditional View Rendering */}
+      {viewMode === 'settings' && currentUser ? (
+        <Settings />
+      ) : (
+        <>
+          {/* Statistics Section */}
+          {stats && (
         <div className="stats-section">
           <h2>Database Statistics</h2>
           <div className="stats-grid">
@@ -202,14 +232,18 @@ function App() {
         )}
       </div>
 
-      <footer>
-        <p>
-          Backend API: <code>GET /api/v1/users</code>
-        </p>
-        <p>
-          Database: MongoDB at <code>mongodb://mongodb:27017/calendar-sms</code>
-        </p>
-      </footer>
+      {viewMode === 'dashboard' && (
+        <footer>
+          <p>
+            Backend API: <code>GET /api/v1/users</code>
+          </p>
+          <p>
+            Database: MongoDB at <code>mongodb://mongodb:27017/calendar-sms</code>
+          </p>
+        </footer>
+      )}
+        </>
+      )}
     </div>
   )
 }

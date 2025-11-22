@@ -43,13 +43,13 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 a {
-  color: #667eea;
+  color: #f5a623;
   text-decoration: none;
   transition: color 0.2s;
 }
 
 a:hover {
-  color: #5568d3;
+  color: #f76b1c;
 }
 
 button {
