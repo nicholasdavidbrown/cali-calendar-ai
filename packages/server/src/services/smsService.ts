@@ -112,6 +112,14 @@ export const sendDailySummary = async (user: StoredUser): Promise<string> => {
     const messageSid = await sendSMS(user.phone, message);
     console.log(`📱 Daily summary sent to ${user.email} (${user.phone})`);
 
+    // Save to SMS history for main user
+    await userStorage.addSmsHistoryEntry(user.id, {
+      message,
+      recipientPhone: user.phone,
+      messageStyle: user.messageStyle,
+      eventCount: events.length,
+    });
+
     // Send to active family members
     const familyMembers = user.familyMembers || [];
     const activeFamilyMembers = familyMembers.filter((member) => member.isActive);
@@ -125,6 +133,15 @@ export const sendDailySummary = async (user: StoredUser): Promise<string> => {
           const familyMessage = message.replace(userName, member.name);
           await sendSMS(member.phone, familyMessage);
           console.log(`  ✅ Sent to ${member.name} (${member.phone})`);
+
+          // Save to SMS history for family member
+          await userStorage.addSmsHistoryEntry(user.id, {
+            message: familyMessage,
+            recipientPhone: member.phone,
+            recipientName: member.name,
+            messageStyle: user.messageStyle,
+            eventCount: events.length,
+          });
         } catch (error) {
           console.error(`  ❌ Failed to send to ${member.name} (${member.phone}):`, error);
           // Continue with other family members even if one fails

@@ -6,9 +6,10 @@ import { generateJoinCode } from './api/familyService'
 import logo from './assets/logo2_t.png'
 import Settings from './pages/Settings'
 import Events from './pages/Events'
+import History from './pages/History'
 import QRCodeModal from './components/QRCodeModal'
 
-type ViewMode = 'dashboard' | 'settings' | 'calendar'
+type ViewMode = 'dashboard' | 'settings' | 'calendar' | 'history'
 
 function App() {
   const [users, setUsers] = useState<User[]>([])
@@ -222,6 +223,12 @@ function App() {
             Calendar
           </button>
           <button
+            className={`nav-tab ${viewMode === 'history' ? 'active' : ''}`}
+            onClick={() => setViewMode('history')}
+          >
+            History
+          </button>
+          <button
             className={`nav-tab ${viewMode === 'settings' ? 'active' : ''}`}
             onClick={() => setViewMode('settings')}
           >
@@ -243,6 +250,8 @@ function App() {
         <Settings />
       ) : viewMode === 'calendar' && currentUser ? (
         <Events />
+      ) : viewMode === 'history' && currentUser ? (
+        <History />
       ) : viewMode === 'dashboard' && currentUser?.isAdmin ? (
         <>
           {/* Statistics Section */}

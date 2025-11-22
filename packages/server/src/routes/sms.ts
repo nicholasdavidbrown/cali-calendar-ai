@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import { authenticateJWT } from '../middleware/auth';
 import { sendDailySummary, isTwilioConfigured } from '../services/smsService';
 import { runSchedulerManually } from '../services/schedulerService';
+import * as userStorage from '../services/userStorageService';
 
 const router = Router();
 
@@ -285,6 +286,43 @@ router.post('/send-demo', async (req: Request, res: Response): Promise<void> => 
     res.status(500).json({
       error: 'Failed to send demo SMS',
       message: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+});
+
+/**
+ * GET /api/v1/sms/history
+ * Fetches SMS history for the authenticated user
+ * Protected route - requires authentication
+ * Query params: limit (optional, default 50)
+ */
+router.get('/history', authenticateJWT, async (req: Request, res: Response): Promise<void> => {
+  try {
+    if (!req.user) {
+      res.status(401).json({
+        error: 'Unauthorized',
+        message: 'User not authenticated',
+      });
+      return;
+    }
+
+    // Get limit from query params (default 50, max 100)
+    const limit = Math.min(parseInt(req.query.limit as string) || 50, 100);
+
+    // Fetch SMS history
+    const history = await userStorage.getSmsHistory(req.user.id, limit);
+
+    res.json({
+      success: true,
+      count: history.length,
+      history,
+    });
+  } catch (error) {
+    console.error('Error fetching SMS history:', error);
+
+    res.status(500).json({
+      error: 'Failed to fetch history',
+      message: 'An error occurred while fetching SMS history',
     });
   }
 });

@@ -4,6 +4,17 @@ import { MessageStyle, FamilyMember } from '../models/User';
 const CONTAINER_NAME = 'user-backups';
 const BLOB_NAME = 'users.json';
 
+// SMS History entry
+export interface SmsHistoryEntry {
+  id: string;
+  message: string;
+  sentAt: string; // ISO string
+  recipientPhone: string;
+  recipientName?: string; // For family members
+  messageStyle: MessageStyle;
+  eventCount: number;
+}
+
 // User interface for blob storage (without MongoDB _id, using string id instead)
 export interface StoredUser {
   id: string;
@@ -18,6 +29,7 @@ export interface StoredUser {
   isActive: boolean;
   messageStyle: MessageStyle;
   familyMembers: FamilyMember[];
+  smsHistory: SmsHistoryEntry[]; // SMS history
   lastSmsSentDate?: string; // ISO string
   createdAt: string; // ISO string
   updatedAt: string; // ISO string
@@ -181,6 +193,7 @@ export async function createUser(userData: Omit<StoredUser, 'id' | 'createdAt' |
   const newUser: StoredUser = {
     id,
     ...userData,
+    smsHistory: userData.smsHistory || [], // Initialize empty history if not provided
     createdAt: now,
     updatedAt: now,
   };
@@ -288,4 +301,65 @@ export async function getUserStats(): Promise<{
     activeUsers: users.filter((u) => u.isActive).length,
     inactiveUsers: users.filter((u) => !u.isActive).length,
   };
+}
+
+/**
+ * Add SMS history entry to a user
+ */
+export async function addSmsHistoryEntry(
+  userId: string,
+  entry: Omit<SmsHistoryEntry, 'id' | 'sentAt'>
+): Promise<StoredUser | null> {
+  const users = await getAllUsers();
+  const index = users.findIndex((u) => u.id === userId);
+
+  if (index === -1) {
+    console.log(`⚠️  User not found: ${userId}`);
+    return null;
+  }
+
+  const historyEntry: SmsHistoryEntry = {
+    id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+    sentAt: new Date().toISOString(),
+    ...entry,
+  };
+
+  // Initialize smsHistory if it doesn't exist (for legacy users)
+  if (!users[index].smsHistory) {
+    users[index].smsHistory = [];
+  }
+
+  // Add new entry at the beginning (most recent first)
+  users[index].smsHistory.unshift(historyEntry);
+
+  // Keep only the last 100 entries
+  if (users[index].smsHistory.length > 100) {
+    users[index].smsHistory = users[index].smsHistory.slice(0, 100);
+  }
+
+  users[index].updatedAt = new Date().toISOString();
+
+  await saveAllUsers(users);
+
+  console.log(`✅ Added SMS history entry for user: ${users[index].email}`);
+  return users[index];
+}
+
+/**
+ * Get SMS history for a user
+ */
+export async function getSmsHistory(userId: string, limit: number = 50): Promise<SmsHistoryEntry[]> {
+  const user = await findUserById(userId);
+
+  if (!user) {
+    return [];
+  }
+
+  // Initialize if doesn't exist (for legacy users)
+  if (!user.smsHistory) {
+    return [];
+  }
+
+  // Return limited history (already sorted by most recent first)
+  return user.smsHistory.slice(0, limit);
 }
