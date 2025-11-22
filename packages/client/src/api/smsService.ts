@@ -5,6 +5,7 @@ export interface SMSResponse {
   message: string;
   messageSid?: string;
   sentTo?: string;
+  messageStyle?: string;
 }
 
 export interface SMSStatusResponse {

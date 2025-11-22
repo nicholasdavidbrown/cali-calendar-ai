@@ -41,11 +41,15 @@ router.post('/send-test', authenticateJWT, async (req: Request, res: Response): 
     // Send the daily summary SMS
     const messageSid = await sendDailySummary(req.user);
 
+    // Format the message style for display
+    const styleDisplay = req.user.messageStyle.charAt(0).toUpperCase() + req.user.messageStyle.slice(1);
+
     res.json({
       success: true,
-      message: 'Test SMS sent successfully',
+      message: 'SMS sent successfully',
       messageSid,
       sentTo: req.user.phone,
+      messageStyle: styleDisplay,
     });
   } catch (error) {
     console.error('Error sending test SMS:', error);

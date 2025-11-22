@@ -2,8 +2,7 @@ import twilio from 'twilio';
 import { StoredUser } from './userStorageService';
 import * as userStorage from './userStorageService';
 import { getEventsForNext24Hours, formatCalendarSummary } from './calendarService';
-// Claude service disabled
-// import { generateCalendarMessage, isClaudeConfigured } from './claudeService';
+import { generateCalendarMessage, isClaudeConfigured } from './claudeService';
 
 /**
  * SMS Service for Twilio Integration
@@ -91,19 +90,23 @@ export const sendDailySummary = async (user: StoredUser): Promise<string> => {
     // Get user's name from email (simple approach)
     const userName = user.email.split('@')[0];
 
-    // Generate message using default formatting (Claude disabled)
-    console.log(`📝 Generating default message format for ${user.email}`);
-    const message = formatCalendarSummary(events, userName);
+    // Generate message using Claude AI with user's preferred message style
+    let message: string;
 
-    // Claude AI disabled - uncomment below to re-enable
-    // let message: string;
-    // if (isClaudeConfigured()) {
-    //   console.log(`Generating message with Claude for ${user.email} (style: ${user.messageStyle})`);
-    //   message = await generateCalendarMessage(events, userName, user.messageStyle);
-    // } else {
-    //   console.warn('Claude API not configured, using default message format');
-    //   message = formatCalendarSummary(events, userName);
-    // }
+    if (isClaudeConfigured()) {
+      try {
+        console.log(`🤖 Generating Claude message for ${user.email} (style: ${user.messageStyle})`);
+        message = await generateCalendarMessage(events, userName, user.messageStyle);
+        console.log(`✅ Claude message generated successfully`);
+      } catch (claudeError) {
+        console.error('❌ Claude API error, falling back to default format:', claudeError);
+        console.log(`📝 Using default message format as fallback`);
+        message = formatCalendarSummary(events, userName);
+      }
+    } else {
+      console.warn('⚠️  Claude API not configured, using default message format');
+      message = formatCalendarSummary(events, userName);
+    }
 
     // Send the SMS
     const messageSid = await sendSMS(user.phone, message);

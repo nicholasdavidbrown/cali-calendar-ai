@@ -53,7 +53,8 @@ function Events() {
 
     try {
       const response = await sendTestSMS();
-      setSmsMessage(`✅ ${response.message} - Sent to ${response.sentTo}`);
+      const styleInfo = response.messageStyle ? ` (${response.messageStyle} style)` : '';
+      setSmsMessage(`✅ ${response.message}${styleInfo} - Sent to ${response.sentTo}`);
       console.log('SMS sent successfully:', response);
     } catch (err: any) {
       if (err.response?.status === 400) {
@@ -151,7 +152,7 @@ function Events() {
             className={`sms-button ${sendingSMS ? 'sending' : ''}`}
             onClick={handleSendTestSMS}
             disabled={sendingSMS || loading}
-            title="Send test SMS with calendar summary"
+            title="Send SMS with calendar summary"
           >
             <svg
               className="sms-icon"
@@ -164,7 +165,7 @@ function Events() {
             >
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
             </svg>
-            {sendingSMS ? 'Sending...' : 'Send Test SMS'}
+            {sendingSMS ? 'Sending...' : 'Send SMS'}
           </button>
 
           <button
