@@ -110,8 +110,8 @@ Important guidelines:
       : `Create a daily schedule SMS message for ${userName} who has no events scheduled today.`;
 
     const message = await client.messages.create({
-      model: 'claude-3-5-sonnet-20240620',
-      max_tokens: 300,
+      model: 'claude-sonnet-4-5-20250929',
+      max_tokens: 2048,
       messages: [
         {
           role: 'user',
