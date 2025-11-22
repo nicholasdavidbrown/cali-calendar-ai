@@ -7,6 +7,7 @@ export interface AuthUser {
   timezone: string;
   smsTime: string;
   isActive: boolean;
+  isAdmin: boolean;
   createdAt: string;
 }
 

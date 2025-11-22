@@ -149,7 +149,7 @@ router.get('/callback', async (req: Request, res: Response): Promise<void> => {
         accessToken: encryptedAccessToken,
         refreshToken: encryptedRefreshToken,
         tokenExpiresAt: expiresOn || new Date(Date.now() + 3600 * 1000),
-        timezone: 'America/Los_Angeles',
+        timezone: 'Australia/Brisbane',
         smsTime: '07:00',
         isActive: true,
       });
@@ -198,6 +198,15 @@ router.get('/logout', (req: Request, res: Response): void => {
 });
 
 /**
+ * Check if user is an admin based on ADMIN_EMAILS environment variable
+ */
+const isAdmin = (email: string): boolean => {
+  const adminEmails = process.env.ADMIN_EMAILS || '';
+  const adminList = adminEmails.split(',').map((e) => e.trim().toLowerCase());
+  return adminList.includes(email.toLowerCase());
+};
+
+/**
  * GET /auth/status
  * Returns current authenticated user
  */
@@ -219,6 +228,7 @@ router.get('/status', authenticateJWT, (req: Request, res: Response): void => {
       timezone: req.user.timezone,
       smsTime: req.user.smsTime,
       isActive: req.user.isActive,
+      isAdmin: isAdmin(req.user.email),
       createdAt: req.user.createdAt,
     },
   });

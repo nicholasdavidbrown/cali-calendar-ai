@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react'
 import './App.css'
-import { fetchUsers, fetchUserStats, User, UserStats } from './api/userService'
+import { fetchUsers, fetchUserStats, deleteUser, User, UserStats } from './api/userService'
 import { checkAuthStatus, loginWithMicrosoft, logout, AuthUser } from './api/authService'
 import logo from './assets/logo2_t.png'
 import Settings from './pages/Settings'
+import Events from './pages/Events'
 
-type ViewMode = 'dashboard' | 'settings'
+type ViewMode = 'dashboard' | 'settings' | 'calendar'
 
 function App() {
   const [users, setUsers] = useState<User[]>([])
@@ -14,7 +15,7 @@ function App() {
   const [error, setError] = useState<string | null>(null)
   const [currentUser, setCurrentUser] = useState<AuthUser | null>(null)
   const [authLoading, setAuthLoading] = useState(true)
-  const [viewMode, setViewMode] = useState<ViewMode>('dashboard')
+  const [viewMode, setViewMode] = useState<ViewMode>('calendar')
 
   // Check authentication status
   const checkAuth = async () => {
@@ -62,6 +63,29 @@ function App() {
       setCurrentUser(null)
     } catch (err) {
       console.error('Failed to logout:', err)
+    }
+  }
+
+  // Handle user deletion
+  const handleDeleteUser = async (userId: string, userEmail: string) => {
+    const confirmed = window.confirm(
+      `Are you sure you want to delete user "${userEmail}"?\n\nThis will permanently remove the user from MongoDB and Azure Storage.\n\nThis action cannot be undone.`
+    )
+
+    if (!confirmed) {
+      return
+    }
+
+    try {
+      await deleteUser(userId)
+      console.log(`✅ User ${userEmail} deleted successfully`)
+
+      // Reload users and stats
+      await loadUsers()
+      await loadStats()
+    } catch (err) {
+      console.error('Failed to delete user:', err)
+      setError('Failed to delete user. Please try again.')
     }
   }
 
@@ -136,24 +160,34 @@ function App() {
       {currentUser && (
         <div className="navigation-tabs">
           <button
-            className={`nav-tab ${viewMode === 'dashboard' ? 'active' : ''}`}
-            onClick={() => setViewMode('dashboard')}
+            className={`nav-tab ${viewMode === 'calendar' ? 'active' : ''}`}
+            onClick={() => setViewMode('calendar')}
           >
-            Dashboard
+            Calendar
           </button>
           <button
             className={`nav-tab ${viewMode === 'settings' ? 'active' : ''}`}
             onClick={() => setViewMode('settings')}
           >
-            Message Style Settings
+            Settings
           </button>
+          {currentUser.isAdmin && (
+            <button
+              className={`nav-tab ${viewMode === 'dashboard' ? 'active' : ''}`}
+              onClick={() => setViewMode('dashboard')}
+            >
+              Users
+            </button>
+          )}
         </div>
       )}
 
       {/* Conditional View Rendering */}
       {viewMode === 'settings' && currentUser ? (
         <Settings />
-      ) : (
+      ) : viewMode === 'calendar' && currentUser ? (
+        <Events />
+      ) : viewMode === 'dashboard' && currentUser?.isAdmin ? (
         <>
           {/* Statistics Section */}
           {stats && (
@@ -209,6 +243,7 @@ function App() {
                   <th>SMS Time</th>
                   <th>Status</th>
                   <th>Created At</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -224,6 +259,15 @@ function App() {
                       </span>
                     </td>
                     <td>{new Date(user.createdAt).toLocaleDateString()}</td>
+                    <td>
+                      <button
+                        className="delete-button"
+                        onClick={() => handleDeleteUser(user._id, user.email)}
+                        title="Delete user"
+                      >
+                        🗑️ Delete
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -232,7 +276,7 @@ function App() {
         )}
       </div>
 
-      {viewMode === 'dashboard' && (
+      {viewMode === 'dashboard' && currentUser?.isAdmin && (
         <footer>
           <p>
             Backend API: <code>GET /api/v1/users</code>
@@ -243,7 +287,7 @@ function App() {
         </footer>
       )}
         </>
-      )}
+      ) : null}
     </div>
   )
 }

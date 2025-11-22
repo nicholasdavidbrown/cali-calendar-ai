@@ -29,6 +29,73 @@
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
+.settings-section {
+  margin-bottom: 3rem;
+}
+
+.settings-section h2 {
+  font-size: 1.5rem;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.section-description {
+  color: #666;
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+
+.phone-input-group {
+  max-width: 500px;
+}
+
+.phone-input-group label {
+  display: block;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.phone-input {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  border: 2px solid #e5e5e5;
+  border-radius: 12px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+.phone-input:focus {
+  outline: none;
+  border-color: #f5a623;
+  box-shadow: 0 0 0 3px rgba(245, 166, 35, 0.1);
+}
+
+.phone-input.error {
+  border-color: #c33;
+}
+
+.phone-input.error:focus {
+  box-shadow: 0 0 0 3px rgba(204, 51, 51, 0.1);
+}
+
+.input-error {
+  color: #c33;
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+  font-weight: 500;
+}
+
+.input-hint {
+  color: #999;
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+  font-style: italic;
+}
+
 .message-styles {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -217,6 +284,14 @@
 
   .settings-content {
     padding: 1.5rem;
+  }
+
+  .settings-section {
+    margin-bottom: 2rem;
+  }
+
+  .phone-input-group {
+    max-width: 100%;
   }
 
   .message-styles {

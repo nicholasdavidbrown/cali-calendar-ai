@@ -77,3 +77,11 @@ export const updateUserPreferences = async (
   const response = await apiClient.put('/api/v1/users/preferences', preferences);
   return response.data;
 };
+
+/**
+ * Delete a user by ID
+ */
+export const deleteUser = async (userId: string): Promise<{ success: boolean; message: string }> => {
+  const response = await apiClient.delete(`/api/v1/users/${userId}`);
+  return response.data;
+};

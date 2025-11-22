@@ -151,4 +151,46 @@ router.get('/me', authenticateJWT, async (req: Request, res: Response): Promise<
   }
 });
 
+/**
+ * DELETE /api/v1/users/:id
+ * Deletes a user from MongoDB and updates Azure Blob Storage
+ */
+router.delete('/:id', async (req: Request, res: Response): Promise<void> => {
+  try {
+    const userId = req.params.id;
+
+    console.log(`🗑️  Attempting to delete user: ${userId}`);
+
+    // Find and delete the user
+    const deletedUser = await User.findByIdAndDelete(userId);
+
+    if (!deletedUser) {
+      res.status(404).json({
+        success: false,
+        error: 'User not found',
+      });
+      return;
+    }
+
+    console.log(`✅ Deleted user from MongoDB: ${deletedUser.email}`);
+
+    // Update Azure Blob Storage
+    saveUsersToBlob().catch((err) => console.error('Failed to save users to blob after deletion:', err));
+
+    res.json({
+      success: true,
+      message: 'User deleted successfully',
+      data: {
+        email: deletedUser.email,
+      },
+    });
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to delete user',
+    });
+  }
+});
+
 export default router;
