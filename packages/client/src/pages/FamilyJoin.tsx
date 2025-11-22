@@ -16,6 +16,15 @@ function FamilyJoin() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [eventCreated, setEventCreated] = useState(false);
+  const [eventError, setEventError] = useState<string | null>(null);
+
+  // Optional event creation fields
+  const [createEvent, setCreateEvent] = useState(false);
+  const [eventTitle, setEventTitle] = useState('');
+  const [eventDate, setEventDate] = useState('');
+  const [eventTime, setEventTime] = useState('');
+  const [eventDuration, setEventDuration] = useState('60');
 
   useEffect(() => {
     if (code) {
@@ -70,21 +79,52 @@ function FamilyJoin() {
       return;
     }
 
+    // Validate event fields if creating an event
+    if (createEvent) {
+      if (!eventTitle.trim()) {
+        setError('Please enter an event title');
+        return;
+      }
+      if (!eventDate) {
+        setError('Please select an event date');
+        return;
+      }
+      if (!eventTime) {
+        setError('Please select an event time');
+        return;
+      }
+    }
+
     setSubmitting(true);
 
     try {
-      await joinWithCode(code, name.trim(), phone.trim());
-      setSuccess(true);
+      const result = await joinWithCode(
+        code,
+        name.trim(),
+        phone.trim(),
+        createEvent ? {
+          eventTitle: eventTitle.trim(),
+          eventDate,
+          eventTime,
+          eventDuration: parseInt(eventDuration),
+        } : undefined
+      );
 
-      // Redirect after 3 seconds
+      setSuccess(true);
+      setEventCreated(result.eventCreated || false);
+      setEventError(result.eventError || null);
+
+      // Redirect after 5 seconds (more time to read event status)
       setTimeout(() => {
         navigate('/');
-      }, 3000);
+      }, 5000);
     } catch (err: any) {
       if (err.response?.status === 404) {
         setError('Invalid or expired join code');
+      } else if (err.response?.data?.field === 'phone') {
+        setError(err.response?.data?.error || 'Invalid phone number format');
       } else {
-        setError('Failed to join. Please try again.');
+        setError(err.response?.data?.error || 'Failed to join. Please try again.');
       }
     } finally {
       setSubmitting(false);
@@ -122,6 +162,21 @@ function FamilyJoin() {
           <p className="success-details">
             You'll receive daily SMS messages with upcoming calendar events at {phone}.
           </p>
+          {createEvent && (
+            <>
+              {eventCreated ? (
+                <div className="event-success">
+                  <span className="event-icon">📅</span>
+                  <p>Calendar event created successfully!</p>
+                </div>
+              ) : eventError ? (
+                <div className="event-warning">
+                  <span className="event-icon">⚠️</span>
+                  <p>{eventError}</p>
+                </div>
+              ) : null}
+            </>
+          )}
           <p className="redirect-note">Redirecting...</p>
         </div>
       </div>
@@ -166,6 +221,82 @@ function FamilyJoin() {
               required
             />
             <p className="input-hint">Include country code (e.g., +1 for US, +61 for Australia)</p>
+          </div>
+
+          <div className="optional-event-section">
+            <div className="section-header">
+              <label className="checkbox-label">
+                <input
+                  type="checkbox"
+                  checked={createEvent}
+                  onChange={(e) => setCreateEvent(e.target.checked)}
+                  disabled={submitting}
+                />
+                <span>Create a calendar event for {userEmail.split('@')[0]}</span>
+              </label>
+              <p className="section-hint">Optionally add an event to their calendar</p>
+            </div>
+
+            {createEvent && (
+              <div className="event-fields">
+                <div className="form-group">
+                  <label htmlFor="eventTitle">Event Title</label>
+                  <input
+                    type="text"
+                    id="eventTitle"
+                    value={eventTitle}
+                    onChange={(e) => setEventTitle(e.target.value)}
+                    placeholder="e.g., Dinner with family"
+                    className="form-input"
+                    disabled={submitting}
+                  />
+                </div>
+
+                <div className="form-row">
+                  <div className="form-group">
+                    <label htmlFor="eventDate">Date</label>
+                    <input
+                      type="date"
+                      id="eventDate"
+                      value={eventDate}
+                      onChange={(e) => setEventDate(e.target.value)}
+                      className="form-input"
+                      disabled={submitting}
+                      min={new Date().toISOString().split('T')[0]}
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="eventTime">Time</label>
+                    <input
+                      type="time"
+                      id="eventTime"
+                      value={eventTime}
+                      onChange={(e) => setEventTime(e.target.value)}
+                      className="form-input"
+                      disabled={submitting}
+                    />
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="eventDuration">Duration (minutes)</label>
+                  <select
+                    id="eventDuration"
+                    value={eventDuration}
+                    onChange={(e) => setEventDuration(e.target.value)}
+                    className="form-input"
+                    disabled={submitting}
+                  >
+                    <option value="30">30 minutes</option>
+                    <option value="60">1 hour</option>
+                    <option value="90">1.5 hours</option>
+                    <option value="120">2 hours</option>
+                    <option value="180">3 hours</option>
+                  </select>
+                </div>
+              </div>
+            )}
           </div>
 
           <button type="submit" className="submit-button" disabled={submitting}>

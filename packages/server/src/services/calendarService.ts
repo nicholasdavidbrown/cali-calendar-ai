@@ -306,6 +306,69 @@ const groupEventsByTimeOfDay = (events: FormattedEvent[]): {
 };
 
 /**
+ * Creates a calendar event for a user
+ * @param user - User document with encrypted tokens
+ * @param eventDetails - Event details to create
+ * @returns Created event information
+ */
+export const createCalendarEvent = async (
+  user: StoredUser,
+  eventDetails: {
+    subject: string;
+    start: Date;
+    end: Date;
+    location?: string;
+    isAllDay: boolean;
+  }
+): Promise<CalendarEvent> => {
+  try {
+    // Ensure token is valid
+    const validUser = await ensureValidToken(user);
+
+    // Decrypt access token
+    const accessToken = decryptToken(validUser.accessToken);
+
+    // Create Graph client
+    const client = getGraphClient(accessToken);
+
+    // Prepare event data for Microsoft Graph
+    const event = {
+      subject: eventDetails.subject,
+      start: {
+        dateTime: eventDetails.start.toISOString(),
+        timeZone: user.timezone,
+      },
+      end: {
+        dateTime: eventDetails.end.toISOString(),
+        timeZone: user.timezone,
+      },
+      location: eventDetails.location ? {
+        displayName: eventDetails.location,
+      } : undefined,
+      isAllDay: eventDetails.isAllDay,
+    };
+
+    // Create the event via Microsoft Graph API
+    const response = await client
+      .api('/me/events')
+      .post(event);
+
+    console.log(`✅ Calendar event created: ${eventDetails.subject} for ${user.email}`);
+
+    return response;
+  } catch (error) {
+    console.error('Error creating calendar event:', error);
+
+    // Check if it's a decryption error
+    if (error instanceof Error && error.message.includes('Failed to decrypt token')) {
+      throw new Error('TOKEN_DECRYPTION_ERROR');
+    }
+
+    throw new Error('Failed to create calendar event');
+  }
+};
+
+/**
  * Formats multiple events into a calendar summary for SMS
  * @param events - Array of formatted events
  * @param userName - User's name for greeting

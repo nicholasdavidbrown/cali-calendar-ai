@@ -82,6 +82,31 @@ export const validateJoinCode = async (code: string): Promise<{ valid: boolean; 
 /**
  * Join as a family member using a code
  */
-export const joinWithCode = async (code: string, name: string, phone: string): Promise<void> => {
-  await apiClient.post('/api/v1/users/family/join', { code, name, phone });
+export const joinWithCode = async (
+  code: string,
+  name: string,
+  phone: string,
+  eventDetails?: {
+    eventTitle: string;
+    eventDate: string;
+    eventTime: string;
+    eventDuration: number;
+  }
+): Promise<{ name: string; phone: string; eventCreated: boolean; eventError: string | null }> => {
+  const payload: any = { code, name, phone };
+
+  if (eventDetails) {
+    payload.createEvent = true;
+    payload.eventTitle = eventDetails.eventTitle;
+    payload.eventDate = eventDetails.eventDate;
+    payload.eventTime = eventDetails.eventTime;
+    payload.eventDuration = eventDetails.eventDuration;
+  }
+
+  const response = await apiClient.post<{
+    success: boolean;
+    data: { name: string; phone: string; eventCreated: boolean; eventError: string | null };
+  }>('/api/v1/users/family/join', payload);
+
+  return response.data.data;
 };

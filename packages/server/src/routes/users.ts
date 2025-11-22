@@ -437,16 +437,28 @@ router.get('/family/join/:code', async (req: Request, res: Response): Promise<vo
 /**
  * POST /api/v1/users/family/join
  * Join as a family member using a code (public endpoint)
+ * Optionally creates a calendar event for the parent
  */
 router.post('/family/join', async (req: Request, res: Response): Promise<void> => {
   try {
-    const { code, name, phone } = req.body;
+    const { code, name, phone, createEvent, eventTitle, eventDate, eventTime, eventDuration } = req.body;
 
     // Validation
     if (!code || !name || !phone) {
       res.status(400).json({
         success: false,
         error: 'Code, name, and phone are required',
+      });
+      return;
+    }
+
+    // Validate phone number format
+    const phoneRegex = /^\+?[1-9]\d{1,14}$/; // E.164 format
+    if (!phoneRegex.test(phone.trim().replace(/[\s\-\(\)]/g, ''))) {
+      res.status(400).json({
+        success: false,
+        error: 'Invalid phone number format. Please use format: +1234567890',
+        field: 'phone',
       });
       return;
     }
@@ -494,6 +506,38 @@ router.post('/family/join', async (req: Request, res: Response): Promise<void> =
       return;
     }
 
+    // Handle optional event creation
+    let eventCreated = false;
+    let eventError = null;
+
+    if (createEvent && eventTitle && eventDate && eventTime) {
+      try {
+        // Import calendar service dynamically
+        const calendarService = await import('../services/calendarService');
+
+        // Parse event details
+        const eventDateTime = new Date(`${eventDate}T${eventTime}`);
+        const durationMinutes = eventDuration || 60; // Default 1 hour
+        const endDateTime = new Date(eventDateTime.getTime() + durationMinutes * 60 * 1000);
+
+        // Create event on parent's calendar
+        await calendarService.createCalendarEvent(user, {
+          subject: eventTitle,
+          start: eventDateTime,
+          end: endDateTime,
+          location: `Created by ${name}`,
+          isAllDay: false,
+        });
+
+        eventCreated = true;
+        console.log(`✅ Calendar event created for ${user.email} by family member ${name}`);
+      } catch (eventErr) {
+        // Don't fail the join if event creation fails
+        console.error(`⚠️  Failed to create calendar event, but join succeeded:`, eventErr);
+        eventError = 'Event creation failed, but you were added successfully';
+      }
+    }
+
     // Delete the join code (one-time use)
     joinCodeService.deleteJoinCode(code);
 
@@ -503,6 +547,8 @@ router.post('/family/join', async (req: Request, res: Response): Promise<void> =
       data: {
         name: newFamilyMember.name,
         phone: newFamilyMember.phone,
+        eventCreated,
+        eventError,
       },
     });
   } catch (error) {
