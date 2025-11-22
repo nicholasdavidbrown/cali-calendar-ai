@@ -1,5 +1,10 @@
 # 📅 Cali Calendar AI
 
+> 👍 **Disclaimer**
+> 
+> This was built in < 12 hrs as part of the [Tanda](https://www.tanda.com.au/) Gen AI hackathon. We do intend on turning it into a proper self-hosted service where you can add your own system API keys. Because we think that it's a fun product that you could leave running all the time. 
+> Please note that due to time contraints, much of the core functionality was coded by a Claude agent and has not been thoroughly tested or reviewed. 
+
 **AI-powered calendar assistant that sends personalized daily SMS notifications with your upcoming events**
 
 Cali integrates with your Microsoft Outlook calendar to send you and your family members daily SMS summaries of upcoming events. With AI-powered message personalization powered by Claude, each notification is tailored to your chosen style—from professional to witty, sarcastic, or even themed personalities like Steve Irwin or Tanda.
