@@ -41,7 +41,15 @@ header {
   letter-spacing: 0.5px;
 }
 
-header p:not(.tagline) {
+.user-greeting {
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  color: #667eea;
+  font-weight: 600;
+  margin: 0.75rem 0 0 0;
+  text-transform: capitalize;
+}
+
+header p:not(.tagline):not(.user-greeting) {
   font-size: clamp(1rem, 2vw, 1.1rem);
   color: #666;
   margin-bottom: 0;
@@ -143,6 +151,48 @@ header p:not(.tagline) {
   flex-shrink: 0;
 }
 
+.user-info-container {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.header-invite-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 1rem 1.75rem;
+  border-radius: 16px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.header-invite-button:hover:not(:disabled) {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  background: linear-gradient(135deg, #5568d3 0%, #614c8a 100%);
+}
+
+.header-invite-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.qr-icon {
+  width: 20px;
+  height: 20px;
+}
+
 .user-info {
   display: flex;
   justify-content: space-between;
@@ -153,6 +203,8 @@ header p:not(.tagline) {
   border: 2px solid #e5e5e5;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
   gap: 1rem;
+  flex: 1;
+  min-width: 300px;
 }
 
 .user-details {

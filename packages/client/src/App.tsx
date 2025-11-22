@@ -2,9 +2,11 @@ import { useState, useEffect } from 'react'
 import './App.css'
 import { fetchUsers, fetchUserStats, deleteUser, User, UserStats } from './api/userService'
 import { checkAuthStatus, loginWithMicrosoft, logout, AuthUser } from './api/authService'
+import { generateJoinCode } from './api/familyService'
 import logo from './assets/logo2_t.png'
 import Settings from './pages/Settings'
 import Events from './pages/Events'
+import QRCodeModal from './components/QRCodeModal'
 
 type ViewMode = 'dashboard' | 'settings' | 'calendar'
 
@@ -16,6 +18,10 @@ function App() {
   const [currentUser, setCurrentUser] = useState<AuthUser | null>(null)
   const [authLoading, setAuthLoading] = useState(true)
   const [viewMode, setViewMode] = useState<ViewMode>('calendar')
+  const [showQRModal, setShowQRModal] = useState(false)
+  const [joinUrl, setJoinUrl] = useState('')
+  const [joinCode, setJoinCode] = useState('')
+  const [generatingCode, setGeneratingCode] = useState(false)
 
   // Check authentication status
   const checkAuth = async () => {
@@ -63,6 +69,28 @@ function App() {
       setCurrentUser(null)
     } catch (err) {
       console.error('Failed to logout:', err)
+    }
+  }
+
+  // Handle invite generation
+  const handleGenerateInvite = async () => {
+    setGeneratingCode(true)
+    setError(null)
+
+    try {
+      const result = await generateJoinCode()
+      setJoinCode(result.code)
+      setJoinUrl(result.joinUrl)
+      setShowQRModal(true)
+    } catch (err: any) {
+      if (err.response?.status === 401) {
+        setError('Your session has expired. Please sign in again.')
+      } else {
+        setError('Failed to generate invite code. Please try again.')
+      }
+      console.error('Error generating invite:', err)
+    } finally {
+      setGeneratingCode(false)
     }
   }
 
@@ -121,23 +149,51 @@ function App() {
           <img src={logo} alt="Cali Logo" className="logo" />
         </div>
         <p className="tagline">Your day wrapped up</p>
+        {currentUser && (
+          <p className="user-greeting">Hi {currentUser.email.split('@')[0]}!</p>
+        )}
 
         {/* Authentication Section */}
         <div className="auth-section">
           {authLoading ? (
             <div className="auth-loading">Checking authentication...</div>
           ) : currentUser ? (
-            <div className="user-info">
-              <div className="user-details">
-                <span className="user-icon">👤</span>
-                <div>
-                  <div className="user-email">{currentUser.email}</div>
-                  <div className="user-status">Signed in</div>
-                </div>
-              </div>
-              <button onClick={handleLogout} className="logout-button">
-                Sign Out
+            <div className="user-info-container">
+              <button
+                onClick={handleGenerateInvite}
+                disabled={generatingCode}
+                className="header-invite-button"
+                title="Invite family member"
+              >
+                <svg
+                  className="qr-icon"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <rect x="3" y="3" width="7" height="7"></rect>
+                  <rect x="14" y="3" width="7" height="7"></rect>
+                  <rect x="14" y="14" width="7" height="7"></rect>
+                  <rect x="3" y="14" width="7" height="7"></rect>
+                </svg>
+                {generatingCode ? 'Generating...' : 'Invite Family'}
               </button>
+
+              <div className="user-info">
+                <div className="user-details">
+                  <span className="user-icon">👤</span>
+                  <div>
+                    <div className="user-email">{currentUser.email}</div>
+                    <div className="user-status">Signed in</div>
+                  </div>
+                </div>
+                <button onClick={handleLogout} className="logout-button">
+                  Sign Out
+                </button>
+              </div>
             </div>
           ) : (
             <div className="sign-in-prompt">
@@ -288,6 +344,14 @@ function App() {
       )}
         </>
       ) : null}
+
+      {/* QR Code Modal */}
+      <QRCodeModal
+        isOpen={showQRModal}
+        onClose={() => setShowQRModal(false)}
+        joinUrl={joinUrl}
+        code={joinCode}
+      />
     </div>
   )
 }

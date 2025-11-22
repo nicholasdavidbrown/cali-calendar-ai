@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react';
 import { fetchEvents24Hours, fetchEventsWeek, CalendarEvent } from '../api/eventsService';
 import { sendTestSMS } from '../api/smsService';
-import { generateJoinCode } from '../api/familyService';
-import QRCodeModal from '../components/QRCodeModal';
 import './Events.css';
 
 type TimeRange = '24hours' | 'week';
@@ -15,10 +13,6 @@ function Events() {
   const [error, setError] = useState<string | null>(null);
   const [smsMessage, setSmsMessage] = useState<string | null>(null);
   const [timeRange, setTimeRange] = useState<TimeRange>('24hours');
-  const [showQRModal, setShowQRModal] = useState(false);
-  const [joinUrl, setJoinUrl] = useState('');
-  const [joinCode, setJoinCode] = useState('');
-  const [generatingCode, setGeneratingCode] = useState(false);
 
   useEffect(() => {
     loadEvents();
@@ -75,27 +69,6 @@ function Events() {
       console.error('Error sending SMS:', err);
     } finally {
       setSendingSMS(false);
-    }
-  };
-
-  const handleGenerateInvite = async () => {
-    setGeneratingCode(true);
-    setError(null);
-
-    try {
-      const result = await generateJoinCode();
-      setJoinCode(result.code);
-      setJoinUrl(result.joinUrl);
-      setShowQRModal(true);
-    } catch (err: any) {
-      if (err.response?.status === 401) {
-        setError('Your session has expired. Please sign in again.');
-      } else {
-        setError('Failed to generate invite code. Please try again.');
-      }
-      console.error('Error generating invite:', err);
-    } finally {
-      setGeneratingCode(false);
     }
   };
 
@@ -175,29 +148,6 @@ function Events() {
         </div>
 
         <div className="action-buttons">
-          <button
-            className={`invite-button ${generatingCode ? 'generating' : ''}`}
-            onClick={handleGenerateInvite}
-            disabled={generatingCode || loading}
-            title="Invite family member"
-          >
-            <svg
-              className="invite-icon"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
-              <circle cx="9" cy="7" r="4"></circle>
-              <line x1="19" y1="8" x2="19" y2="14"></line>
-              <line x1="22" y1="11" x2="16" y2="11"></line>
-            </svg>
-            {generatingCode ? 'Generating...' : 'Invite Family'}
-          </button>
-
           <button
             className={`sms-button ${sendingSMS ? 'sending' : ''}`}
             onClick={handleSendTestSMS}
@@ -300,14 +250,6 @@ function Events() {
           ))}
         </div>
       )}
-
-      {/* QR Code Modal */}
-      <QRCodeModal
-        isOpen={showQRModal}
-        onClose={() => setShowQRModal(false)}
-        joinUrl={joinUrl}
-        code={joinCode}
-      />
     </div>
   );
 }
