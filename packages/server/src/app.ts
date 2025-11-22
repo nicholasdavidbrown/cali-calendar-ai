@@ -28,6 +28,16 @@ app.get<{}, MessageResponse>('/', (req, res) => {
   });
 });
 
+// Health check endpoint for Azure Web Apps
+app.get('/health', (req, res) => {
+  res.status(200).json({
+    status: 'healthy',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    environment: process.env.NODE_ENV || 'development',
+  });
+});
+
 // Authentication routes
 app.use('/auth', authRoutes);
 
