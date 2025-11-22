@@ -77,6 +77,11 @@ export const sendSMS = async (to: string, message: string): Promise<string> => {
  */
 export const sendDailySummary = async (user: IUser): Promise<string> => {
   try {
+    // Check if user has a phone number
+    if (!user.phone) {
+      throw new Error('User does not have a phone number set');
+    }
+
     // Fetch the next 24 hours of events
     const events = await getEventsForNext24Hours(user);
 

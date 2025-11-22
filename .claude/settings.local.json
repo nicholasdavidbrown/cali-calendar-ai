@@ -9,7 +9,18 @@
       "Bash(npm run typecheck:*)",
       "Bash(yarn workspace:*)",
       "Bash(yarn typecheck:*)",
-      "Bash(yarn ts-node:*)"
+      "Bash(yarn ts-node:*)",
+      "Bash(yarn dev)",
+      "Bash(yarn)",
+      "Bash(yarn install:*)",
+      "Bash(ping:*)",
+      "Bash(nul)",
+      "Bash(docker logs:*)",
+      "Bash(docker compose build:*)",
+      "Bash(docker exec:*)",
+      "Bash(docker restart:*)",
+      "Bash(docker ps:*)",
+      "Bash(yarn dev-clean)"
     ],
     "deny": [],
     "ask": []
