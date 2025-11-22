@@ -154,4 +154,135 @@ router.post('/trigger-scheduler', authenticateJWT, async (req: Request, res: Res
   }
 });
 
+/**
+ * POST /api/v1/sms/test-scheduler-direct
+ * Test endpoint without authentication for quick scheduler testing
+ * TEMPORARY - Remove in production
+ */
+router.post('/test-scheduler-direct', async (req: Request, res: Response): Promise<void> => {
+  try {
+    console.log('🧪 Direct scheduler test triggered via API...');
+
+    // Check if Twilio is configured
+    if (!isTwilioConfigured()) {
+      res.status(503).json({
+        error: 'Service unavailable',
+        message: 'SMS service is not configured.',
+      });
+      return;
+    }
+
+    // Manually trigger the scheduler
+    await runSchedulerManually();
+
+    res.json({
+      success: true,
+      message: 'Scheduler test completed. Check server logs for details.',
+    });
+  } catch (error) {
+    console.error('Error in test scheduler:', error);
+
+    res.status(500).json({
+      error: 'Failed to test scheduler',
+      message: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+});
+
+/**
+ * POST /api/v1/sms/send-demo
+ * Send a demo SMS showing what the daily summary looks like
+ * Body: { phoneNumber: string }
+ */
+router.post('/send-demo', async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { phoneNumber } = req.body;
+
+    if (!phoneNumber) {
+      res.status(400).json({
+        error: 'Bad request',
+        message: 'Phone number is required',
+      });
+      return;
+    }
+
+    // Check if Twilio is configured
+    if (!isTwilioConfigured()) {
+      res.status(503).json({
+        error: 'Service unavailable',
+        message: 'SMS service is not configured.',
+      });
+      return;
+    }
+
+    // Create mock calendar events
+    const mockEvents = [
+      {
+        title: 'Team Standup',
+        start: new Date('2025-11-22T09:00:00'),
+        end: new Date('2025-11-22T09:30:00'),
+        location: 'Zoom Meeting Room',
+        isAllDay: false,
+        formattedTime: '9:00 AM - 9:30 AM',
+      },
+      {
+        title: 'Project Planning Session',
+        start: new Date('2025-11-22T11:00:00'),
+        end: new Date('2025-11-22T12:00:00'),
+        location: 'Conference Room A',
+        isAllDay: false,
+        formattedTime: '11:00 AM - 12:00 PM',
+      },
+      {
+        title: 'Client Meeting',
+        start: new Date('2025-11-22T14:00:00'),
+        end: new Date('2025-11-22T15:00:00'),
+        location: 'Microsoft Teams',
+        isAllDay: false,
+        formattedTime: '2:00 PM - 3:00 PM',
+      },
+      {
+        title: 'Code Review',
+        start: new Date('2025-11-22T16:00:00'),
+        end: new Date('2025-11-22T16:30:00'),
+        location: '',
+        isAllDay: false,
+        formattedTime: '4:00 PM - 4:30 PM',
+      },
+    ];
+
+    // Format the message
+    let message = 'Good morning! Here\'s your schedule for today:\n\n';
+
+    mockEvents.forEach((event) => {
+      message += `${event.formattedTime} - ${event.title}`;
+      if (event.location) {
+        message += ` (${event.location})`;
+      }
+      message += '\n';
+    });
+
+    message += '\nHave a great day!';
+
+    // Send the SMS
+    const { sendSMS } = require('../services/smsService');
+    const messageSid = await sendSMS(phoneNumber, message);
+
+    res.json({
+      success: true,
+      message: 'Demo SMS sent successfully',
+      messageSid,
+      sentTo: phoneNumber,
+      preview: message,
+    });
+  } catch (error) {
+    console.error('Error sending demo SMS:', error);
+
+    res.status(500).json({
+      error: 'Failed to send demo SMS',
+      message: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+});
+
 export default router;
