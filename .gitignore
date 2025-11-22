@@ -4,3 +4,8 @@ npm-debug.log
 .env
 .DS_Store
 .yarn
+
+# Ignore the azurtie stuff
+.azurite
+AzuriteConfig
+*azurite_db_*
