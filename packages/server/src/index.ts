@@ -1,5 +1,6 @@
 import app from './app';
 import { connectDatabase } from './config/database';
+import { initializeScheduler } from './services/schedulerService';
 
 const port = process.env.PORT || 5000;
 
@@ -7,6 +8,9 @@ const startServer = async () => {
   try {
     // Connect to MongoDB
     await connectDatabase();
+
+    // Initialize SMS scheduler
+    initializeScheduler();
 
     // Start Express server
     app.listen(port, () => {

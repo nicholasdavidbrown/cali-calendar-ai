@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { authenticateJWT } from '../middleware/auth';
 import { sendDailySummary, isTwilioConfigured } from '../services/smsService';
+import { runSchedulerManually } from '../services/schedulerService';
 
 const router = Router();
 
@@ -107,6 +108,48 @@ router.get('/status', authenticateJWT, async (req: Request, res: Response): Prom
     res.status(500).json({
       error: 'Failed to check status',
       message: 'An error occurred while checking SMS service status',
+    });
+  }
+});
+
+/**
+ * POST /api/v1/sms/trigger-scheduler
+ * Manually triggers the scheduler to check and send SMS to eligible users
+ * Protected route - requires authentication
+ * Useful for testing the scheduler logic without waiting for the hourly cron
+ */
+router.post('/trigger-scheduler', authenticateJWT, async (req: Request, res: Response): Promise<void> => {
+  try {
+    if (!req.user) {
+      res.status(401).json({
+        error: 'Unauthorized',
+        message: 'User not authenticated',
+      });
+      return;
+    }
+
+    // Check if Twilio is configured
+    if (!isTwilioConfigured()) {
+      res.status(503).json({
+        error: 'Service unavailable',
+        message: 'SMS service is not configured. Please contact administrator.',
+      });
+      return;
+    }
+
+    // Manually trigger the scheduler
+    await runSchedulerManually();
+
+    res.json({
+      success: true,
+      message: 'Scheduler triggered successfully. Check server logs for details.',
+    });
+  } catch (error) {
+    console.error('Error triggering scheduler:', error);
+
+    res.status(500).json({
+      error: 'Failed to trigger scheduler',
+      message: 'An error occurred while manually triggering the scheduler',
     });
   }
 });
