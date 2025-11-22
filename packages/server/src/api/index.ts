@@ -3,6 +3,7 @@ import express from 'express';
 import MessageResponse from '../interfaces/MessageResponse';
 import emojis from './emojis';
 import calendarRoutes from '../routes/calendar';
+import userRoutes from '../routes/users';
 
 const router = express.Router();
 
@@ -14,5 +15,6 @@ router.get<{}, MessageResponse>('/', (req, res) => {
 
 router.use('/emojis', emojis);
 router.use('/calendar', calendarRoutes);
+router.use('/users', userRoutes);
 
 export default router;
