@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { fetchEvents24Hours, fetchEventsWeek, CalendarEvent } from '../api/eventsService';
+import { sendTestSMS } from '../api/smsService';
 import './Events.css';
 
 type TimeRange = '24hours' | 'week';
@@ -8,7 +9,9 @@ function Events() {
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [sendingSMS, setSendingSMS] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [smsMessage, setSmsMessage] = useState<string | null>(null);
   const [timeRange, setTimeRange] = useState<TimeRange>('24hours');
 
   useEffect(() => {
@@ -41,6 +44,31 @@ function Events() {
 
   const handleRefresh = () => {
     loadEvents(true);
+  };
+
+  const handleSendTestSMS = async () => {
+    setSendingSMS(true);
+    setSmsMessage(null);
+    setError(null);
+
+    try {
+      const response = await sendTestSMS();
+      setSmsMessage(`✅ ${response.message} - Sent to ${response.sentTo}`);
+      console.log('SMS sent successfully:', response);
+    } catch (err: any) {
+      if (err.response?.status === 400) {
+        setError('Please add a phone number in Settings before sending SMS');
+      } else if (err.response?.status === 503) {
+        setError('SMS service is not configured. Please contact support.');
+      } else if (err.response?.status === 401) {
+        setError('Your session has expired. Please sign in again.');
+      } else {
+        setError('Failed to send test SMS. Please try again.');
+      }
+      console.error('Error sending SMS:', err);
+    } finally {
+      setSendingSMS(false);
+    }
   };
 
   const formatDate = (dateString: string): string => {
@@ -101,7 +129,7 @@ function Events() {
         <p>Your upcoming Outlook calendar events</p>
       </div>
 
-      {/* Controls: Time Range Toggle + Refresh Button */}
+      {/* Controls: Time Range Toggle + Refresh Button + SMS Test Button */}
       <div className="events-controls">
         <div className="time-range-toggle">
           <button
@@ -118,26 +146,55 @@ function Events() {
           </button>
         </div>
 
-        <button
-          className={`refresh-button ${refreshing ? 'refreshing' : ''}`}
-          onClick={handleRefresh}
-          disabled={refreshing || loading}
-          title="Refresh events"
-        >
-          <svg
-            className="refresh-icon"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+        <div className="action-buttons">
+          <button
+            className={`sms-button ${sendingSMS ? 'sending' : ''}`}
+            onClick={handleSendTestSMS}
+            disabled={sendingSMS || loading}
+            title="Send test SMS with calendar summary"
           >
-            <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2" />
-          </svg>
-          {refreshing ? 'Refreshing...' : 'Refresh'}
-        </button>
+            <svg
+              className="sms-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+            {sendingSMS ? 'Sending...' : 'Send Test SMS'}
+          </button>
+
+          <button
+            className={`refresh-button ${refreshing ? 'refreshing' : ''}`}
+            onClick={handleRefresh}
+            disabled={refreshing || loading}
+            title="Refresh events"
+          >
+            <svg
+              className="refresh-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2" />
+            </svg>
+            {refreshing ? 'Refreshing...' : 'Refresh'}
+          </button>
+        </div>
       </div>
+
+      {/* SMS Success Message */}
+      {smsMessage && (
+        <div className="success-message">
+          {smsMessage}
+        </div>
+      )}
 
       {error && (
         <div className="error-message">

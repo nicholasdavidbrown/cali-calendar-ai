@@ -60,7 +60,14 @@
   box-shadow: 0 4px 12px rgba(245, 166, 35, 0.3);
 }
 
-.refresh-button {
+.action-buttons {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.refresh-button,
+.sms-button {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -81,12 +88,39 @@
   background: rgba(245, 166, 35, 0.05);
 }
 
+.sms-button {
+  background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+  border-color: #25D366;
+  color: white;
+}
+
+.sms-button:hover:not(:disabled) {
+  background: linear-gradient(135deg, #1da851 0%, #0e6f62 100%);
+  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+  transform: translateY(-2px);
+}
+
+.sms-button:disabled,
 .refresh-button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
 
-.refresh-icon {
+.sms-button.sending {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.refresh-icon,
+.sms-icon {
   width: 18px;
   height: 18px;
   transition: transform 0.3s ease;
@@ -275,6 +309,20 @@
 
 .retry-button:hover {
   background: #a22;
+}
+
+.success-message {
+  background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+  color: #155724;
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  border-left: 4px solid #28a745;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 2px 8px rgba(40, 167, 69, 0.1);
 }
 
 .loading {
