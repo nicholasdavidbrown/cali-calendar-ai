@@ -15,6 +15,18 @@ export interface SmsHistoryEntry {
   eventCount: number;
 }
 
+// Manual event created by family members
+export interface ManualEvent {
+  id: string;
+  subject: string;
+  start: string; // ISO string
+  end: string; // ISO string
+  location?: string;
+  isAllDay: boolean;
+  createdBy: string; // Family member name
+  createdAt: string; // ISO string
+}
+
 // User interface for blob storage (without MongoDB _id, using string id instead)
 export interface StoredUser {
   id: string;
@@ -29,6 +41,7 @@ export interface StoredUser {
   isActive: boolean;
   messageStyle: MessageStyle;
   familyMembers: FamilyMember[];
+  manualEvents: ManualEvent[]; // Events created by family members
   smsHistory: SmsHistoryEntry[]; // SMS history
   lastSmsSentDate?: string; // ISO string
   createdAt: string; // ISO string
@@ -193,6 +206,7 @@ export async function createUser(userData: Omit<StoredUser, 'id' | 'createdAt' |
   const newUser: StoredUser = {
     id,
     ...userData,
+    manualEvents: userData.manualEvents || [], // Initialize empty events if not provided
     smsHistory: userData.smsHistory || [], // Initialize empty history if not provided
     createdAt: now,
     updatedAt: now,

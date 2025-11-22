@@ -117,40 +117,95 @@ const ensureValidToken = async (user: StoredUser): Promise<StoredUser> => {
 };
 
 /**
+ * Converts a manual event to a formatted event
+ * @param manualEvent - Manual event from storage
+ * @param timezone - User's timezone
+ * @returns Formatted event object
+ */
+const formatManualEvent = (manualEvent: any, timezone: string): FormattedEvent => {
+  const start = new Date(manualEvent.start);
+  const end = new Date(manualEvent.end);
+
+  // Format time string
+  const formattedTime = formatEventTime(start, end, manualEvent.isAllDay, timezone);
+
+  return {
+    title: manualEvent.subject,
+    start,
+    end,
+    location: manualEvent.location,
+    isAllDay: manualEvent.isAllDay,
+    formattedTime,
+  };
+};
+
+/**
+ * Filters manual events within a date range
+ * @param manualEvents - Array of manual events
+ * @param startDate - Start of date range
+ * @param endDate - End of date range
+ * @returns Filtered manual events
+ */
+const filterManualEventsByDateRange = (manualEvents: any[], startDate: Date, endDate: Date): any[] => {
+  return manualEvents.filter((event) => {
+    const eventStart = new Date(event.start);
+    return eventStart >= startDate && eventStart < endDate;
+  });
+};
+
+/**
  * Fetches calendar events for the next 24 hours
  * @param user - User document with encrypted tokens
- * @returns Array of formatted calendar events
+ * @returns Array of formatted calendar events (includes both Outlook and manual events)
  */
 export const getEventsForNext24Hours = async (user: StoredUser): Promise<FormattedEvent[]> => {
   try {
-    // Ensure token is valid
-    const validUser = await ensureValidToken(user);
-
-    // Decrypt access token
-    const accessToken = decryptToken(validUser.accessToken);
-
-    // Create Graph client
-    const client = getGraphClient(accessToken);
-
-    // Calculate time range
     const now = new Date();
     const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
 
-    // Fetch events from Microsoft Graph
-    const response = await client
-      .api('/me/calendarview')
-      .query({
-        startDateTime: now.toISOString(),
-        endDateTime: tomorrow.toISOString(),
-      })
-      .select('subject,start,end,location,isAllDay')
-      .orderby('start/dateTime')
-      .get();
+    let outlookEvents: FormattedEvent[] = [];
 
-    const events: CalendarEvent[] = response.value || [];
+    // Try to fetch Outlook events
+    try {
+      // Ensure token is valid
+      const validUser = await ensureValidToken(user);
 
-    // Format events
-    return events.map((event) => formatEvent(event, validUser.timezone));
+      // Decrypt access token
+      const accessToken = decryptToken(validUser.accessToken);
+
+      // Create Graph client
+      const client = getGraphClient(accessToken);
+
+      // Fetch events from Microsoft Graph
+      const response = await client
+        .api('/me/calendarview')
+        .query({
+          startDateTime: now.toISOString(),
+          endDateTime: tomorrow.toISOString(),
+        })
+        .select('subject,start,end,location,isAllDay')
+        .orderby('start/dateTime')
+        .get();
+
+      const events: CalendarEvent[] = response.value || [];
+
+      // Format events
+      outlookEvents = events.map((event) => formatEvent(event, user.timezone));
+    } catch (outlookError) {
+      console.error('⚠️  Failed to fetch Outlook events, continuing with manual events only:', outlookError);
+    }
+
+    // Get manual events
+    const manualEvents = user.manualEvents || [];
+    const filteredManualEvents = filterManualEventsByDateRange(manualEvents, now, tomorrow);
+    const formattedManualEvents = filteredManualEvents.map((event) => formatManualEvent(event, user.timezone));
+
+    // Combine and sort by start time
+    const allEvents = [...outlookEvents, ...formattedManualEvents].sort(
+      (a, b) => a.start.getTime() - b.start.getTime()
+    );
+
+    return allEvents;
   } catch (error) {
     console.error('Error fetching 24-hour events:', error);
 
@@ -166,38 +221,56 @@ export const getEventsForNext24Hours = async (user: StoredUser): Promise<Formatt
 /**
  * Fetches calendar events for the next 7 days
  * @param user - User document with encrypted tokens
- * @returns Array of formatted calendar events
+ * @returns Array of formatted calendar events (includes both Outlook and manual events)
  */
 export const getEventsForNext7Days = async (user: StoredUser): Promise<FormattedEvent[]> => {
   try {
-    // Ensure token is valid
-    const validUser = await ensureValidToken(user);
-
-    // Decrypt access token
-    const accessToken = decryptToken(validUser.accessToken);
-
-    // Create Graph client
-    const client = getGraphClient(accessToken);
-
-    // Calculate time range
     const now = new Date();
     const next7Days = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
 
-    // Fetch events from Microsoft Graph
-    const response = await client
-      .api('/me/calendarview')
-      .query({
-        startDateTime: now.toISOString(),
-        endDateTime: next7Days.toISOString(),
-      })
-      .select('subject,start,end,location,isAllDay')
-      .orderby('start/dateTime')
-      .get();
+    let outlookEvents: FormattedEvent[] = [];
 
-    const events: CalendarEvent[] = response.value || [];
+    // Try to fetch Outlook events
+    try {
+      // Ensure token is valid
+      const validUser = await ensureValidToken(user);
 
-    // Format events
-    return events.map((event) => formatEvent(event, validUser.timezone));
+      // Decrypt access token
+      const accessToken = decryptToken(validUser.accessToken);
+
+      // Create Graph client
+      const client = getGraphClient(accessToken);
+
+      // Fetch events from Microsoft Graph
+      const response = await client
+        .api('/me/calendarview')
+        .query({
+          startDateTime: now.toISOString(),
+          endDateTime: next7Days.toISOString(),
+        })
+        .select('subject,start,end,location,isAllDay')
+        .orderby('start/dateTime')
+        .get();
+
+      const events: CalendarEvent[] = response.value || [];
+
+      // Format events
+      outlookEvents = events.map((event) => formatEvent(event, user.timezone));
+    } catch (outlookError) {
+      console.error('⚠️  Failed to fetch Outlook events, continuing with manual events only:', outlookError);
+    }
+
+    // Get manual events
+    const manualEvents = user.manualEvents || [];
+    const filteredManualEvents = filterManualEventsByDateRange(manualEvents, now, next7Days);
+    const formattedManualEvents = filteredManualEvents.map((event) => formatManualEvent(event, user.timezone));
+
+    // Combine and sort by start time
+    const allEvents = [...outlookEvents, ...formattedManualEvents].sort(
+      (a, b) => a.start.getTime() - b.start.getTime()
+    );
+
+    return allEvents;
   } catch (error) {
     console.error('Error fetching 7-day events:', error);
 

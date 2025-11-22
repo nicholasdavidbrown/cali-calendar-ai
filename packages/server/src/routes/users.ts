@@ -512,29 +512,37 @@ router.post('/family/join', async (req: Request, res: Response): Promise<void> =
 
     if (createEvent && eventTitle && eventDate && eventTime) {
       try {
-        // Import calendar service dynamically
-        const calendarService = await import('../services/calendarService');
-
         // Parse event details
         const eventDateTime = new Date(`${eventDate}T${eventTime}`);
         const durationMinutes = eventDuration || 60; // Default 1 hour
         const endDateTime = new Date(eventDateTime.getTime() + durationMinutes * 60 * 1000);
 
-        // Create event on parent's calendar
-        await calendarService.createCalendarEvent(user, {
+        // Create manual event in JSON storage
+        const manualEvent = {
+          id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
           subject: eventTitle,
-          start: eventDateTime,
-          end: endDateTime,
+          start: eventDateTime.toISOString(),
+          end: endDateTime.toISOString(),
           location: `Created by ${name}`,
           isAllDay: false,
-        });
+          createdBy: name,
+          createdAt: new Date().toISOString(),
+        };
 
-        eventCreated = true;
-        console.log(`✅ Calendar event created for ${user.email} by family member ${name}`);
-      } catch (eventErr) {
+        // Add event to user's manual events
+        const manualEvents = [...(updatedUser.manualEvents || []), manualEvent];
+        const userWithEvent = await userStorage.updateUser(userId, { manualEvents });
+
+        if (userWithEvent) {
+          eventCreated = true;
+          console.log(`✅ Manual event created in storage for ${user.email} by family member ${name}`);
+        } else {
+          throw new Error('Failed to update user with manual event');
+        }
+      } catch (eventErr: any) {
         // Don't fail the join if event creation fails
-        console.error(`⚠️  Failed to create calendar event, but join succeeded:`, eventErr);
-        eventError = 'Event creation failed, but you were added successfully';
+        console.error(`⚠️  Failed to create manual event, but join succeeded:`, eventErr);
+        eventError = 'Event failed to add but user was added';
       }
     }
 

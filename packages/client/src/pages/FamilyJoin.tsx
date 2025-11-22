@@ -172,7 +172,7 @@ function FamilyJoin() {
               ) : eventError ? (
                 <div className="event-warning">
                   <span className="event-icon">⚠️</span>
-                  <p>{eventError}</p>
+                  <p><strong>Note:</strong> {eventError}</p>
                 </div>
               ) : null}
             </>
