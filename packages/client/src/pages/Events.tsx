@@ -13,7 +13,7 @@ function Events() {
   const [error, setError] = useState<string | null>(null);
   const [smsMessage, setSmsMessage] = useState<string | null>(null);
   const [timeRange, setTimeRange] = useState<TimeRange>('24hours');
-  const [pollingEnabled, setPollingEnabled] = useState(true);
+  const pollingEnabled = true; // Always enabled
 
   // Load events when time range changes
   useEffect(() => {

@@ -1,6 +1,6 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
-export type MessageStyle = 'professional' | 'witty' | 'sarcastic' | 'mission';
+export type MessageStyle = 'professional' | 'witty' | 'sarcastic' | 'mission' | 'irwin' | 'tanda';
 
 export interface FamilyMember {
   id: string;
@@ -72,7 +72,7 @@ const UserSchema: Schema = new Schema(
     },
     messageStyle: {
       type: String,
-      enum: ['professional', 'witty', 'sarcastic', 'mission'],
+      enum: ['professional', 'witty', 'sarcastic', 'mission', 'irwin', 'tanda'],
       default: 'professional',
     },
     familyMembers: {

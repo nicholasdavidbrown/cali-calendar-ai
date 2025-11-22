@@ -9,7 +9,7 @@ import {
 } from '../api/familyService';
 import './Settings.css';
 
-type MessageStyle = 'professional' | 'witty' | 'sarcastic' | 'mission';
+type MessageStyle = 'professional' | 'witty' | 'sarcastic' | 'mission' | 'irwin' | 'tanda';
 
 interface MessageStyleOption {
   value: MessageStyle;
@@ -42,6 +42,18 @@ const messageStyleOptions: MessageStyleOption[] = [
     label: 'Mission Briefing',
     description: 'Motivational mission-style format',
     example: 'Mission Briefing: 3 objectives await. First deployment: 0900 hours. Prepare for success!',
+  },
+  {
+    value: 'irwin',
+    label: 'Steve Irwin',
+    description: 'Crikey! Enthusiastic wildlife-style energy',
+    example: 'Crikey mate! What a ripper of a day ahead! You\'ve got meetings that are absolute beauties! 🐊',
+  },
+  {
+    value: 'tanda',
+    label: 'I ❤️ Tanda',
+    description: 'Overly enthusiastic about Tanda (the company)',
+    example: 'OMG! A meeting about the ABSOLUTELY MAGNIFICENT Tanda! ✨💕 This will be life-changing!',
   },
 ];
 

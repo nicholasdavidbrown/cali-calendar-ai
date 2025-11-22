@@ -68,11 +68,11 @@ router.put('/preferences', authenticateJWT, async (req: Request, res: Response):
 
     // Validate messageStyle if provided
     if (messageStyle !== undefined) {
-      const validStyles: MessageStyle[] = ['professional', 'witty', 'sarcastic', 'mission'];
+      const validStyles: MessageStyle[] = ['professional', 'witty', 'sarcastic', 'mission', 'irwin', 'tanda'];
       if (!validStyles.includes(messageStyle)) {
         res.status(400).json({
           success: false,
-          error: 'Invalid message style. Must be: professional, witty, sarcastic, or mission',
+          error: 'Invalid message style. Must be: professional, witty, sarcastic, mission, irwin, or tanda',
         });
         return;
       }
