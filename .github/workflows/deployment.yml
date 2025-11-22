@@ -11,6 +11,7 @@ env:
   BACKEND_PACKAGE_NAME: server
   DATABASE_PACKAGE_NAME: mongodb
   AZURE_MONGODB_RESOURCE_NAME: cali-db # UPDATE THIS to match your MongoDB Web App name
+  VITE_API_URL: https://cali-calendar-ai-server.azurewebsites.net # UPDATE THIS to match your Server Web App URL
   FRONTEND_IMAGE_TARGET: ghcr.io/nicholasdavidbrown/cali-calendar-ai-client:${{ github.head_ref || github.ref_name }}
   BACKEND_IMAGE_TARGET: ghcr.io/nicholasdavidbrown/cali-calendar-ai-server:${{ github.head_ref || github.ref_name }}
   DATABASE_IMAGE_TARGET: ghcr.io/nicholasdavidbrown/cali-calendar-ai-db:${{ github.head_ref || github.ref_name }}
@@ -59,6 +60,7 @@ jobs:
             NODE_ENV=${{ env.NODE_ENV }}
             GENERATE_SOURCEMAP=${{ env.GENERATE_SOURCEMAP }}
             VITE_APP_ENV=${{ env.VITE_APP_ENV }}
+            VITE_API_URL=${{ env.VITE_API_URL }}
 
   # ==================================================================================================
   # DEPLOY CLIENT DOCKER CONTAINER
