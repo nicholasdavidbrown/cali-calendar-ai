@@ -280,21 +280,82 @@ export const formatEventForSMS = (event: FormattedEvent): string => {
 };
 
 /**
+ * Groups events by time of day
+ * @param events - Array of formatted events
+ * @returns Grouped events by morning/afternoon/evening
+ */
+const groupEventsByTimeOfDay = (events: FormattedEvent[]): {
+  morning: FormattedEvent[];
+  afternoon: FormattedEvent[];
+  evening: FormattedEvent[];
+} => {
+  return events.reduce(
+    (groups, event) => {
+      const hour = event.start.getHours();
+      if (hour < 12) {
+        groups.morning.push(event);
+      } else if (hour < 17) {
+        groups.afternoon.push(event);
+      } else {
+        groups.evening.push(event);
+      }
+      return groups;
+    },
+    { morning: [] as FormattedEvent[], afternoon: [] as FormattedEvent[], evening: [] as FormattedEvent[] }
+  );
+};
+
+/**
  * Formats multiple events into a calendar summary for SMS
  * @param events - Array of formatted events
  * @param userName - User's name for greeting
  * @returns Complete SMS message
  */
 export const formatCalendarSummary = (events: FormattedEvent[], userName: string): string => {
+  const now = new Date();
+  const dayName = now.toLocaleDateString('en-US', { weekday: 'long' });
+
   if (events.length === 0) {
-    return `Good morning${userName ? ` ${userName}` : ''}! No events scheduled for today.`;
+    return `Good morning${userName ? ` ${userName}` : ''}! Free day ahead - no events scheduled for ${dayName}. Enjoy!`;
   }
 
-  let message = `Good morning${userName ? ` ${userName}` : ''}! Here's your schedule for today:\n\n`;
+  const greeting = `Good morning${userName ? ` ${userName}` : ''}!`;
+  const count = events.length === 1 ? '1 event' : `${events.length} events`;
+  const firstTime = events[0].formattedTime.split(' - ')[0];
+  const lastEvent = events[events.length - 1];
+  const lastTime = lastEvent.formattedTime.split(' - ')[1] || lastEvent.formattedTime;
 
-  events.forEach((event) => {
-    message += `${formatEventForSMS(event)}\n`;
-  });
+  let message = `${greeting} ${count} today (${firstTime} - ${lastTime}):\n\n`;
+
+  // Group events if more than 4
+  if (events.length > 4) {
+    const groups = groupEventsByTimeOfDay(events);
+    if (groups.morning.length > 0) {
+      message += `Morning (${groups.morning.length}):\n`;
+      groups.morning.forEach((event) => {
+        message += `• ${formatEventForSMS(event)}\n`;
+      });
+      message += '\n';
+    }
+    if (groups.afternoon.length > 0) {
+      message += `Afternoon (${groups.afternoon.length}):\n`;
+      groups.afternoon.forEach((event) => {
+        message += `• ${formatEventForSMS(event)}\n`;
+      });
+      message += '\n';
+    }
+    if (groups.evening.length > 0) {
+      message += `Evening (${groups.evening.length}):\n`;
+      groups.evening.forEach((event) => {
+        message += `• ${formatEventForSMS(event)}\n`;
+      });
+    }
+  } else {
+    // List all events individually
+    events.forEach((event, index) => {
+      message += `${index + 1}. ${formatEventForSMS(event)}\n`;
+    });
+  }
 
   message += '\nHave a great day!';
 
