@@ -9,8 +9,11 @@ env:
   IMAGE_REGISTRY: ghcr.io/nicholasdavidbrown
   FRONTEND_PACKAGE_NAME: client
   BACKEND_PACKAGE_NAME: server
+  DATABASE_PACKAGE_NAME: mongodb
+  AZURE_MONGODB_RESOURCE_NAME: cali-db # UPDATE THIS to match your MongoDB Web App name
   FRONTEND_IMAGE_TARGET: ghcr.io/nicholasdavidbrown/cali-calendar-ai-client:${{ github.head_ref || github.ref_name }}
   BACKEND_IMAGE_TARGET: ghcr.io/nicholasdavidbrown/cali-calendar-ai-server:${{ github.head_ref || github.ref_name }}
+  DATABASE_IMAGE_TARGET: ghcr.io/nicholasdavidbrown/cali-calendar-ai-db:${{ github.head_ref || github.ref_name }}
 
 jobs:
   # ==================================================================================================
@@ -141,3 +144,58 @@ jobs:
           slot-name: "Production"
           publish-profile: ${{ secrets.CALI_SERVER_PUBLISH_PROFILE }}
           images: "${{ env.BACKEND_IMAGE_TARGET }}"
+
+  # ==================================================================================================
+  # BUILD AND PUBLISH MONGODB DOCKER IMAGE
+  # ==================================================================================================
+  build_and_publish_mongodb:
+    name: Build and push MongoDB image
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push MongoDB Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./packages/${{ env.DATABASE_PACKAGE_NAME }}
+          file: ./packages/${{ env.DATABASE_PACKAGE_NAME }}/Dockerfile
+          push: true
+          tags: ${{ env.DATABASE_IMAGE_TARGET }}
+
+  # ==================================================================================================
+  # DEPLOY MONGODB DOCKER CONTAINER
+  # ==================================================================================================
+  deploy-mongodb:
+    name: Deploy cali-calendar-ai-mongodb container
+    runs-on: ubuntu-latest
+    needs: build_and_publish_mongodb
+    environment: production
+
+    steps:
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ env.AZURE_MONGODB_RESOURCE_NAME }}
+          slot-name: "Production"
+          publish-profile: ${{ secrets.CALI_MONGODB_PUBLISH_PROFILE }}
+          images: "${{ env.DATABASE_IMAGE_TARGET }}"
