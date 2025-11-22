@@ -13,20 +13,27 @@
 
 .history-header h1 {
   font-size: clamp(1.75rem, 4vw, 2.5rem);
-  color: #333;
+  background: linear-gradient(135deg, #ff6b35 0%, #f5a623 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin-bottom: 0.5rem;
+  font-weight: 800;
 }
 
 .history-header p {
   font-size: clamp(1rem, 2vw, 1.1rem);
-  color: #666;
+  color: #8b5a3c;
+  font-weight: 500;
 }
 
 .history-content {
-  background: white;
-  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
   padding: 2rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 8px 32px rgba(255, 107, 53, 0.15);
+  border: 2px solid rgba(255, 107, 53, 0.1);
 }
 
 .history-list {
@@ -36,16 +43,18 @@
 }
 
 .history-card {
-  background: #f8f9fa;
-  border-radius: 12px;
+  background: linear-gradient(135deg, #fff9f0 0%, #fff5eb 100%);
+  border-radius: 16px;
   padding: 1.5rem;
-  border-left: 4px solid #25D366;
+  border-left: 5px solid #ff6b35;
   transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(255, 107, 53, 0.1);
 }
 
 .history-card:hover {
-  transform: translateX(8px);
-  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.2);
+  transform: translateX(8px) translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 107, 53, 0.25);
+  border-left-width: 6px;
 }
 
 .history-card-header {

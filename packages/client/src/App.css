@@ -12,7 +12,12 @@ header {
   text-align: center;
   margin-bottom: 3rem;
   padding-bottom: 2rem;
-  border-bottom: 2px solid #e5e5e5;
+  border-bottom: 3px solid rgba(255, 107, 53, 0.2);
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 4px 20px rgba(255, 107, 53, 0.1);
 }
 
 .header-logo {
@@ -26,27 +31,33 @@ header {
   width: auto;
   height: 300px;
   object-fit: contain;
-  transition: transform 0.3s ease;
+  transition: transform 0.3s ease, filter 0.3s ease;
+  filter: drop-shadow(0 4px 8px rgba(255, 107, 53, 0.2));
 }
 
 .logo:hover {
-  transform: scale(1.05);
+  transform: scale(1.05) rotate(2deg);
+  filter: drop-shadow(0 8px 16px rgba(255, 107, 53, 0.3));
 }
 
 .tagline {
   font-size: clamp(1.25rem, 3vw, 1.75rem);
-  color: #333;
-  font-weight: 600;
+  background: linear-gradient(135deg, #ff6b35 0%, #f5a623 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 700;
   margin: 0;
   letter-spacing: 0.5px;
 }
 
 .user-greeting {
   font-size: clamp(1rem, 2vw, 1.25rem);
-  color: #667eea;
-  font-weight: 600;
+  color: #ff6b35;
+  font-weight: 700;
   margin: 0.75rem 0 0 0;
   text-transform: capitalize;
+  text-shadow: 0 2px 4px rgba(255, 107, 53, 0.1);
 }
 
 header p:not(.tagline):not(.user-greeting) {
@@ -69,31 +80,36 @@ header p:not(.tagline):not(.user-greeting) {
   gap: 1rem;
   justify-content: center;
   margin-bottom: 2rem;
-  border-bottom: 2px solid #e5e5e5;
+  border-bottom: 3px solid rgba(255, 107, 53, 0.2);
   padding-bottom: 0;
 }
 
 .nav-tab {
   background: none;
   border: none;
-  border-bottom: 3px solid transparent;
+  border-bottom: 4px solid transparent;
   padding: 1rem 2rem;
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: 1.05rem;
+  font-weight: 700;
   color: #666;
   cursor: pointer;
   transition: all 0.3s ease;
   position: relative;
-  bottom: -2px;
+  bottom: -3px;
+  border-radius: 8px 8px 0 0;
 }
 
 .nav-tab:hover {
-  color: #f5a623;
+  color: #ff6b35;
+  background: rgba(255, 107, 53, 0.05);
+  transform: translateY(-2px);
 }
 
 .nav-tab.active {
-  color: #f5a623;
-  border-bottom-color: #f5a623;
+  color: #ff6b35;
+  border-bottom-color: #ff6b35;
+  background: rgba(255, 107, 53, 0.08);
+  box-shadow: 0 -2px 8px rgba(255, 107, 53, 0.1);
 }
 
 .auth-loading {

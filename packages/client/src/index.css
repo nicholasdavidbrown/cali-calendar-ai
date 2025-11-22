@@ -5,8 +5,8 @@
   line-height: 1.6;
   font-weight: 400;
 
-  color: #213547;
-  background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+  color: #2d1810;
+  background: linear-gradient(135deg, #fff5eb 0%, #ffe4cc 50%, #ffd4a3 100%);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -67,19 +67,20 @@ button:disabled {
 
 /* Scrollbar styling */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: #fff5eb;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 4px;
+  background: linear-gradient(135deg, #ff9a56 0%, #ff6b35 100%);
+  border-radius: 5px;
+  border: 2px solid #fff5eb;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: linear-gradient(135deg, #ff8547 0%, #ff5722 100%);
 }
