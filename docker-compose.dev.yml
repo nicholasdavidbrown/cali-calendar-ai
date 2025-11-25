@@ -54,7 +54,7 @@ services:
     depends_on:
       - backend
 
-  sqlite-web:
+  sqlite-web-dev:
     image: coleifer/sqlite-web
     platform: linux/amd64
     container_name: sqlite-web-dev
