@@ -66,6 +66,62 @@ A full-stack web application template using SQLite, Express, React, and Node.js 
 ### Prerequisites
 Ensure you have the required versions listed in the Requirements section above.
 
+### Docker Development (Recommended)
+
+**For detailed instructions, see [DEV_SETUP.md](./DEV_SETUP.md)**
+
+1. **Start development environment with hot reload:**
+   ```bash
+   # Using yarn (any platform)
+   yarn dev-build
+
+   # Windows
+   dev.bat build
+
+   # Linux/Mac
+   make dev-build
+
+   # Or manually
+   docker compose -f docker-compose.dev.yml up --build
+   ```
+
+2. **Access the services:**
+   - Frontend (React + Vite): http://localhost:5173
+   - Backend API: http://localhost:8080
+   - Health Check: http://localhost:8080/health
+   - SQLite Web Viewer: http://localhost:8081
+
+3. **Seed the database:**
+   ```bash
+   # Using yarn (any platform)
+   yarn dev-seed
+
+   # Windows
+   dev.bat seed
+
+   # Linux/Mac
+   make seed
+
+   # Or manually
+   docker compose -f docker-compose.dev.yml exec backend yarn db:seed
+   ```
+
+4. **Default admin credentials:**
+   - Email: `admin@localhost`
+   - Password: `admin123`
+
+5. **Stop the environment:**
+   ```bash
+   # Using yarn (any platform)
+   yarn dev-down
+
+   # Windows
+   dev.bat stop
+
+   # Linux/Mac
+   make dev-down
+   ```
+
 ### Production (Docker)
 
 1. **Start the application:**
@@ -82,7 +138,7 @@ Ensure you have the required versions listed in the Requirements section above.
    docker compose down
    ```
 
-### Local Development
+### Local Development (Without Docker)
 
 1. **Enable Yarn 4 (first time setup):**
    ```bash
@@ -96,38 +152,52 @@ Ensure you have the required versions listed in the Requirements section above.
 
 3. **Start backend (Terminal 1):**
    ```bash
-   yarn dev-backend
+   cd backend
+   yarn db:seed  # First time only
+   yarn dev
    ```
 
 4. **Start frontend (Terminal 2):**
    ```bash
-   yarn dev-frontend
+   cd frontend
+   yarn dev
    ```
 
-4. **Access the application:**
+5. **Access the application:**
    - Frontend: http://localhost:5173 (Vite dev server with HMR)
    - API: http://localhost:8080
 
 ## Available Scripts
 
-### Docker Commands
-
-| Command | Shorthand | Description |
-|---------|-----------|-------------|
-| `docker compose up` | `yarn up` | Start containers with existing images |
-| `docker compose up --build` | `yarn up-build` | Start containers and rebuild if needed |
-| `docker compose down` | `yarn down` | Stop and remove containers |
-| `docker compose down -v && docker system prune -f` | `yarn clean` | Remove containers, volumes, and clean Docker system |
-| `docker compose down && docker compose build --no-cache && docker compose up` | `yarn rebuild` | Full clean rebuild (no cache) |
-| `docker compose logs -f` | `yarn logs` | Follow container logs in real-time |
-| `docker compose restart` | `yarn restart` | Restart all containers |
-
-### Development Commands
+### Docker Development Commands
 
 | Command | Description |
 |---------|-------------|
-| `yarn dev-frontend` | Run frontend dev server with HMR |
-| `yarn dev-backend` | Run backend in development mode |
+| `yarn dev` | Start development environment (hot reload) |
+| `yarn dev-build` | Build and start development environment |
+| `yarn dev-down` | Stop development environment |
+| `yarn dev-clean` | Clean rebuild (remove volumes and rebuild) |
+| `yarn dev-logs` | View development logs |
+| `yarn dev-seed` | Seed database in development |
+
+### Docker Production Commands
+
+| Command | Description |
+|---------|-------------|
+| `yarn up` | Start production containers |
+| `yarn up-build` | Build and start production containers |
+| `yarn down` | Stop and remove containers |
+| `yarn clean` | Remove containers, volumes, and clean Docker system |
+| `yarn rebuild` | Full clean rebuild (no cache) |
+| `yarn logs` | Follow container logs in real-time |
+| `yarn restart` | Restart all containers |
+
+### Local Development Commands
+
+| Command | Description |
+|---------|-------------|
+| `yarn local-frontend` | Run frontend dev server with HMR (no Docker) |
+| `yarn local-backend` | Run backend in development mode (no Docker) |
 
 ## API Endpoints
 

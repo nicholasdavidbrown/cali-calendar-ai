@@ -1,44 +1,27 @@
 import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
-import sqlite3 from "sqlite3";
-import { open, Database } from "sqlite";
-import { DEFAULTS, ERROR_MESSAGES } from "./types/index.js";
+import { db } from "./lib/database.js";
+import { runMigrations } from "./lib/migrate.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 8080;
-const DB_PATH = process.env.DB_PATH || path.join(__dirname, "..", "..", "data", "db.sqlite");
 
-let db: Database<sqlite3.Database, sqlite3.Statement>;
-
-async function initDb() {
-  db = await open({
-    filename: DB_PATH,
-    driver: sqlite3.Database,
-  });
-
-  await db.exec(`
-    CREATE TABLE IF NOT EXISTS users (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      name TEXT NOT NULL
-    );
-  `);
-}
-
+// Middleware
 app.use(express.json());
 
-app.get("/api/users", async (_req, res) => {
-  const rows = await db.all("SELECT * FROM users");
-  res.json(rows);
-});
+// Initialize database
+async function initDatabase() {
+  await db.connect();
+  await runMigrations();
+}
 
-app.post("/api/users", async (req, res) => {
-  const { name } = req.body;
-  const result = await db.run("INSERT INTO users (name) VALUES (?)", name);
-  res.json({ id: result.lastID, name });
+// Health check
+app.get("/health", (req, res) => {
+  res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
 
 // Serve static files in production only
@@ -52,8 +35,21 @@ if (process.env.NODE_ENV === "production") {
   });
 }
 
-initDb().then(() => {
-  app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-  });
-});
+// Start server
+async function start() {
+  try {
+    await initDatabase();
+
+    app.listen(PORT, () => {
+      console.log(`🚀 Server running on http://localhost:${PORT}`);
+      console.log(`📱 Health check: http://localhost:${PORT}/health`);
+    });
+  } catch (error) {
+    console.error("Failed to start server:", error);
+    process.exit(1);
+  }
+}
+
+start();
+
+export default app;

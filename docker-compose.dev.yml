@@ -1,0 +1,76 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+      target: backend
+    container_name: cali-backend-dev
+    environment:
+      - NODE_ENV=development
+      - PORT=8080
+      - DB_PATH=/data/cali.db
+      - TZ=America/Los_Angeles
+    ports:
+      - "8080:8080"
+    volumes:
+      # Mount source code for hot reload
+      - ./backend/src:/app/backend/src
+      - ./backend/package.json:/app/backend/package.json
+      - ./backend/tsconfig.json:/app/backend/tsconfig.json
+      # Mount data directory for database persistence
+      - ./data:/data
+      # Use named volumes for node_modules to avoid conflicts with host
+      - backend-node-modules:/app/backend/node_modules
+    command: yarn dev
+    restart: unless-stopped
+    networks:
+      - cali-dev
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+      target: frontend
+    container_name: cali-frontend-dev
+    environment:
+      - NODE_ENV=development
+      - VITE_API_URL=http://backend:8080
+    ports:
+      - "5173:5173"
+    volumes:
+      # Mount source code for hot reload
+      - ./frontend/src:/app/frontend/src
+      - ./frontend/public:/app/frontend/public
+      - ./frontend/index.html:/app/frontend/index.html
+      - ./frontend/package.json:/app/frontend/package.json
+      - ./frontend/tsconfig.json:/app/frontend/tsconfig.json
+      - ./frontend/vite.config.ts:/app/frontend/vite.config.ts
+      # Use named volumes for node_modules to avoid conflicts with host
+      - frontend-node-modules:/app/frontend/node_modules
+    command: yarn dev --host
+    restart: unless-stopped
+    networks:
+      - cali-dev
+    depends_on:
+      - backend
+
+  sqlite-web:
+    image: coleifer/sqlite-web
+    platform: linux/amd64
+    container_name: cali-sqlite-web-dev
+    ports:
+      - "8081:8081"
+    volumes:
+      - ./data:/data
+    command: sqlite_web --host 0.0.0.0 --port 8081 /data/cali.db
+    restart: unless-stopped
+    networks:
+      - cali-dev
+
+volumes:
+  backend-node-modules:
+  frontend-node-modules:
+
+networks:
+  cali-dev:
+    driver: bridge
