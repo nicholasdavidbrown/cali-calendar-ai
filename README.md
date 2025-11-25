@@ -130,8 +130,8 @@ Ensure you have the required versions listed in the Requirements section above.
    ```
 
 2. **Access the services:**
-   - Frontend + API: http://localhost:8080
-   - SQLite Web Viewer: http://localhost:8081
+   - Frontend + API: http://localhost:8082
+   - SQLite Web Viewer: http://localhost:8083
 
 3. **Stop the application:**
    ```bash
@@ -179,6 +179,7 @@ Ensure you have the required versions listed in the Requirements section above.
 | `yarn dev-clean` | Clean rebuild (remove volumes and rebuild) |
 | `yarn dev-logs` | View development logs |
 | `yarn dev-seed` | Seed database in development |
+| `yarn dev-test` | Run tests in Docker container |
 
 ### Docker Production Commands
 
@@ -198,6 +199,14 @@ Ensure you have the required versions listed in the Requirements section above.
 |---------|-------------|
 | `yarn local-frontend` | Run frontend dev server with HMR (no Docker) |
 | `yarn local-backend` | Run backend in development mode (no Docker) |
+
+### Testing Commands
+
+| Command | Description |
+|---------|-------------|
+| `yarn test` | Run all unit tests |
+| `yarn test:watch` | Run tests in watch mode |
+| `yarn test:coverage` | Run tests with coverage report |
 
 ## API Endpoints
 
@@ -249,17 +258,33 @@ Content-Type: application/json
 
 ## Docker Services
 
-### myapp
-- **Port:** 8080:8080
+### Production (docker-compose.yml)
+
+#### cali
+- **Port:** 8082:8080 (external:internal)
 - **Purpose:** Serves both frontend and backend API
 - **Volume:** `./data:/data` - Persistent database storage
 - **Restart:** unless-stopped
 
-### sqlite-web
-- **Port:** 8081:8081
+#### sqlite-web
+- **Port:** 8083:8081 (external:internal)
 - **Purpose:** Web-based SQLite database viewer
 - **Volume:** `./data:/data` - Access to application database
 - **Restart:** unless-stopped
+
+### Development (docker-compose.dev.yml)
+
+#### backend
+- **Port:** 8080:8080
+- **Purpose:** Express API server with hot reload
+
+#### frontend
+- **Port:** 5173:5173
+- **Purpose:** Vite dev server with HMR
+
+#### sqlite-web
+- **Port:** 8081:8081
+- **Purpose:** Web-based SQLite database viewer
 
 ## Development Workflow
 
@@ -340,9 +365,13 @@ Docker will automatically:
 ## Troubleshooting
 
 ### Port already in use
-If ports 8080 or 8081 are in use, either:
+**Development ports:** 5173, 8080, 8081
+**Production ports:** 8082, 8083
+
+If any of these ports are in use:
 - Stop the conflicting service
-- Modify ports in `docker-compose.yml`
+- Modify the external port (left side) in the respective docker-compose file
+- Note: Dev and prod can run simultaneously without conflicts
 
 ### Database locked
 If you get "database is locked" errors:

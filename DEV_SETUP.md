@@ -106,6 +106,10 @@ docker compose -f docker-compose.dev.yml exec backend sh
 # Frontend shell
 docker compose -f docker-compose.dev.yml exec frontend sh
 
+# Run tests
+yarn dev-test  # From root
+docker compose -f docker-compose.dev.yml exec backend yarn test  # Manual
+
 # Install new backend dependency
 docker compose -f docker-compose.dev.yml exec backend yarn add package-name
 

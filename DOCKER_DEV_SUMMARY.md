@@ -129,6 +129,7 @@ docker compose -f docker-compose.dev.yml up --build
 | Build & start | `yarn dev-build` | `dev.bat build` | `make dev-build` | `docker compose -f docker-compose.dev.yml up --build` |
 | Stop | `yarn dev-down` | `dev.bat stop` | `make dev-down` | `docker compose -f docker-compose.dev.yml down` |
 | Seed DB | `yarn dev-seed` | `dev.bat seed` | `make seed` | `docker compose -f docker-compose.dev.yml exec backend yarn db:seed` |
+| Run tests | `yarn dev-test` | - | `make test` | `docker compose -f docker-compose.dev.yml exec backend yarn test` |
 | View logs | `yarn dev-logs` | `dev.bat logs` | `make dev-logs` | `docker compose -f docker-compose.dev.yml logs -f` |
 | Clean rebuild | `yarn dev-clean` | `dev.bat clean` | `make clean` | `docker compose -f docker-compose.dev.yml down -v && docker compose -f docker-compose.dev.yml up --build` |
 

@@ -18,6 +18,11 @@ help:
 	@echo "  make migrate      - Run database migrations"
 	@echo "  make db-ui        - Open SQLite web interface"
 	@echo ""
+	@echo "Testing:"
+	@echo "  make test         - Run all tests"
+	@echo "  make test-watch   - Run tests in watch mode"
+	@echo "  make test-coverage - Run tests with coverage"
+	@echo ""
 	@echo "Utilities:"
 	@echo "  make backend-shell   - Open backend container shell"
 	@echo "  make frontend-shell  - Open frontend container shell"
@@ -63,6 +68,19 @@ db-ui:
 	 which open > /dev/null 2>&1 && open http://localhost:8081 || \
 	 which start > /dev/null 2>&1 && start http://localhost:8081 || \
 	 echo "Please open http://localhost:8081 in your browser"
+
+# Test commands
+test:
+	@echo "🧪 Running tests..."
+	docker compose -f docker-compose.dev.yml exec backend yarn test
+
+test-watch:
+	@echo "🧪 Running tests in watch mode..."
+	docker compose -f docker-compose.dev.yml exec backend yarn test:watch
+
+test-coverage:
+	@echo "📊 Running tests with coverage..."
+	docker compose -f docker-compose.dev.yml exec backend yarn test:coverage
 
 # Shell access
 backend-shell:
