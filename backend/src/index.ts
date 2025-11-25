@@ -3,6 +3,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import sqlite3 from "sqlite3";
 import { open, Database } from "sqlite";
+import { DEFAULTS, ERROR_MESSAGES } from "./types/index.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
