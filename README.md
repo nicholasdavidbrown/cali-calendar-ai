@@ -1,400 +1,297 @@
-# 📅 Cali Calendar AI
+# SERN Lite Compose Template
 
-> 👍 **Disclaimer**
-> 
-> This was built in < 12 hrs as part of the [Tanda](https://www.tanda.com.au/) Gen AI hackathon. We do intend on turning it into a proper self-hosted service where you can add your own system API keys. Because we think that it's a fun product that you could leave running all the time. 
-> Please note that due to time contraints, much of the core functionality was coded by a Claude agent and has not been thoroughly tested or reviewed.
+A full-stack web application template using SQLite, Express, React, and Node.js with Docker Compose for easy deployment. This template is designed for small-scale self-hosted projects and such uses SQLite.
 
-## 🚀 Roadmap
+## Tech Stack
 
-I would not advise using it in it's current state, but over the next week or so I will do the following:
-- Add branch patterns for open source
-- Setup releases (version 0.x.x)
-- Correct the mongodb backend service
-- Create an admin area in the UI to put your AI API token (Anthropic claude initially) & SMS sending token (Twilio initially).
-- Create a plan to merge Timetree calendar app into the history (because I use this app shared with my parner) - This may be that we find a Timetree to Outlook merger & use that.
-- Other calendar support (or at lease make it modular enough for someone to extend it)
-- A guide for those new to self-hosting software, so you can set and forget on your own PC or deploy to your own cloud infrastructure.
+### Frontend
+- **React** - UI library
+- **TypeScript** - Type safety
+- **Vite** - Build tool and dev server
+- **CSS** - Styling with dark/light mode support
 
-# AI-powered calendar assistant that sends personalized daily SMS notifications with your upcoming events
+### Backend
+- **Node.js** - Runtime environment
+- **Express** - Web framework
+- **TypeScript** - Type safety
+- **SQLite** - Embedded database
+- **sqlite3** - Database driver
 
-Cali integrates with your Microsoft Outlook calendar to send you and your family members daily SMS summaries of upcoming events. With AI-powered message personalization powered by Claude, each notification is tailored to your chosen style—from professional to witty, sarcastic, or even themed personalities like Steve Irwin or Tanda.
+### DevOps
+- **Docker** - Containerization
+- **Docker Compose** - Multi-container orchestration
+- **sqlite-web** - Web-based SQLite database viewer
 
-## ✨ Features
-
-### Core Functionality
-- 🔐 **Microsoft OAuth Integration** - Secure authentication with Outlook/Microsoft 365
-- 📱 **SMS Notifications** - Daily calendar summaries sent via Twilio
-- 👨‍👩‍👧‍👦 **Family Sharing** - Add family members to receive notifications
-- 🎭 **AI-Powered Messaging** - Multiple personality styles powered by Claude (Anthropic)
-- 📅 **Manual Events** - Create events through family join links (stored in JSON)
-- 🔄 **Auto-refresh** - Real-time event updates every 5 seconds
-- 📊 **SMS History** - Track all sent messages and delivery status
-
-### Personality Styles
-- **Professional** - Clear, concise, and business-appropriate
-- **Witty** - Clever and humorous
-- **Sarcastic** - Playful with a sarcastic edge
-- **Mission** - Action-oriented, military-style briefings
-- **Irwin** - Enthusiastic, Steve Irwin-inspired wildlife commentary
-- **Tanda** - Tanda-specific personality
-
-### Family Features
-- Generate shareable join codes with QR codes
-- Family members can register themselves via join link
-- Optional event creation when joining
-- Manage family members (add, edit, activate/deactivate)
-- Family members receive personalized SMS notifications
-
-## 🏗️ Architecture
-
-This is a monorepo with three main components:
+## Project Structure
 
 ```
-cali-calendar-ai/
-├── packages/
-│   ├── server/          # Express.js API (TypeScript)
-│   ├── client/          # React frontend (TypeScript + Vite)
-│   └── mongodb/         # MongoDB data (Docker volume)
-├── docker-compose.yml   # Container orchestration
-└── README.md
+.
+├── backend/              # Express API server
+│   ├── src/
+│   │   └── index.ts     # Main server file
+│   ├── dist/            # Compiled output
+│   └── package.json
+├── frontend/            # React application
+│   ├── src/
+│   │   ├── App.tsx      # Main app component
+│   │   ├── App.css      # Styles
+│   │   └── main.tsx     # Entry point
+│   ├── dist/            # Build output
+│   └── package.json
+├── data/                # SQLite database storage (gitignored)
+├── docker-compose.yml   # Docker services configuration
+├── Dockerfile           # Multi-stage build for production
+└── package.json         # Root package with scripts
+
 ```
 
-### Tech Stack
+## Requirements
 
-**Backend:**
-- Node.js + Express.js
-- TypeScript
-- Microsoft Graph API (Calendar integration)
-- Azure Blob Storage (JSON user storage)
-- Twilio SMS API
-- Anthropic Claude API (AI messaging)
-- JWT authentication
+### For Docker Deployment (Recommended)
+- **Docker**: 20.10+ or later
+- **Docker Compose**: 2.0+ or later (v2 CLI)
 
-**Frontend:**
-- React 19
-- TypeScript
-- Vite
-- React Router
-- Axios
-- QR Code generation
+### For Local Development
+- **Node.js**: 20.x or later
+- **Yarn**: 4.x (Berry) via Corepack
+  - Enable with: `corepack enable`
+  - Corepack comes bundled with Node.js 16.10+
+- **Git**: Any recent version
 
-**Infrastructure:**
-- Docker & Docker Compose
-- MongoDB (user sessions)
-- Azurite (local Azure Blob Storage emulation)
+### Optional Tools
+- **SQLite CLI**: For manual database inspection (not required - sqlite-web provides a UI)
 
-## 🚀 Getting Started
+## Quick Start
 
 ### Prerequisites
+Ensure you have the required versions listed in the Requirements section above.
 
-- Node.js 18+ and npm/yarn
-- Docker and Docker Compose
-- Microsoft Azure account (for OAuth app registration)
-- Twilio account (for SMS)
-- Anthropic API key (for AI messaging)
+### Production (Docker)
 
-### 1. Clone the Repository
+1. **Start the application:**
+   ```bash
+   docker compose up --build
+   ```
 
-```bash
-git clone https://github.com/yourusername/cali-calendar-ai.git
-cd cali-calendar-ai
+2. **Access the services:**
+   - Frontend + API: http://localhost:8080
+   - SQLite Web Viewer: http://localhost:8081
+
+3. **Stop the application:**
+   ```bash
+   docker compose down
+   ```
+
+### Local Development
+
+1. **Enable Yarn 4 (first time setup):**
+   ```bash
+   corepack enable
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   yarn install
+   ```
+
+3. **Start backend (Terminal 1):**
+   ```bash
+   yarn dev-backend
+   ```
+
+4. **Start frontend (Terminal 2):**
+   ```bash
+   yarn dev-frontend
+   ```
+
+4. **Access the application:**
+   - Frontend: http://localhost:5173 (Vite dev server with HMR)
+   - API: http://localhost:8080
+
+## Available Scripts
+
+### Docker Commands
+
+| Command | Shorthand | Description |
+|---------|-----------|-------------|
+| `docker compose up` | `yarn up` | Start containers with existing images |
+| `docker compose up --build` | `yarn up-build` | Start containers and rebuild if needed |
+| `docker compose down` | `yarn down` | Stop and remove containers |
+| `docker compose down -v && docker system prune -f` | `yarn clean` | Remove containers, volumes, and clean Docker system |
+| `docker compose down && docker compose build --no-cache && docker compose up` | `yarn rebuild` | Full clean rebuild (no cache) |
+| `docker compose logs -f` | `yarn logs` | Follow container logs in real-time |
+| `docker compose restart` | `yarn restart` | Restart all containers |
+
+### Development Commands
+
+| Command | Description |
+|---------|-------------|
+| `yarn dev-frontend` | Run frontend dev server with HMR |
+| `yarn dev-backend` | Run backend in development mode |
+
+## API Endpoints
+
+### Users
+
+#### Get All Users
+```http
+GET /api/users
 ```
 
-### 2. Set Up Microsoft OAuth
-
-1. Go to [Azure Portal](https://portal.azure.com/#view/Microsoft_AAD_RegisteredApps)
-2. Create a new app registration
-3. Add redirect URI: `http://localhost:3001/auth/callback`
-4. Add API permissions:
-   - `User.Read`
-   - `Calendars.Read`
-   - `offline_access`
-5. Generate a client secret
-6. Copy the Client ID, Client Secret, and Tenant ID
-
-### 3. Set Up Twilio
-
-1. Sign up at [Twilio](https://www.twilio.com)
-2. Get your Account SID and Auth Token
-3. Purchase a phone number for sending SMS
-
-### 4. Get Anthropic API Key
-
-1. Sign up at [Anthropic](https://www.anthropic.com)
-2. Generate an API key from your dashboard
-
-### 5. Configure Environment Variables
-
-Copy the example environment file and fill in your credentials:
-
-```bash
-cp packages/server/.env.example packages/server/.env
+**Response:**
+```json
+[
+  {
+    "id": 1,
+    "name": "John Doe"
+  }
+]
 ```
 
-Edit `packages/server/.env`:
+#### Create User
+```http
+POST /api/users
+Content-Type: application/json
 
-```bash
-# Server Configuration
-NODE_ENV=development
-PORT=3001
-
-# Database
-MONGODB_URI=mongodb://mongodb:27017/calendar-sms
-
-# JWT Authentication (generate a secure random string)
-JWT_SECRET=your-super-secret-jwt-key-change-in-production
-JWT_EXPIRES_IN=7d
-
-# Microsoft OAuth
-MICROSOFT_CLIENT_ID=your_client_id_here
-MICROSOFT_CLIENT_SECRET=your_client_secret_here
-MICROSOFT_TENANT_ID=common
-REDIRECT_URI=http://localhost:3001/auth/callback
-
-# Frontend URL
-CLIENT_URL=http://localhost:3000
-
-# Twilio SMS
-TWILIO_ACCOUNT_SID=your_twilio_account_sid
-TWILIO_AUTH_TOKEN=your_twilio_auth_token
-TWILIO_PHONE_NUMBER=+1234567890
-
-# Anthropic Claude API
-ANTHROPIC_API_KEY=your_anthropic_api_key_here
-
-# Azure Blob Storage (uses Azurite for local dev, or your Azure connection string for production)
-AZURE_STORAGE_CONNECTION_STRING=your_azure_storage_connection_string_here
-```
-
-### 6. Start the Application
-
-Using Docker Compose (recommended):
-
-```bash
-# Start all services
-npm run dev
-
-# Or for a clean build
-npm run dev-clean
-
-# Stop services
-npm run stop
-```
-
-Or run services individually:
-
-```bash
-# Terminal 1 - MongoDB
-docker run -d -p 27017:27017 --name mongodb mongo:7
-
-# Terminal 2 - Azurite (Azure Storage Emulator)
-docker run -d -p 10000:10000 --name azurite mcr.microsoft.com/azure-storage/azurite
-
-# Terminal 3 - Backend
-cd packages/server
-npm install
-npm run dev
-
-# Terminal 4 - Frontend
-cd packages/client
-npm install
-npm run dev
-```
-
-### 7. Access the Application
-
-- **Frontend**: http://localhost:3000
-- **Backend API**: http://localhost:3001
-- **Health Check**: http://localhost:3001/health
-
-## 📖 Usage
-
-### For Calendar Owners
-
-1. **Sign In** - Click "Sign in with Microsoft" to connect your Outlook calendar
-2. **Configure Settings** - Set your phone number, timezone, and SMS delivery time
-3. **Choose Personality** - Select your preferred message style
-4. **Add Family Members** - Generate join codes to invite family members
-5. **Test SMS** - Send a test message to verify everything works
-
-### For Family Members
-
-1. **Receive Invite** - Get a join link from the calendar owner
-2. **Register** - Enter your name and phone number
-3. **Optional Event** - Create an event for the calendar owner
-4. **Receive SMS** - Get daily calendar updates at the owner's scheduled time
-
-### Daily SMS Flow
-
-Every day at your configured time (default: 7:00 AM):
-1. System fetches your calendar events for the next 24 hours
-2. Includes both Outlook events and manually created events
-3. Claude AI formats them in your chosen personality style
-4. SMS sent to you and all active family members
-
-## 🔑 API Endpoints
-
-### Authentication
-- `GET /auth/login` - Initiate Microsoft OAuth flow
-- `GET /auth/callback` - OAuth callback handler
-
-### User Management
-- `GET /api/v1/users/me` - Get current user profile
-- `PUT /api/v1/users/preferences` - Update user preferences
-
-### Family Members
-- `GET /api/v1/users/me/family` - List family members
-- `POST /api/v1/users/me/family` - Add family member
-- `PUT /api/v1/users/me/family/:id` - Update family member
-- `DELETE /api/v1/users/me/family/:id` - Remove family member
-- `POST /api/v1/users/me/family/invite` - Generate join code
-- `POST /api/v1/users/family/join` - Join via code
-
-### Calendar Events
-- `GET /api/v1/calendar/events` - Get events (next 24 hours)
-- `GET /api/v1/calendar/events/week` - Get events (next 7 days)
-
-### SMS
-- `POST /api/v1/sms/test` - Send test SMS
-- `GET /api/v1/sms/history` - Get SMS history
-
-## 🏗️ Project Structure
-
-```
-packages/
-├── server/
-│   ├── src/
-│   │   ├── config/          # App configuration
-│   │   ├── middleware/      # Express middleware
-│   │   ├── models/          # MongoDB models
-│   │   ├── routes/          # API routes
-│   │   ├── services/        # Business logic
-│   │   │   ├── calendarService.ts    # Microsoft Graph integration
-│   │   │   ├── smsService.ts         # Twilio SMS
-│   │   │   ├── claudeService.ts      # AI message generation
-│   │   │   ├── userStorageService.ts # Azure Blob storage
-│   │   │   └── schedulerService.ts   # Daily SMS scheduler
-│   │   └── utils/           # Utilities (encryption, etc.)
-│   ├── test/
-│   └── package.json
-│
-└── client/
-    ├── src/
-    │   ├── api/             # API client services
-    │   ├── components/      # React components
-    │   ├── pages/           # Page components
-    │   │   ├── Events.tsx   # Calendar view
-    │   │   ├── Settings.tsx # User settings
-    │   │   ├── History.tsx  # SMS history
-    │   │   └── FamilyJoin.tsx # Family registration
-    │   └── App.tsx
-    └── package.json
-```
-
-## 🔒 Security Features
-
-- **Encrypted Tokens** - Microsoft access/refresh tokens encrypted at rest
-- **JWT Authentication** - Secure session management
-- **CORS Protection** - Configured for specific origins
-- **Helmet.js** - Security headers
-- **Phone Validation** - E.164 format enforcement
-- **One-time Join Codes** - Expire after use or 24 hours
-
-## 🧪 Testing
-
-Run tests:
-
-```bash
-# Backend tests
-cd packages/server
-npm test
-
-# Type checking
-npm run typecheck
-
-# Linting
-npm run lint
-```
-
-## 📝 Manual Event Storage
-
-Events created through family join links are stored in Azure Blob Storage as JSON. The system automatically merges these with Outlook calendar events for a unified view.
-
-**Manual Event Structure:**
-```typescript
 {
-  id: string;
-  subject: string;
-  start: string;        // ISO date
-  end: string;          // ISO date
-  location?: string;
-  isAllDay: boolean;
-  createdBy: string;    // Family member name
-  createdAt: string;    // ISO date
+  "name": "Jane Doe"
 }
 ```
 
-## 🚀 Deployment
+**Response:**
+```json
+{
+  "id": 2,
+  "name": "Jane Doe"
+}
+```
 
-### Azure Deployment
+## Environment Variables
 
-See [AZURE_DEPLOYMENT_GUIDE.md](AZURE_DEPLOYMENT_GUIDE.md) for detailed deployment instructions.
+### Backend
 
-Quick steps:
-1. Create Azure App Service
-2. Create Azure Blob Storage account
-3. Configure environment variables in Azure
-4. Deploy using GitHub Actions or Azure CLI
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `PORT` | `8080` | Server port |
+| `NODE_ENV` | `production` | Environment mode |
+| `DB_PATH` | `/data/db.sqlite` | SQLite database path |
+| `TZ` | `Australia/Brisbane` | Timezone |
 
-### Environment Variables for Production
+## Docker Services
 
-Update these in your production environment:
-- Change `JWT_SECRET` to a strong random string
-- Set `NODE_ENV=production`
-- Update `CLIENT_URL` to your frontend domain
-- Update `REDIRECT_URI` to your production callback URL
-- Use production MongoDB and Azure Storage
+### myapp
+- **Port:** 8080:8080
+- **Purpose:** Serves both frontend and backend API
+- **Volume:** `./data:/data` - Persistent database storage
+- **Restart:** unless-stopped
 
-## 🤝 Contributing
+### sqlite-web
+- **Port:** 8081:8081
+- **Purpose:** Web-based SQLite database viewer
+- **Volume:** `./data:/data` - Access to application database
+- **Restart:** unless-stopped
 
-Contributions are welcome! Please follow these guidelines:
+## Development Workflow
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+### Making Changes
 
-## 📄 License
+1. **Frontend changes:**
+   - Edit files in `frontend/src/`
+   - Changes are reflected immediately with HMR in dev mode
+   - For Docker: `docker compose up --build`
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+2. **Backend changes:**
+   - Edit files in `backend/src/`
+   - For Docker: `docker compose up --build`
 
-## 🙏 Acknowledgments
+3. **Dependency changes:**
+   - Update package.json in respective folder
+   - Run `docker compose down && docker compose build --no-cache && docker compose up` for clean Docker build
 
-- [Microsoft Graph API](https://docs.microsoft.com/en-us/graph/) - Calendar integration
-- [Twilio](https://www.twilio.com/) - SMS delivery
-- [Anthropic Claude](https://www.anthropic.com/) - AI-powered messaging
-- [Azure Blob Storage](https://azure.microsoft.com/en-us/services/storage/blobs/) - Data persistence
+### Viewing the Database
 
-## 📧 Support
+Access http://localhost:8081 to view and query your SQLite database using the web interface.
 
-For issues, questions, or suggestions:
-- Open an issue on GitHub
-- Check existing issues for solutions
-- Review the documentation
+## Database Schema
 
-## 🗺️ Roadmap
+### Users Table
 
-- [ ] Support for Google Calendar
-- [ ] Mobile app (React Native)
-- [ ] Event reminders (30 min before)
-- [ ] Custom message templates
-- [ ] Multi-language support
-- [ ] Event categories and filtering
-- [ ] Recurring event management
-- [ ] Integration with other calendars (iCal, etc.)
+```sql
+CREATE TABLE users (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL
+);
+```
+
+## Features
+
+- Full-stack TypeScript support
+- Hot Module Replacement (HMR) in development
+- Multi-stage Docker builds for optimized production images
+- **Multi-architecture support** (AMD64, ARM64, x86)
+- Persistent SQLite database with web viewer
+- Dark/Light mode support in UI
+- RESTful API design
+- Containerized development and production environments
+
+## Multi-Architecture Support
+
+This project is designed to work seamlessly across different CPU architectures:
+
+- **AMD64/x86_64** - Intel/AMD processors (most common)
+- **ARM64/aarch64** - Apple Silicon (M1/M2/M3), AWS Graviton, Raspberry Pi 4+
+- **x86** - Older 32-bit systems (via emulation)
+
+### How it Works
+
+1. **Base Images**: Uses official `node:20-alpine` multi-arch images
+2. **Native Compilation**: sqlite3 module is compiled from source during build for the target architecture
+3. **Platform Detection**: Docker automatically detects your system architecture and builds accordingly
+4. **Cross-Platform Compatible**: The same `docker-compose.yml` works on all architectures
+
+### No Special Configuration Needed
+
+Simply run on any supported platform:
+```bash
+docker compose up --build
+```
+
+Docker will automatically:
+- Pull the correct base images for your architecture
+- Compile native dependencies (sqlite3) for your platform
+- Build an optimized container that runs natively
+
+### Notes
+
+- **sqlite-web**: Uses linux/amd64 with emulation on ARM (slight performance impact, but works fine)
+- **Performance**: Native builds provide best performance on all platforms
+- **Apple Silicon**: Fully supported - no Rosetta needed for the main app
+
+## Troubleshooting
+
+### Port already in use
+If ports 8080 or 8081 are in use, either:
+- Stop the conflicting service
+- Modify ports in `docker-compose.yml`
+
+### Database locked
+If you get "database is locked" errors:
+- Stop all containers: `docker compose down`
+- Remove volumes: `docker compose down -v && docker system prune -f`
+- Restart: `docker compose up --build`
+
+### Clean rebuild needed
+If you encounter issues after dependency changes:
+```bash
+docker compose down && docker compose build --no-cache && docker compose up
+```
+
+This performs a complete rebuild without cache.
+
+## License
+
+MIT
 
 ---
 
-**Built with ❤️ using TypeScript, React, and Claude AI**
+*Vibed by Claude and quality checked by Nick Brown*

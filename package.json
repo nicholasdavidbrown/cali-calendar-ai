@@ -1,19 +1,21 @@
 {
-    "name": "sample-monorepo",
-    "version": "1.0.0",
-    "private": true,
-    "scripts": {
-        "dev": "docker compose up -w",
-        "dev-clean": "docker compose up -w --build --force-recreate",
-        "start": "docker compose up -w --build --force-recreate",
-        "stop": "docker compose down",
-        "restart": "docker compose restart"
-    },
-    "workspaces": [
-        "packages/*"
-    ],
-    "packageManager": "yarn@4.9.1+sha512.f95ce356460e05be48d66401c1ae64ef84d163dd689964962c6888a9810865e39097a5e9de748876c2e0bf89b232d583c33982773e9903ae7a76257270986538",
-    "dependencies": {
-        "yarn": "^1.22.22"
-    }
+  "name": "sern-compose-template",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Full-stack template with Docker Compose",
+  "scripts": {
+    "up": "docker compose up",
+    "up-build": "docker compose up --build",
+    "down": "docker compose down",
+    "clean": "docker compose down -v && docker system prune -f",
+    "rebuild": "docker compose down && docker compose build --no-cache && docker compose up",
+    "logs": "docker compose logs -f",
+    "restart": "docker compose restart",
+    "dev-frontend": "cd frontend && yarn dev",
+    "dev-backend": "cd backend && yarn dev"
+  },
+  "workspaces": [
+    "frontend",
+    "backend"
+  ]
 }

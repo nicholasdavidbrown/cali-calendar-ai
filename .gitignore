@@ -1,11 +1,26 @@
-node_modules
-build
-npm-debug.log
-.env
-.DS_Store
-.yarn
+# Data directory (SQLite database)
+data/
 
-# Ignore the azurtie stuff
-.azurite
-AzuriteConfig
-*azurite_db_*
+# Environment variables
+.env
+.env.local
+.env.production
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS files
+Thumbs.db
+
+# Node modules
+*node_modules
+
+.yarn
