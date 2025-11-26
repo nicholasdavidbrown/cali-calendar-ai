@@ -15,10 +15,10 @@ async function seed() {
     await db.run(
       `INSERT OR IGNORE INTO users (email, password, firstName, lastName, isAdmin)
        VALUES (?, ?, ?, ?, ?)`,
-      ["admin@localhost", hashedPassword, "Admin", "User", 1]
+      ["admin@example.com", hashedPassword, "Admin", "User", 1]
     );
 
-    console.log("✅ Created admin user: admin@localhost");
+    console.log("✅ Created admin user: admin@example.com");
 
     // Initialize system setup
     await db.run(
@@ -27,7 +27,7 @@ async function seed() {
 
     console.log("✅ System setup initialized");
     console.log("\n📧 Default admin credentials:");
-    console.log("   Email: admin@localhost");
+    console.log("   Email: admin@example.com");
     console.log("   Password: admin123");
     console.log("\n⚠️  Please change these credentials after first login!\n");
 

@@ -1,8 +1,11 @@
 import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
+import cookieParser from "cookie-parser";
+import cors from "cors";
 import { db } from "./lib/database.js";
 import { runMigrations } from "./lib/migrate.js";
+import authRouter from "./routes/auth.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -13,6 +16,13 @@ const PUBLIC_PORT = process.env.PUBLIC_PORT || PORT; // External port for Docker
 
 // Middleware
 app.use(express.json());
+app.use(cookieParser());
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL || "http://localhost:5173",
+    credentials: true,
+  })
+);
 
 // Initialize database
 async function initDatabase() {
@@ -24,6 +34,22 @@ async function initDatabase() {
 app.get("/health", (req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
+
+// API Routes
+app.use("/api/auth", authRouter);
+
+// 404 handler for API routes
+app.use("/api", (req, res) => {
+  res.status(404).json({ error: "API endpoint not found" });
+});
+
+// Error handler
+app.use(
+  (err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+    console.error("Server error:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+);
 
 // Serve static files in production only
 if (process.env.NODE_ENV === "production") {
@@ -44,6 +70,7 @@ async function start() {
     app.listen(PORT, () => {
       console.log(`🚀 Server running on http://localhost:${PUBLIC_PORT}`);
       console.log(`📱 Health check: http://localhost:${PUBLIC_PORT}/health`);
+      console.log(`🔐 Auth endpoints: http://localhost:${PUBLIC_PORT}/api/auth/*`);
       if (PUBLIC_PORT !== PORT) {
         console.log(`   (Container internal port: ${PORT})`);
       }

@@ -1,52 +1,23 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import "./App.css";
 
-interface User {
-  id: number;
-  name: string;
-}
-
 function App() {
-  const [users, setUsers] = useState<User[]>([]);
-  const [showModal, setShowModal] = useState(false);
-  const [newUserName, setNewUserName] = useState("");
+  const [healthStatus, setHealthStatus] = useState<string>("");
   const [loading, setLoading] = useState(false);
 
   const API_BASE = "";
 
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
-  const fetchUsers = async () => {
-    try {
-      const response = await fetch(`${API_BASE}/api/users`);
-      const data = await response.json();
-      setUsers(data);
-    } catch (error) {
-      console.error("Failed to fetch users:", error);
-    }
-  };
-
-  const createUser = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newUserName.trim()) return;
-
+  const checkHealth = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${API_BASE}/api/users`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: newUserName }),
-      });
-      const newUser = await response.json();
-      setUsers([...users, newUser]);
-      setNewUserName("");
-      setShowModal(false);
+      const response = await fetch(`${API_BASE}/health`);
+      const data = await response.json();
+      setHealthStatus(`✅ Backend is healthy! Timestamp: ${new Date(data.timestamp).toLocaleString()}`);
     } catch (error) {
-      console.error("Failed to create user:", error);
+      console.error("Failed to check health:", error);
+      setHealthStatus("❌ Backend is not responding");
     } finally {
       setLoading(false);
     }
@@ -62,48 +33,54 @@ function App() {
           <img src={reactLogo} className="logo react" alt="React logo" />
         </a>
       </div>
-      <h1>SERN Compose Starter</h1>
-      <p>with Vite React, Node Express and Sqlite3</p>
+      <h1>Cali Calendar AI</h1>
+      <p>Phase 3: Authentication System Complete ✅</p>
 
       <div className="card">
-        <h2>User Management</h2>
-        <button onClick={() => setShowModal(true)}>Create New User</button>
+        <h2>Backend Status</h2>
+        <button onClick={checkHealth} disabled={loading}>
+          {loading ? "Checking..." : "Check Backend Health"}
+        </button>
 
-        <div className="users-list">
-          {users.length === 0 ? (
-            <p className="read-the-docs">
-              No users yet. Create one to get started!
-            </p>
-          ) : (
-            <ul>
-              {users.map((user) => (
-                <li key={user.id}>
-                  <span className="user-id">#{user.id}</span>
-                  <span className="user-name">{user.name}</span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
+        {healthStatus && (
+          <div className="users-list">
+            <p style={{ fontSize: "1.1em", marginTop: "1rem" }}>{healthStatus}</p>
+          </div>
+        )}
       </div>
 
       <div className="info-section">
         <div className="info-card">
-          <h3>API Endpoints</h3>
+          <h3>🔐 Authentication Endpoints</h3>
           <div className="endpoint">
-            <code className="method get">GET</code>
-            <code className="path">/api/users</code>
-            <span className="description">Fetch all users</span>
+            <code className="method post">POST</code>
+            <code className="path">/api/auth/register</code>
+            <span className="description">Register new user</span>
           </div>
           <div className="endpoint">
             <code className="method post">POST</code>
-            <code className="path">/api/users</code>
-            <span className="description">Create a new user</span>
+            <code className="path">/api/auth/login</code>
+            <span className="description">Login user</span>
+          </div>
+          <div className="endpoint">
+            <code className="method get">GET</code>
+            <code className="path">/api/auth/me</code>
+            <span className="description">Get current user</span>
+          </div>
+          <div className="endpoint">
+            <code className="method post">POST</code>
+            <code className="path">/api/auth/logout</code>
+            <span className="description">Logout user</span>
+          </div>
+          <div className="endpoint">
+            <code className="method get">GET</code>
+            <code className="path">/api/auth/verify</code>
+            <span className="description">Verify JWT token</span>
           </div>
         </div>
 
         <div className="info-card">
-          <h3>Database Viewer</h3>
+          <h3>🗄️ Database Viewer</h3>
           <p>View and query the SQLite database directly:</p>
           <a
             href="http://localhost:8081"
@@ -113,35 +90,28 @@ function App() {
           >
             Open SQLite Web Viewer
           </a>
+          <p style={{ fontSize: "0.9em", marginTop: "1rem", opacity: 0.8 }}>
+            View tables: users, calendar_events, family_members, sms_history, join_codes, calendar_integrations, admin_settings, system_setup
+          </p>
+        </div>
+
+        <div className="info-card">
+          <h3>📋 Project Status</h3>
+          <ul style={{ textAlign: "left", fontSize: "0.9em" }}>
+            <li>✅ Phase 1: Shared Types Setup</li>
+            <li>✅ Phase 2: Database Setup (8 tables)</li>
+            <li>✅ Phase 3: Authentication System</li>
+            <li>⏳ Phase 4: Calendar Events (Manual CRUD)</li>
+            <li>⏳ Phase 5: SMS Notifications</li>
+            <li>⏳ Phase 6: AI Messaging with Claude</li>
+            <li>⏳ Phase 7: Family Sharing</li>
+          </ul>
         </div>
       </div>
 
-      {showModal && (
-        <div className="modal-overlay" onClick={() => setShowModal(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <h2>Create New User</h2>
-            <form onSubmit={createUser}>
-              <input
-                type="text"
-                placeholder="Enter user name"
-                value={newUserName}
-                onChange={(e) => setNewUserName(e.target.value)}
-                autoFocus
-              />
-              <div className="modal-buttons">
-                <button type="submit" disabled={loading}>
-                  {loading ? "Creating..." : "Create"}
-                </button>
-                <button type="button" onClick={() => setShowModal(false)}>
-                  Cancel
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      <p className="read-the-docs">Frontend connected to backend API</p>
+      <p className="read-the-docs">
+        Backend API: <code>http://localhost:8080</code> | Frontend: <code>http://localhost:5174</code>
+      </p>
     </>
   );
 }
