@@ -56,17 +56,21 @@ export const Register: React.FC = () => {
   };
 
   return (
-    <div className="auth-page">
-      <div className="auth-card">
-        <h1 className="auth-title">Create Admin Account</h1>
-        <p className="auth-subtitle">
+    <div className="min-h-screen flex items-center justify-center p-8 bg-bg-light dark:bg-bg-dark">
+      <div className="bg-bg-card-light dark:bg-bg-card-dark p-12 rounded-xl shadow-lg max-w-md w-full border border-border-light dark:border-border-dark">
+        <h1 className="text-3xl font-semibold mb-2 bg-gradient-to-r from-primary-orange to-primary-yellow bg-clip-text text-transparent">
+          Create Admin Account
+        </h1>
+        <p className="text-text-muted-light dark:text-text-muted-dark mb-8">
           Start managing your calendar with AI-powered SMS
         </p>
 
-        <form onSubmit={handleSubmit} className="auth-form">
-          <div className="form-row">
-            <div className="form-group">
-              <label htmlFor="firstName">First Name</label>
+        <form onSubmit={handleSubmit} className="mb-6">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="mb-6">
+              <label htmlFor="firstName" className="block mb-2 font-medium text-text-dark dark:text-text-light">
+                First Name
+              </label>
               <input
                 id="firstName"
                 name="firstName"
@@ -74,12 +78,14 @@ export const Register: React.FC = () => {
                 value={formData.firstName}
                 onChange={handleChange}
                 required
-                className="form-input"
+                className="w-full px-4 py-3 bg-white/5 border border-border-light dark:border-border-dark rounded-lg text-text-dark dark:text-text-light focus:outline-none focus:border-primary-orange focus:ring-2 focus:ring-primary-orange/20 transition-all"
               />
             </div>
 
-            <div className="form-group">
-              <label htmlFor="lastName">Last Name</label>
+            <div className="mb-6">
+              <label htmlFor="lastName" className="block mb-2 font-medium text-text-dark dark:text-text-light">
+                Last Name
+              </label>
               <input
                 id="lastName"
                 name="lastName"
@@ -87,13 +93,15 @@ export const Register: React.FC = () => {
                 value={formData.lastName}
                 onChange={handleChange}
                 required
-                className="form-input"
+                className="w-full px-4 py-3 bg-white/5 border border-border-light dark:border-border-dark rounded-lg text-text-dark dark:text-text-light focus:outline-none focus:border-primary-orange focus:ring-2 focus:ring-primary-orange/20 transition-all"
               />
             </div>
           </div>
 
-          <div className="form-group">
-            <label htmlFor="email">Email</label>
+          <div className="mb-6">
+            <label htmlFor="email" className="block mb-2 font-medium text-text-dark dark:text-text-light">
+              Email
+            </label>
             <input
               id="email"
               name="email"
@@ -101,12 +109,14 @@ export const Register: React.FC = () => {
               value={formData.email}
               onChange={handleChange}
               required
-              className="form-input"
+              className="w-full px-4 py-3 bg-white/5 border border-border-light dark:border-border-dark rounded-lg text-text-dark dark:text-text-light focus:outline-none focus:border-primary-orange focus:ring-2 focus:ring-primary-orange/20 transition-all"
             />
           </div>
 
-          <div className="form-group">
-            <label htmlFor="phoneNumber">Phone Number *</label>
+          <div className="mb-6">
+            <label htmlFor="phoneNumber" className="block mb-2 font-medium text-text-dark dark:text-text-light">
+              Phone Number *
+            </label>
             <input
               id="phoneNumber"
               name="phoneNumber"
@@ -114,14 +124,18 @@ export const Register: React.FC = () => {
               value={formData.phoneNumber}
               onChange={handleChange}
               required
-              className="form-input"
+              className="w-full px-4 py-3 bg-white/5 border border-border-light dark:border-border-dark rounded-lg text-text-dark dark:text-text-light focus:outline-none focus:border-primary-orange focus:ring-2 focus:ring-primary-orange/20 transition-all"
               placeholder="+12345678900"
             />
-            <small className="form-hint">Format: +1234567890 (E.164)</small>
+            <small className="block mt-1 text-sm text-text-muted-light dark:text-text-muted-dark">
+              Format: +1234567890 (E.164)
+            </small>
           </div>
 
-          <div className="form-group">
-            <label htmlFor="password">Password</label>
+          <div className="mb-6">
+            <label htmlFor="password" className="block mb-2 font-medium text-text-dark dark:text-text-light">
+              Password
+            </label>
             <input
               id="password"
               name="password"
@@ -130,24 +144,33 @@ export const Register: React.FC = () => {
               onChange={handleChange}
               required
               minLength={8}
-              className="form-input"
+              className="w-full px-4 py-3 bg-white/5 border border-border-light dark:border-border-dark rounded-lg text-text-dark dark:text-text-light focus:outline-none focus:border-primary-orange focus:ring-2 focus:ring-primary-orange/20 transition-all"
             />
-            <small className="form-hint">Minimum 8 characters</small>
+            <small className="block mt-1 text-sm text-text-muted-light dark:text-text-muted-dark">
+              Minimum 8 characters
+            </small>
           </div>
 
-          {error && <div className="form-error">{error}</div>}
+          {error && (
+            <div className="bg-error/10 border-l-4 border-error px-4 py-3 rounded-md text-error mb-4">
+              {error}
+            </div>
+          )}
 
           <button
             type="submit"
             disabled={loading}
-            className="btn-primary btn-full"
+            className="w-full bg-gradient-to-r from-primary-orange to-primary-yellow text-white px-6 py-3 rounded-lg font-semibold shadow-sm hover:-translate-y-0.5 hover:shadow-md transition-all disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none"
           >
             {loading ? "Creating account..." : "Create Account"}
           </button>
         </form>
 
-        <p className="auth-footer">
-          Already have an account? <Link to="/login">Sign in</Link>
+        <p className="text-center text-text-muted-light dark:text-text-muted-dark">
+          Already have an account?{" "}
+          <Link to="/login" className="text-primary-orange hover:text-primary-yellow transition-colors">
+            Sign in
+          </Link>
         </p>
       </div>
     </div>

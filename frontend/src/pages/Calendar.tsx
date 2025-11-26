@@ -5,7 +5,6 @@ import EventForm from "../components/EventForm";
 import Layout from "../components/Layout";
 import type { CalendarEvent, CreateEventData } from "../types";
 import {
-  format,
   startOfToday,
   endOfToday,
   startOfWeek,
@@ -105,9 +104,9 @@ export const Calendar: React.FC = () => {
   if (loading) {
     return (
       <Layout>
-        <div className="loading-container">
-          <div className="spinner"></div>
-          <p>Loading events...</p>
+        <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
+          <div className="border-4 border-primary-orange/10 border-t-primary-orange rounded-full w-12 h-12 animate-spin"></div>
+          <p className="text-text-dark dark:text-text-light">Loading events...</p>
         </div>
       </Layout>
     );
@@ -115,41 +114,60 @@ export const Calendar: React.FC = () => {
 
   return (
     <Layout>
-      <div className="calendar-page">
-        <div className="calendar-header">
-          <h1>Your Calendar</h1>
-          <button onClick={() => setShowForm(true)} className="btn-primary">
+      <div className="py-8">
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-semibold text-text-dark dark:text-text-light">Your Calendar</h1>
+          <button
+            onClick={() => setShowForm(true)}
+            className="bg-gradient-to-r from-primary-orange to-primary-yellow text-white px-6 py-3 rounded-lg font-semibold shadow-sm hover:-translate-y-0.5 hover:shadow-md transition-all"
+          >
             + Add Event
           </button>
         </div>
 
-        <div className="calendar-filters">
+        <div className="flex gap-4 mb-8">
           <button
-            className={filter === "today" ? "filter-btn active" : "filter-btn"}
+            className={`px-5 py-2 rounded-lg border transition-all ${
+              filter === "today"
+                ? "bg-gradient-to-r from-primary-orange to-primary-yellow text-white border-transparent"
+                : "bg-bg-card-light dark:bg-bg-card-dark text-text-dark dark:text-text-light border-border-light dark:border-border-dark hover:border-primary-orange"
+            }`}
             onClick={() => setFilter("today")}
           >
             Today
           </button>
           <button
-            className={filter === "week" ? "filter-btn active" : "filter-btn"}
+            className={`px-5 py-2 rounded-lg border transition-all ${
+              filter === "week"
+                ? "bg-gradient-to-r from-primary-orange to-primary-yellow text-white border-transparent"
+                : "bg-bg-card-light dark:bg-bg-card-dark text-text-dark dark:text-text-light border-border-light dark:border-border-dark hover:border-primary-orange"
+            }`}
             onClick={() => setFilter("week")}
           >
             This Week
           </button>
           <button
-            className={filter === "all" ? "filter-btn active" : "filter-btn"}
+            className={`px-5 py-2 rounded-lg border transition-all ${
+              filter === "all"
+                ? "bg-gradient-to-r from-primary-orange to-primary-yellow text-white border-transparent"
+                : "bg-bg-card-light dark:bg-bg-card-dark text-text-dark dark:text-text-light border-border-light dark:border-border-dark hover:border-primary-orange"
+            }`}
             onClick={() => setFilter("all")}
           >
             All Events
           </button>
         </div>
 
-        {error && <div className="error-message">{error}</div>}
+        {error && (
+          <div className="bg-error/10 border-l-4 border-error px-4 py-3 rounded-md text-error mb-6">
+            {error}
+          </div>
+        )}
 
-        <div className="events-list">
+        <div className="flex flex-col gap-4">
           {filteredEvents.length === 0 ? (
-            <div className="empty-state">
-              <p>
+            <div className="text-center py-16 text-text-muted-light dark:text-text-muted-dark">
+              <p className="mb-6 text-lg">
                 No events scheduled for{" "}
                 {filter === "today"
                   ? "today"
@@ -157,7 +175,10 @@ export const Calendar: React.FC = () => {
                   ? "this week"
                   : "now"}
               </p>
-              <button onClick={() => setShowForm(true)} className="btn-primary">
+              <button
+                onClick={() => setShowForm(true)}
+                className="bg-gradient-to-r from-primary-orange to-primary-yellow text-white px-6 py-3 rounded-lg font-semibold shadow-sm hover:-translate-y-0.5 hover:shadow-md transition-all"
+              >
                 Create your first event
               </button>
             </div>

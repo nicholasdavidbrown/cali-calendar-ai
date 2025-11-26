@@ -71,13 +71,15 @@ export const Settings: React.FC = () => {
 
   return (
     <Layout>
-      <div className="settings-page">
-        <h1>Settings</h1>
+      <div className="max-w-3xl mx-auto">
+        <h1 className="text-3xl font-semibold mb-8 text-text-dark dark:text-text-light">Settings</h1>
 
-        <div className="settings-card">
-          <form onSubmit={handleSubmit} className="settings-form">
-            <div className="form-group">
-              <label htmlFor="phoneNumber">Phone Number *</label>
+        <div className="bg-bg-card-light dark:bg-bg-card-dark border border-border-light dark:border-border-dark rounded-xl p-8 mt-8">
+          <form onSubmit={handleSubmit}>
+            <div className="mb-6">
+              <label htmlFor="phoneNumber" className="block mb-2 font-medium text-text-dark dark:text-text-light">
+                Phone Number *
+              </label>
               <input
                 id="phoneNumber"
                 name="phoneNumber"
@@ -85,20 +87,24 @@ export const Settings: React.FC = () => {
                 value={formData.phoneNumber}
                 onChange={handleChange}
                 required
-                className="form-input"
+                className="w-full px-4 py-3 bg-white/5 border border-border-light dark:border-border-dark rounded-lg text-text-dark dark:text-text-light focus:outline-none focus:border-primary-orange focus:ring-2 focus:ring-primary-orange/20 transition-all"
                 placeholder="+12345678900"
               />
-              <small className="form-hint">Format: +1234567890 (E.164)</small>
+              <small className="block mt-1 text-sm text-text-muted-light dark:text-text-muted-dark">
+                Format: +1234567890 (E.164)
+              </small>
             </div>
 
-            <div className="form-group">
-              <label htmlFor="timezone">Timezone</label>
+            <div className="mb-6">
+              <label htmlFor="timezone" className="block mb-2 font-medium text-text-dark dark:text-text-light">
+                Timezone
+              </label>
               <select
                 id="timezone"
                 name="timezone"
                 value={formData.timezone}
                 onChange={handleChange}
-                className="form-input"
+                className="w-full px-4 py-3 bg-white/5 border border-border-light dark:border-border-dark rounded-lg text-text-dark dark:text-text-light focus:outline-none focus:border-primary-orange focus:ring-2 focus:ring-primary-orange/20 transition-all"
               >
                 <option value="America/Los_Angeles">Pacific Time</option>
                 <option value="America/Denver">Mountain Time</option>
@@ -107,35 +113,43 @@ export const Settings: React.FC = () => {
               </select>
             </div>
 
-            <div className="form-group">
-              <label htmlFor="smsTime">Daily SMS Time</label>
+            <div className="mb-6">
+              <label htmlFor="smsTime" className="block mb-2 font-medium text-text-dark dark:text-text-light">
+                Daily SMS Time
+              </label>
               <input
                 id="smsTime"
                 name="smsTime"
                 type="time"
                 value={formData.smsTime}
                 onChange={handleChange}
-                className="form-input"
+                className="w-full px-4 py-3 bg-white/5 border border-border-light dark:border-border-dark rounded-lg text-text-dark dark:text-text-light focus:outline-none focus:border-primary-orange focus:ring-2 focus:ring-primary-orange/20 transition-all"
               />
-              <small className="form-hint">
+              <small className="block mt-1 text-sm text-text-muted-light dark:text-text-muted-dark">
                 When to receive daily calendar summary
               </small>
             </div>
 
-            <div className="form-group">
-              <label>Message Style</label>
-              <div className="radio-group">
+            <div className="mb-6">
+              <label className="block mb-3 font-medium text-text-dark dark:text-text-light">
+                Message Style
+              </label>
+              <div className="flex flex-col gap-3">
                 {["professional", "witty", "sarcastic", "mission", "irwin", "tanda"].map(
                   (style) => (
-                    <label key={style} className="radio-label">
+                    <label
+                      key={style}
+                      className="flex items-center gap-3 px-3 py-3 bg-white/5 border border-border-light dark:border-border-dark rounded-lg cursor-pointer transition-all hover:bg-primary-orange/5 hover:border-primary-orange"
+                    >
                       <input
                         type="radio"
                         name="messageStyle"
                         value={style}
                         checked={formData.messageStyle === style}
                         onChange={handleChange}
+                        className="w-4 h-4 accent-primary-orange"
                       />
-                      <span className="radio-text">
+                      <span className="text-text-dark dark:text-text-light">
                         {style.charAt(0).toUpperCase() + style.slice(1)}
                       </span>
                     </label>
@@ -144,12 +158,22 @@ export const Settings: React.FC = () => {
               </div>
             </div>
 
-            {error && <div className="form-error">{error}</div>}
+            {error && (
+              <div className="bg-error/10 border-l-4 border-error px-4 py-3 rounded-md text-error mb-4">
+                {error}
+              </div>
+            )}
             {success && (
-              <div className="form-success">Settings updated successfully!</div>
+              <div className="bg-success/10 border-l-4 border-success px-4 py-3 rounded-md text-success mb-4">
+                Settings updated successfully!
+              </div>
             )}
 
-            <button type="submit" disabled={loading} className="btn-primary">
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-gradient-to-r from-primary-orange to-primary-yellow text-white px-6 py-3 rounded-lg font-semibold shadow-sm hover:-translate-y-0.5 hover:shadow-md transition-all disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none"
+            >
               {loading ? "Saving..." : "Save Settings"}
             </button>
           </form>

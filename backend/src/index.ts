@@ -23,18 +23,29 @@ app.use(cookieParser());
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow requests with no origin (like mobile apps or curl)
+      // Allow requests with no origin (like mobile apps, curl, or same-origin requests)
       if (!origin) return callback(null, true);
 
-      // In development, allow any localhost origin
-      if (process.env.NODE_ENV !== 'production' && origin.startsWith('http://localhost:')) {
-        return callback(null, true);
+      // In development, allow any localhost or 127.0.0.1 origin
+      if (process.env.NODE_ENV !== 'production') {
+        if (origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:')) {
+          return callback(null, true);
+        }
       }
 
-      // In production, use specific allowed origins
-      const allowedOrigins = process.env.CLIENT_URL ? [process.env.CLIENT_URL] : [];
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
+      // In production, when serving static frontend from same server, allow same origin
+      if (process.env.NODE_ENV === 'production') {
+        // Allow requests from same origin (when frontend is served by this server)
+        const serverOrigin = `http://localhost:${PUBLIC_PORT}`;
+        if (origin === serverOrigin) {
+          return callback(null, true);
+        }
+
+        // Also allow CLIENT_URL if configured for external frontend
+        const allowedOrigins = process.env.CLIENT_URL ? [process.env.CLIENT_URL] : [];
+        if (allowedOrigins.includes(origin)) {
+          return callback(null, true);
+        }
       }
 
       callback(new Error('Not allowed by CORS'));

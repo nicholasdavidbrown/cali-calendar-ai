@@ -9,7 +9,7 @@ services:
       - NODE_ENV=development
       - PORT=8080
       - DB_PATH=/data/cali-dev-db.sqlite
-      - TZ=America/Los_Angeles
+      - TZ=Australia/Brisbane
     ports:
       - "8080:8080"
     volumes:
@@ -45,6 +45,8 @@ services:
       - ./frontend/package.json:/app/frontend/package.json
       - ./frontend/tsconfig.json:/app/frontend/tsconfig.json
       - ./frontend/vite.config.ts:/app/frontend/vite.config.ts
+      - ./frontend/tailwind.config.js:/app/frontend/tailwind.config.js
+      - ./frontend/postcss.config.js:/app/frontend/postcss.config.js
       # Use named volumes for node_modules to avoid conflicts with host
       - frontend-node-modules:/app/frontend/node_modules
     command: yarn dev --host

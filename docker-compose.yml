@@ -9,6 +9,7 @@ services:
       - PORT=8080
       - PUBLIC_PORT=8082
       - DB_PATH=/data/cali-db.sqlite
+      - VITE_API_URL=http://backend:8082
     ports:
       - "8082:8080"
     volumes:
