@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { Button } from "flowbite-react";
 import { useAuth } from "../hooks/useAuth";
 import ThemeToggle from "./ThemeToggle";
 
@@ -14,57 +15,46 @@ export const Navbar: React.FC = () => {
   };
 
   return (
-    <nav className="bg-bg-card-light dark:bg-bg-card-dark border-b border-border-light dark:border-border-dark px-4 sm:px-6 lg:px-8 py-3 sm:py-4 shadow-sm">
-      <div className="flex items-center justify-between gap-4">
-        <div className="flex-shrink-0">
-          <h1 className="text-lg sm:text-xl lg:text-2xl font-semibold bg-gradient-to-r from-primary-orange to-primary-yellow bg-clip-text text-transparent">
-            📅 <span className="hidden sm:inline">Cali Calendar AI</span><span className="sm:hidden">Cali</span>
-          </h1>
-        </div>
+    <nav className="bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+      <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
+        <Link to="/calendar" className="flex items-center space-x-3">
+          <span className="self-center text-xl font-semibold whitespace-nowrap">
+            <span className="bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">
+              📅 Cali Calendar AI
+            </span>
+          </span>
+        </Link>
 
-        <div className="hidden md:flex gap-4 lg:gap-6">
-          <Link
-            to="/calendar"
-            className="px-3 py-2 lg:px-4 rounded-md font-medium text-sm lg:text-base text-text-dark dark:text-text-light hover:bg-primary-orange/10 transition-colors"
-          >
-            Calendar
-          </Link>
-          <Link
-            to="/settings"
-            className="px-3 py-2 lg:px-4 rounded-md font-medium text-sm lg:text-base text-text-dark dark:text-text-light hover:bg-primary-orange/10 transition-colors"
-          >
-            Settings
-          </Link>
-        </div>
-
-        <div className="flex items-center gap-2 sm:gap-3 lg:gap-4">
-          <span className="hidden lg:inline text-sm text-text-muted-light dark:text-text-muted-dark">
+        <div className="flex items-center gap-2 md:order-2">
+          <span className="hidden lg:inline text-sm text-gray-600 dark:text-gray-400">
             {user?.firstName} {user?.lastName}
           </span>
           <ThemeToggle />
-          <button
-            onClick={handleLogout}
-            className="px-3 py-1.5 sm:px-4 sm:py-2 bg-white/10 dark:bg-white/10 text-text-dark dark:text-text-light rounded-md text-xs sm:text-sm hover:bg-white/15 dark:hover:bg-white/15 transition-colors"
-          >
+          <Button size="sm" color="light" onClick={handleLogout}>
             Logout
-          </button>
+          </Button>
         </div>
-      </div>
 
-      {/* Mobile Navigation */}
-      <div className="flex md:hidden gap-3 mt-3 pt-3 border-t border-border-light dark:border-border-dark">
-        <Link
-          to="/calendar"
-          className="flex-1 text-center px-3 py-2 rounded-md font-medium text-sm text-text-dark dark:text-text-light hover:bg-primary-orange/10 transition-colors"
-        >
-          Calendar
-        </Link>
-        <Link
-          to="/settings"
-          className="flex-1 text-center px-3 py-2 rounded-md font-medium text-sm text-text-dark dark:text-text-light hover:bg-primary-orange/10 transition-colors"
-        >
-          Settings
-        </Link>
+        <div className="hidden md:flex md:w-auto md:order-1">
+          <ul className="flex flex-col md:flex-row md:space-x-8 md:mt-0 md:text-base md:font-medium">
+            <li>
+              <Link
+                to="/calendar"
+                className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-orange-500 md:p-0 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
+              >
+                Calendar
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/settings"
+                className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-orange-500 md:p-0 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
+              >
+                Settings
+              </Link>
+            </li>
+          </ul>
+        </div>
       </div>
     </nav>
   );

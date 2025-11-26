@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Button, Alert, Spinner, ButtonGroup } from "flowbite-react";
 import { calendarAPI } from "../services/api";
 import EventCard from "../components/EventCard";
 import EventForm from "../components/EventForm";
@@ -105,8 +106,8 @@ export const Calendar: React.FC = () => {
     return (
       <Layout>
         <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
-          <div className="border-4 border-primary-orange/10 border-t-primary-orange rounded-full w-12 h-12 animate-spin"></div>
-          <p className="text-text-dark dark:text-text-light">Loading events...</p>
+          <Spinner size="xl" color="warning" />
+          <p className="text-gray-700 dark:text-gray-300">Loading events...</p>
         </div>
       </Layout>
     );
@@ -115,59 +116,47 @@ export const Calendar: React.FC = () => {
   return (
     <Layout>
       <div>
-        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6 sm:mb-8">
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-text-dark dark:text-text-light">Your Calendar</h1>
-          <button
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">Your Calendar</h1>
+          <Button
             onClick={() => setShowForm(true)}
-            className="bg-gradient-to-r from-primary-orange to-primary-yellow text-white px-5 py-2.5 sm:px-6 sm:py-3 rounded-lg font-semibold text-sm sm:text-base shadow-sm hover:-translate-y-0.5 hover:shadow-md transition-all"
+            className="bg-gradient-to-r from-orange-500 to-amber-500 enabled:hover:from-orange-600 enabled:hover:to-amber-600"
           >
             + Add Event
-          </button>
+          </Button>
         </div>
 
-        <div className="flex flex-wrap gap-2 sm:gap-3 mb-6 sm:mb-8">
-          <button
-            className={`px-4 py-2 sm:px-5 text-sm sm:text-base rounded-lg border transition-all ${
-              filter === "today"
-                ? "bg-gradient-to-r from-primary-orange to-primary-yellow text-white border-transparent"
-                : "bg-bg-card-light dark:bg-bg-card-dark text-text-dark dark:text-text-light border-border-light dark:border-border-dark hover:border-primary-orange"
-            }`}
+        <ButtonGroup className="mb-6">
+          <Button
+            color={filter === "today" ? "warning" : "gray"}
             onClick={() => setFilter("today")}
           >
             Today
-          </button>
-          <button
-            className={`px-4 py-2 sm:px-5 text-sm sm:text-base rounded-lg border transition-all ${
-              filter === "week"
-                ? "bg-gradient-to-r from-primary-orange to-primary-yellow text-white border-transparent"
-                : "bg-bg-card-light dark:bg-bg-card-dark text-text-dark dark:text-text-light border-border-light dark:border-border-dark hover:border-primary-orange"
-            }`}
+          </Button>
+          <Button
+            color={filter === "week" ? "warning" : "gray"}
             onClick={() => setFilter("week")}
           >
             This Week
-          </button>
-          <button
-            className={`px-4 py-2 sm:px-5 text-sm sm:text-base rounded-lg border transition-all ${
-              filter === "all"
-                ? "bg-gradient-to-r from-primary-orange to-primary-yellow text-white border-transparent"
-                : "bg-bg-card-light dark:bg-bg-card-dark text-text-dark dark:text-text-light border-border-light dark:border-border-dark hover:border-primary-orange"
-            }`}
+          </Button>
+          <Button
+            color={filter === "all" ? "warning" : "gray"}
             onClick={() => setFilter("all")}
           >
             All Events
-          </button>
-        </div>
+          </Button>
+        </ButtonGroup>
 
         {error && (
-          <div className="bg-error/10 border-l-4 border-error px-3 py-2.5 sm:px-4 sm:py-3 rounded-md text-error text-sm mb-6">
+          <Alert color="failure" className="mb-6">
             {error}
-          </div>
+          </Alert>
         )}
 
-        <div className="flex flex-col gap-3 sm:gap-4">
+        <div className="flex flex-col gap-4">
           {filteredEvents.length === 0 ? (
-            <div className="text-center py-12 sm:py-16 text-text-muted-light dark:text-text-muted-dark">
-              <p className="mb-6 text-base sm:text-lg">
+            <div className="text-center py-16 text-gray-600 dark:text-gray-400">
+              <p className="mb-6 text-lg">
                 No events scheduled for{" "}
                 {filter === "today"
                   ? "today"
@@ -175,12 +164,12 @@ export const Calendar: React.FC = () => {
                   ? "this week"
                   : "now"}
               </p>
-              <button
+              <Button
                 onClick={() => setShowForm(true)}
-                className="bg-gradient-to-r from-primary-orange to-primary-yellow text-white px-5 py-2.5 sm:px-6 sm:py-3 rounded-lg font-semibold text-sm sm:text-base shadow-sm hover:-translate-y-0.5 hover:shadow-md transition-all"
+                className="bg-gradient-to-r from-orange-500 to-amber-500 enabled:hover:from-orange-600 enabled:hover:to-amber-600"
               >
                 Create your first event
-              </button>
+              </Button>
             </div>
           ) : (
             filteredEvents.map((event) => (

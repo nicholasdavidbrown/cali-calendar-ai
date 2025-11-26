@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { Card, Label, TextInput, Button, Alert } from "flowbite-react";
 import { useAuth } from "../hooks/useAuth";
 
 export const Login: React.FC = () => {
@@ -33,68 +34,75 @@ export const Login: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-8 sm:px-6 lg:px-8 bg-bg-light dark:bg-bg-dark">
-      <div className="bg-bg-card-light dark:bg-bg-card-dark p-6 sm:p-8 md:p-10 lg:p-12 rounded-xl shadow-lg max-w-md w-full border border-border-light dark:border-border-dark">
-        <h1 className="text-2xl sm:text-3xl font-semibold mb-2 bg-gradient-to-r from-primary-orange to-primary-yellow bg-clip-text text-transparent">
-          Welcome Back!
-        </h1>
-        <p className="text-sm sm:text-base text-text-muted-light dark:text-text-muted-dark mb-6 sm:mb-8">
-          Sign in to manage your calendar
-        </p>
-
-        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5 mb-6">
+    <div className="min-h-screen flex items-center justify-center px-4 py-8 bg-gray-50 dark:bg-gray-900">
+      <Card className="max-w-md w-full">
+        <div className="space-y-6">
           <div>
-            <label htmlFor="email" className="block mb-2 text-sm font-medium text-text-dark dark:text-text-light">
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="w-full px-3 py-2.5 sm:px-4 sm:py-3 bg-white/5 border border-border-light dark:border-border-dark rounded-lg text-text-dark dark:text-text-light text-sm sm:text-base focus:outline-none focus:border-primary-orange focus:ring-2 focus:ring-primary-orange/20 transition-all"
-              placeholder="you@example.com"
-            />
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
+              <span className="bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">
+                Welcome Back!
+              </span>
+            </h1>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              Sign in to manage your calendar
+            </p>
           </div>
 
-          <div>
-            <label htmlFor="password" className="block mb-2 text-sm font-medium text-text-dark dark:text-text-light">
-              Password
-            </label>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="w-full px-3 py-2.5 sm:px-4 sm:py-3 bg-white/5 border border-border-light dark:border-border-dark rounded-lg text-text-dark dark:text-text-light text-sm sm:text-base focus:outline-none focus:border-primary-orange focus:ring-2 focus:ring-primary-orange/20 transition-all"
-              placeholder="••••••••"
-            />
-          </div>
-
-          {error && (
-            <div className="bg-error/10 border-l-4 border-error px-3 py-2.5 sm:px-4 sm:py-3 rounded-md text-error text-sm">
-              {error}
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <div className="mb-2">
+                <Label htmlFor="email">Email</Label>
+              </div>
+              <TextInput
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@example.com"
+                required
+                color="gray"
+              />
             </div>
-          )}
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-gradient-to-r from-primary-orange to-primary-yellow text-white px-5 py-2.5 sm:px-6 sm:py-3 rounded-lg font-semibold text-sm sm:text-base shadow-sm hover:-translate-y-0.5 hover:shadow-md transition-all disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none"
-          >
-            {loading ? "Signing in..." : "Sign In"}
-          </button>
-        </form>
+            <div>
+              <div className="mb-2">
+                <Label htmlFor="password">Password</Label>
+              </div>
+              <TextInput
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                required
+                color="gray"
+              />
+            </div>
 
-        <p className="text-center text-sm text-text-muted-light dark:text-text-muted-dark">
-          Don't have an account?{" "}
-          <Link to="/register" className="text-primary-orange hover:text-primary-yellow font-medium transition-colors">
-            Sign up
-          </Link>
-        </p>
-      </div>
+            {error && (
+              <Alert color="failure">
+                <span className="font-medium">Error!</span> {error}
+              </Alert>
+            )}
+
+            <Button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-gradient-to-r from-orange-500 to-amber-500 enabled:hover:from-orange-600 enabled:hover:to-amber-600"
+              size="lg"
+            >
+              {loading ? "Signing in..." : "Sign In"}
+            </Button>
+          </form>
+
+          <p className="text-center text-sm text-gray-600 dark:text-gray-400">
+            Don't have an account?{" "}
+            <Link to="/register" className="text-orange-500 hover:text-orange-600 font-medium">
+              Sign up
+            </Link>
+          </p>
+        </div>
+      </Card>
     </div>
   );
 };
