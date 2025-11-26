@@ -114,20 +114,20 @@ export const Calendar: React.FC = () => {
 
   return (
     <Layout>
-      <div className="py-8">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-semibold text-text-dark dark:text-text-light">Your Calendar</h1>
+      <div>
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-text-dark dark:text-text-light">Your Calendar</h1>
           <button
             onClick={() => setShowForm(true)}
-            className="bg-gradient-to-r from-primary-orange to-primary-yellow text-white px-6 py-3 rounded-lg font-semibold shadow-sm hover:-translate-y-0.5 hover:shadow-md transition-all"
+            className="bg-gradient-to-r from-primary-orange to-primary-yellow text-white px-5 py-2.5 sm:px-6 sm:py-3 rounded-lg font-semibold text-sm sm:text-base shadow-sm hover:-translate-y-0.5 hover:shadow-md transition-all"
           >
             + Add Event
           </button>
         </div>
 
-        <div className="flex gap-4 mb-8">
+        <div className="flex flex-wrap gap-2 sm:gap-3 mb-6 sm:mb-8">
           <button
-            className={`px-5 py-2 rounded-lg border transition-all ${
+            className={`px-4 py-2 sm:px-5 text-sm sm:text-base rounded-lg border transition-all ${
               filter === "today"
                 ? "bg-gradient-to-r from-primary-orange to-primary-yellow text-white border-transparent"
                 : "bg-bg-card-light dark:bg-bg-card-dark text-text-dark dark:text-text-light border-border-light dark:border-border-dark hover:border-primary-orange"
@@ -137,7 +137,7 @@ export const Calendar: React.FC = () => {
             Today
           </button>
           <button
-            className={`px-5 py-2 rounded-lg border transition-all ${
+            className={`px-4 py-2 sm:px-5 text-sm sm:text-base rounded-lg border transition-all ${
               filter === "week"
                 ? "bg-gradient-to-r from-primary-orange to-primary-yellow text-white border-transparent"
                 : "bg-bg-card-light dark:bg-bg-card-dark text-text-dark dark:text-text-light border-border-light dark:border-border-dark hover:border-primary-orange"
@@ -147,7 +147,7 @@ export const Calendar: React.FC = () => {
             This Week
           </button>
           <button
-            className={`px-5 py-2 rounded-lg border transition-all ${
+            className={`px-4 py-2 sm:px-5 text-sm sm:text-base rounded-lg border transition-all ${
               filter === "all"
                 ? "bg-gradient-to-r from-primary-orange to-primary-yellow text-white border-transparent"
                 : "bg-bg-card-light dark:bg-bg-card-dark text-text-dark dark:text-text-light border-border-light dark:border-border-dark hover:border-primary-orange"
@@ -159,15 +159,15 @@ export const Calendar: React.FC = () => {
         </div>
 
         {error && (
-          <div className="bg-error/10 border-l-4 border-error px-4 py-3 rounded-md text-error mb-6">
+          <div className="bg-error/10 border-l-4 border-error px-3 py-2.5 sm:px-4 sm:py-3 rounded-md text-error text-sm mb-6">
             {error}
           </div>
         )}
 
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-3 sm:gap-4">
           {filteredEvents.length === 0 ? (
-            <div className="text-center py-16 text-text-muted-light dark:text-text-muted-dark">
-              <p className="mb-6 text-lg">
+            <div className="text-center py-12 sm:py-16 text-text-muted-light dark:text-text-muted-dark">
+              <p className="mb-6 text-base sm:text-lg">
                 No events scheduled for{" "}
                 {filter === "today"
                   ? "today"
@@ -177,7 +177,7 @@ export const Calendar: React.FC = () => {
               </p>
               <button
                 onClick={() => setShowForm(true)}
-                className="bg-gradient-to-r from-primary-orange to-primary-yellow text-white px-6 py-3 rounded-lg font-semibold shadow-sm hover:-translate-y-0.5 hover:shadow-md transition-all"
+                className="bg-gradient-to-r from-primary-orange to-primary-yellow text-white px-5 py-2.5 sm:px-6 sm:py-3 rounded-lg font-semibold text-sm sm:text-base shadow-sm hover:-translate-y-0.5 hover:shadow-md transition-all"
               >
                 Create your first event
               </button>
