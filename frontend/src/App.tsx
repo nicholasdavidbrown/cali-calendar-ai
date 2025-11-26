@@ -1,128 +1,39 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Calendar from "./pages/Calendar";
+import Settings from "./pages/Settings";
+import ProtectedRoute from "./components/ProtectedRoute";
 import "./App.css";
-import { getApiBaseUrl } from "./utils/api";
 
 function App() {
-  const [healthStatus, setHealthStatus] = useState<string>("");
-  const [loading, setLoading] = useState(false);
-
-  const API_BASE = getApiBaseUrl();
-
-  const checkHealth = async () => {
-    setLoading(true);
-    try {
-      console.log("Checking backend health at ", `${API_BASE}/health`);
-      const response = await fetch(`${API_BASE}/health`);
-      const data = await response.json();
-      setHealthStatus(
-        `✅ Backend is healthy! Timestamp: ${new Date(
-          data.timestamp
-        ).toLocaleString()}`
-      );
-    } catch (error) {
-      console.error("Failed to check health:", error);
-      setHealthStatus("❌ Backend is not responding");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Cali Calendar AI</h1>
-      <p>Phase 3: Authentication System Complete ✅</p>
-
-      <div className="card">
-        <h2>Backend Status</h2>
-        <button onClick={checkHealth} disabled={loading}>
-          {loading ? "Checking..." : "Check Backend Health"}
-        </button>
-
-        {healthStatus && (
-          <div className="users-list">
-            <p style={{ fontSize: "1.1em", marginTop: "1rem" }}>
-              {healthStatus}
-            </p>
-          </div>
-        )}
-      </div>
-
-      <div className="info-section">
-        <div className="info-card">
-          <h3>🔐 Authentication Endpoints</h3>
-          <div className="endpoint">
-            <code className="method post">POST</code>
-            <code className="path">/api/auth/register</code>
-            <span className="description">Register new user</span>
-          </div>
-          <div className="endpoint">
-            <code className="method post">POST</code>
-            <code className="path">/api/auth/login</code>
-            <span className="description">Login user</span>
-          </div>
-          <div className="endpoint">
-            <code className="method get">GET</code>
-            <code className="path">/api/auth/me</code>
-            <span className="description">Get current user</span>
-          </div>
-          <div className="endpoint">
-            <code className="method post">POST</code>
-            <code className="path">/api/auth/logout</code>
-            <span className="description">Logout user</span>
-          </div>
-          <div className="endpoint">
-            <code className="method get">GET</code>
-            <code className="path">/api/auth/verify</code>
-            <span className="description">Verify JWT token</span>
-          </div>
-        </div>
-
-        <div className="info-card">
-          <h3>🗄️ Database Viewer</h3>
-          <p>View and query the SQLite database directly:</p>
-          <a
-            href="http://localhost:8081"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="db-link"
-          >
-            Open SQLite Web Viewer
-          </a>
-          <p style={{ fontSize: "0.9em", marginTop: "1rem", opacity: 0.8 }}>
-            View tables: users, calendar_events, family_members, sms_history,
-            join_codes, calendar_integrations, admin_settings, system_setup
-          </p>
-        </div>
-
-        <div className="info-card">
-          <h3>📋 Project Status</h3>
-          <ul style={{ textAlign: "left", fontSize: "0.9em" }}>
-            <li>✅ Phase 1: Shared Types Setup</li>
-            <li>✅ Phase 2: Database Setup (8 tables)</li>
-            <li>✅ Phase 3: Authentication System</li>
-            <li>⏳ Phase 4: Calendar Events (Manual CRUD)</li>
-            <li>⏳ Phase 5: SMS Notifications</li>
-            <li>⏳ Phase 6: AI Messaging with Claude</li>
-            <li>⏳ Phase 7: Family Sharing</li>
-          </ul>
-        </div>
-      </div>
-
-      <p className="read-the-docs">
-        Backend API: <code>http://localhost:8080</code> | Frontend:{" "}
-        <code>http://localhost:5174</code>
-      </p>
-    </>
+    <BrowserRouter>
+      <AuthProvider>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route
+            path="/calendar"
+            element={
+              <ProtectedRoute>
+                <Calendar />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              <ProtectedRoute>
+                <Settings />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/" element={<Navigate to="/calendar" replace />} />
+        </Routes>
+      </AuthProvider>
+    </BrowserRouter>
   );
 }
 

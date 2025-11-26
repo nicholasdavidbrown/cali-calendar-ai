@@ -12,8 +12,26 @@ import {
   validateRequest,
 } from "../lib/validation.js";
 import { authenticate } from "../middleware/auth.js";
+import { db } from "../lib/database.js";
 
 const router = Router();
+
+// Check if system needs initial setup (no users exist)
+router.get("/setup-status", async (req: Request, res: Response) => {
+  try {
+    const result = await db.get<{ count: number }>(
+      "SELECT COUNT(*) as count FROM users"
+    );
+    const userCount = result?.count || 0;
+    res.json({
+      needsSetup: userCount === 0,
+      hasUsers: userCount > 0,
+    });
+  } catch (error) {
+    console.error("Setup status error:", error);
+    res.status(500).json({ error: "Failed to check setup status" });
+  }
+});
 
 // Register new user
 router.post(
