@@ -22,7 +22,9 @@
       "Bash(docker ps:*)",
       "Bash(yarn dev-clean)",
       "Bash(curl:*)",
-      "Bash(docker start:*)"
+      "Bash(docker start:*)",
+      "Bash(docker stop:*)",
+      "Bash(docker compose:*)"
     ],
     "deny": [],
     "ask": []

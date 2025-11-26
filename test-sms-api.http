@@ -1,27 +1,43 @@
-### Calendar-to-SMS API Tests
-### Use with REST Client extension in VS Code or any HTTP client
+### SMS API Tests
+### Phase 5 - SMS Notification System
 
-@baseUrl = http://localhost:3001
-@apiUrl = {{baseUrl}}/api/v1
-
-### 1. Check SMS Service Status (requires authentication)
-GET {{apiUrl}}/sms/status
-Cookie: token=YOUR_JWT_TOKEN_HERE
-
-### 2. Send Test SMS (requires authentication)
-POST {{apiUrl}}/sms/send-test
-Cookie: token=YOUR_JWT_TOKEN_HERE
+### Login to get token
+POST http://localhost:8080/api/auth/login
 Content-Type: application/json
 
-### 3. Check if server is running
-GET {{baseUrl}}/
+{
+  "email": "test2@example.com",
+  "password": "Test1234"
+}
 
-### 4. Check API status
-GET {{apiUrl}}/
+### Get SMS history
+GET http://localhost:8080/api/sms/history
+Authorization: Bearer {{token}}
+
+### Send test SMS (requires Twilio configuration)
+# Note: Twilio credentials must be configured in admin_settings table
+# - twilio_account_sid
+# - twilio_auth_token
+# - twilio_phone_number
+POST http://localhost:8080/api/sms/test
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "phoneNumber": "+1234567890"
+}
+
+### Send daily summary (requires Twilio configuration and user phone number)
+POST http://localhost:8080/api/sms/send-daily-summary
+Authorization: Bearer {{token}}
 
 ### Instructions:
-### 1. First log in through the frontend (http://localhost:3000)
-### 2. Open browser dev tools → Application → Cookies
-### 3. Find the 'token' cookie value
-### 4. Replace YOUR_JWT_TOKEN_HERE with the actual token value
-### 5. Run the requests above
+### 1. Login with the first request to get your JWT token
+### 2. Replace {{token}} with the actual token value from the login response
+### 3. Configure Twilio credentials in the database (see below)
+### 4. Test SMS sending
+
+### To configure Twilio (run these SQL commands via sqlite-web at http://localhost:8081):
+# INSERT INTO admin_settings (key, value, category, isSecret) VALUES ('twilio_account_sid', 'YOUR_TWILIO_SID', 'sms', 1);
+# INSERT INTO admin_settings (key, value, category, isSecret) VALUES ('twilio_auth_token', 'YOUR_TWILIO_TOKEN', 'sms', 1);
+# INSERT INTO admin_settings (key, value, category, isSecret) VALUES ('twilio_phone_number', '+1234567890', 'sms', 0);
