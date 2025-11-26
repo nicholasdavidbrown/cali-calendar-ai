@@ -2,19 +2,25 @@ import { useState } from "react";
 import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import "./App.css";
+import { getApiBaseUrl } from "./utils/api";
 
 function App() {
   const [healthStatus, setHealthStatus] = useState<string>("");
   const [loading, setLoading] = useState(false);
 
-  const API_BASE = "";
+  const API_BASE = getApiBaseUrl();
 
   const checkHealth = async () => {
     setLoading(true);
     try {
+      console.log("Checking backend health at ", `${API_BASE}/health`);
       const response = await fetch(`${API_BASE}/health`);
       const data = await response.json();
-      setHealthStatus(`✅ Backend is healthy! Timestamp: ${new Date(data.timestamp).toLocaleString()}`);
+      setHealthStatus(
+        `✅ Backend is healthy! Timestamp: ${new Date(
+          data.timestamp
+        ).toLocaleString()}`
+      );
     } catch (error) {
       console.error("Failed to check health:", error);
       setHealthStatus("❌ Backend is not responding");
@@ -44,7 +50,9 @@ function App() {
 
         {healthStatus && (
           <div className="users-list">
-            <p style={{ fontSize: "1.1em", marginTop: "1rem" }}>{healthStatus}</p>
+            <p style={{ fontSize: "1.1em", marginTop: "1rem" }}>
+              {healthStatus}
+            </p>
           </div>
         )}
       </div>
@@ -91,7 +99,8 @@ function App() {
             Open SQLite Web Viewer
           </a>
           <p style={{ fontSize: "0.9em", marginTop: "1rem", opacity: 0.8 }}>
-            View tables: users, calendar_events, family_members, sms_history, join_codes, calendar_integrations, admin_settings, system_setup
+            View tables: users, calendar_events, family_members, sms_history,
+            join_codes, calendar_integrations, admin_settings, system_setup
           </p>
         </div>
 
@@ -110,7 +119,8 @@ function App() {
       </div>
 
       <p className="read-the-docs">
-        Backend API: <code>http://localhost:8080</code> | Frontend: <code>http://localhost:5174</code>
+        Backend API: <code>http://localhost:8080</code> | Frontend:{" "}
+        <code>http://localhost:5174</code>
       </p>
     </>
   );
