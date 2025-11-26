@@ -53,14 +53,17 @@
 - [ ] Create auth context (Phase 4)
 - [ ] Implement protected routes (Phase 4)
 
-### Phase 4: Calendar Events (Manual)
-- [ ] Create calendar routes (CRUD)
-- [ ] Build event helpers
-- [ ] Create frontend calendar UI
-- [ ] Implement event creation form
-- [ ] Add event editing functionality
-- [ ] Add event deletion
-- [ ] Build calendar view
+### Phase 4: Calendar Events (Manual) ✅ COMPLETE (Backend)
+- [x] Create calendar routes (CRUD)
+- [x] Build event helpers (already in Phase 2)
+- [x] Test all calendar endpoints
+- [x] Verify event validation (missing fields, invalid times)
+- [x] Verify authorization (user isolation, synced event protection)
+- [ ] Create frontend calendar UI (Future: Phase 8+)
+- [ ] Implement event creation form (Future: Phase 8+)
+- [ ] Add event editing functionality (Future: Phase 8+)
+- [ ] Add event deletion (Future: Phase 8+)
+- [ ] Build calendar view (Future: Phase 8+)
 
 ### Phase 5: SMS Notification System (Next Phase)
 - [ ] Integrate Twilio
@@ -183,7 +186,16 @@ docker compose up --build
 ---
 
 **Last Updated:** 2025-11-26
-**Status:** Phase 3 Complete! Ready to begin Phase 4 - Calendar Events (Manual CRUD)
+**Status:** Phase 4 Complete! Ready to begin Phase 5 - SMS Notification System
+
+**Phase 4 Completed:**
+- ✅ Calendar event CRUD routes (GET, POST, PUT, DELETE)
+- ✅ Event validation (title required, valid ISO8601 dates, end time after start time)
+- ✅ User isolation (users can only access their own events)
+- ✅ Synced event protection (cannot update/delete events from Google, Microsoft, TimeTree)
+- ✅ Calendar endpoints: GET /api/calendar/events, GET /api/calendar/events/upcoming, GET /api/calendar/events/range, POST /api/calendar/events, PUT /api/calendar/events/:id, DELETE /api/calendar/events/:id
+- ✅ Comprehensive API testing with security validation
+- ✅ Test files created: test-calendar-api.http, test-calendar.js, test-calendar-security.js
 
 **Phase 3 Completed:**
 - ✅ JWT-based authentication system
@@ -192,9 +204,8 @@ docker compose up --build
 - ✅ Express-validator integration for request validation
 - ✅ CORS configuration with credentials support
 - ✅ Auth routes: POST /api/auth/register, POST /api/auth/login, POST /api/auth/logout, GET /api/auth/me, GET /api/auth/verify
-- ✅ Tested registration, login, and authenticated endpoints
-- ✅ Admin email updated to admin@example.com
 
 **Testing Credentials:**
+- Admin: admin@localhost / admin123
+- Test user: test2@example.com / Test1234
 - Register new users via: POST /api/auth/register
-- Example user: test2@example.com / Test1234

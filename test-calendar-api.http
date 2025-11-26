@@ -1,0 +1,76 @@
+### Login to get token
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "test2@example.com",
+  "password": "Test1234"
+}
+
+### Get all events (empty initially)
+GET http://localhost:8080/api/calendar/events
+Authorization: Bearer {{token}}
+
+### Create a new event
+POST http://localhost:8080/api/calendar/events
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "title": "Team Meeting",
+  "description": "Weekly sync meeting",
+  "startTime": "2025-11-27T10:00:00Z",
+  "endTime": "2025-11-27T11:00:00Z",
+  "location": "Conference Room A"
+}
+
+### Get upcoming events (24 hours)
+GET http://localhost:8080/api/calendar/events/upcoming
+Authorization: Bearer {{token}}
+
+### Get upcoming events (48 hours)
+GET http://localhost:8080/api/calendar/events/upcoming?hours=48
+Authorization: Bearer {{token}}
+
+### Get events by date range
+GET http://localhost:8080/api/calendar/events/range?startDate=2025-11-27T00:00:00Z&endDate=2025-11-28T00:00:00Z
+Authorization: Bearer {{token}}
+
+### Update event (replace {eventId} with actual ID)
+PUT http://localhost:8080/api/calendar/events/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "title": "Updated Team Meeting",
+  "location": "Conference Room B"
+}
+
+### Delete event (replace {eventId} with actual ID)
+DELETE http://localhost:8080/api/calendar/events/1
+Authorization: Bearer {{token}}
+
+### Test validation - missing title
+POST http://localhost:8080/api/calendar/events
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "description": "Missing title",
+  "startTime": "2025-11-27T10:00:00Z",
+  "endTime": "2025-11-27T11:00:00Z"
+}
+
+### Test validation - end time before start time
+POST http://localhost:8080/api/calendar/events
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "title": "Invalid Times",
+  "startTime": "2025-11-27T11:00:00Z",
+  "endTime": "2025-11-27T10:00:00Z"
+}
+
+### Test unauthorized access (no token)
+GET http://localhost:8080/api/calendar/events

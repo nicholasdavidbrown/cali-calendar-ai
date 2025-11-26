@@ -6,6 +6,7 @@ import cors from "cors";
 import { db } from "./lib/database.js";
 import { runMigrations } from "./lib/migrate.js";
 import authRouter from "./routes/auth.js";
+import calendarRouter from "./routes/calendar.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -53,6 +54,7 @@ app.get("/health", (req, res) => {
 
 // API Routes
 app.use("/api/auth", authRouter);
+app.use("/api/calendar", calendarRouter);
 
 // 404 handler for API routes
 app.use("/api", (req, res) => {
@@ -87,6 +89,7 @@ async function start() {
       console.log(`🚀 Server running on http://localhost:${PUBLIC_PORT}`);
       console.log(`📱 Health check: http://localhost:${PUBLIC_PORT}/health`);
       console.log(`🔐 Auth endpoints: http://localhost:${PUBLIC_PORT}/api/auth/*`);
+      console.log(`📅 Calendar endpoints: http://localhost:${PUBLIC_PORT}/api/calendar/*`);
       if (PUBLIC_PORT !== PORT) {
         console.log(`   (Container internal port: ${PORT})`);
       }

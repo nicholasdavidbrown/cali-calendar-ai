@@ -20,7 +20,9 @@
       "Bash(docker exec:*)",
       "Bash(docker restart:*)",
       "Bash(docker ps:*)",
-      "Bash(yarn dev-clean)"
+      "Bash(yarn dev-clean)",
+      "Bash(curl:*)",
+      "Bash(docker start:*)"
     ],
     "deny": [],
     "ask": []
