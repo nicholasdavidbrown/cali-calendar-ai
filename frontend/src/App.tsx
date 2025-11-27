@@ -40,7 +40,7 @@ function App() {
         </a>
       </div>
       <h1>Cali Calendar AI</h1>
-      <p>Phase 5.5: Admin Setup Wizard Complete ✅</p>
+      <p>Phase 6: AI Messaging with Claude Complete ✅</p>
 
       <div className="card">
         <h2>Backend Status</h2>
@@ -145,8 +145,23 @@ function App() {
           <div className="endpoint">
             <code className="method post">POST</code>
             <code className="path">/api/sms/send-daily-summary</code>
-            <span className="description">Send daily summary</span>
+            <span className="description">Send daily summary (AI-powered)</span>
           </div>
+        </div>
+
+        <div className="info-card">
+          <h3>👤 User Settings Endpoints</h3>
+          <div className="endpoint">
+            <code className="method put">PUT</code>
+            <code className="path">/api/users/settings</code>
+            <span className="description">Update user settings</span>
+          </div>
+          <p style={{ fontSize: "0.85em", marginTop: "0.5rem", opacity: 0.8 }}>
+            Update: phoneNumber, timezone, smsTime, messageStyle
+          </p>
+          <p style={{ fontSize: "0.85em", marginTop: "0.25rem", opacity: 0.8 }}>
+            Personalities: professional, witty, sarcastic, mission, irwin, tanda, random
+          </p>
         </div>
 
         <div className="info-card">
@@ -175,7 +190,7 @@ function App() {
             <li>✅ Phase 4: Calendar Events (Manual CRUD)</li>
             <li>✅ Phase 5: SMS Notifications (Twilio)</li>
             <li>✅ Phase 5.5: Admin Setup Wizard</li>
-            <li>⏳ Phase 6: AI Messaging with Claude</li>
+            <li>✅ Phase 6: AI Messaging with Claude</li>
             <li>⏳ Phase 7: Family Sharing</li>
           </ul>
         </div>

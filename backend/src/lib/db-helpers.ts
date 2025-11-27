@@ -33,6 +33,47 @@ export const userHelpers = {
       [id]
     );
   },
+
+  update: async (id: number, data: Partial<{
+    phoneNumber: string | null;
+    timezone: string;
+    smsTime: string;
+    messageStyle: string;
+  }>): Promise<User | undefined> => {
+    const fields: string[] = [];
+    const values: any[] = [];
+
+    if (data.phoneNumber !== undefined) {
+      fields.push("phoneNumber = ?");
+      values.push(data.phoneNumber);
+    }
+    if (data.timezone !== undefined) {
+      fields.push("timezone = ?");
+      values.push(data.timezone);
+    }
+    if (data.smsTime !== undefined) {
+      fields.push("smsTime = ?");
+      values.push(data.smsTime);
+    }
+    if (data.messageStyle !== undefined) {
+      fields.push("messageStyle = ?");
+      values.push(data.messageStyle);
+    }
+
+    if (fields.length === 0) {
+      return userHelpers.findById(id);
+    }
+
+    fields.push("updatedAt = CURRENT_TIMESTAMP");
+    values.push(id);
+
+    await db.run(
+      `UPDATE users SET ${fields.join(", ")} WHERE id = ?`,
+      values
+    );
+
+    return userHelpers.findById(id);
+  },
 };
 
 // Calendar event helpers

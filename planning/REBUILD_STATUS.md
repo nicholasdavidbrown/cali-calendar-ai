@@ -85,11 +85,16 @@
 - [x] Store ALL credentials in database (Twilio, Anthropic, Google OAuth, Microsoft OAuth)
 - [x] Test setup flow end-to-end
 
-### Phase 6: AI Messaging with Claude
-- [ ] Integrate Anthropic Claude API
-- [ ] Implement personality styles
-- [ ] Generate AI-powered messages
-- [ ] Add fallback message generation
+### Phase 6: AI Messaging with Claude ✅ COMPLETE (Backend)
+- [x] Installed Anthropic SDK (@anthropic-ai/sdk v0.71.0)
+- [x] Created Claude service with personality prompts (6 styles + random)
+- [x] Integrated Claude API for AI-powered message generation
+- [x] Implemented fallback message generation
+- [x] Updated SMS service to use Claude for daily summaries
+- [x] Created user settings API route (PUT /api/users/settings)
+- [x] Added user update helper to db-helpers
+- [x] Tested all 6 personality styles (professional, witty, sarcastic, mission, irwin, tanda)
+- [x] Uses Claude Sonnet 4.5 model (claude-sonnet-4-5-20250929)
 
 ### Phase 7: Family Sharing Features
 - [ ] Family member management
@@ -204,11 +209,24 @@ docker compose up --build
 - `/README.md` - Current project structure and scripts
 - `/docker-compose.yml` - Docker configuration
 - `/test-setup.js` - Admin setup wizard testing script
+- `/test-claude.js` - Claude AI integration testing script
 
 ---
 
 **Last Updated:** 2025-11-27
-**Status:** Phase 5.5 Complete! Admin Setup Wizard implemented. Ready to begin Phase 6 - AI Messaging with Claude
+**Status:** Phase 6 Complete! AI Messaging with Claude integrated. Ready to begin Phase 7 - Family Sharing Features
+
+**Phase 6 Completed (AI Messaging with Claude):**
+- ✅ Anthropic SDK integration (@anthropic-ai/sdk v0.71.0)
+- ✅ Claude service with 6 personality styles (professional, witty, sarcastic, mission, irwin, tanda) + random
+- ✅ AI-powered message generation using Claude Sonnet 4.5 (claude-sonnet-4-5-20250929)
+- ✅ Fallback message generation when Claude unavailable
+- ✅ Updated SMS daily summary to use Claude for personalized messages
+- ✅ User settings API route: PUT /api/users/settings (phoneNumber, timezone, smsTime, messageStyle)
+- ✅ User update helper added to db-helpers.ts
+- ✅ Comprehensive testing with all personality styles
+- ✅ Test script: test-claude.js
+- ✅ Frontend updated to show Phase 6 status
 
 **Phase 5.5 Completed (Admin Setup Wizard):**
 - ✅ Setup helper functions in db-helpers.ts (5 functions: isSetupComplete, hasUsers, getSetupStatus, completeSetup, initializeSetup)

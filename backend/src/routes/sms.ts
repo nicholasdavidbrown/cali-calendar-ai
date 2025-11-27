@@ -7,7 +7,9 @@ import {
   formatPhoneNumber,
   validatePhoneNumber,
 } from "../services/twilioService.js";
+import { generateCalendarMessage } from "../services/claudeService.js";
 import { smsHelpers, eventHelpers, userHelpers } from "../lib/db-helpers.js";
+import type { MessagePersonality } from "../types/index.js";
 
 const router = Router();
 router.use(authenticate);
@@ -99,25 +101,12 @@ router.post("/send-daily-summary", async (req, res) => {
 
     const events = await eventHelpers.findUpcoming(userId, 24);
 
-    let message = `📅 Good morning! Here's your schedule for today:\n\n`;
-
-    if (events.length === 0) {
-      message += `No events scheduled. Enjoy your free day!`;
-    } else {
-      events.forEach((event, index) => {
-        const start = new Date(event.startTime);
-        const timeStr = event.isAllDay
-          ? "All Day"
-          : start.toLocaleTimeString("en-US", {
-            hour: "numeric",
-            minute: "2-digit",
-          });
-
-        message += `${index + 1}. ${timeStr} - ${event.title}`;
-        if (event.location) message += ` (${event.location})`;
-        message += `\n`;
-      });
-    }
+    // Generate AI-powered message using Claude
+    const message = await generateCalendarMessage(
+      events,
+      user.firstName,
+      user.messageStyle as MessagePersonality
+    );
 
     const formatted = formatPhoneNumber(user.phoneNumber);
     const result = await sendSMS({ to: formatted, message });
