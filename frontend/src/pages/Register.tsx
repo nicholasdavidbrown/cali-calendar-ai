@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { Card, Label, TextInput, Button, Alert } from "flowbite-react";
 import { useAuth } from "../hooks/useAuth";
 import { authAPI } from "../services/api";
 
@@ -56,123 +57,139 @@ export const Register: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-8 sm:px-6 lg:px-8 bg-bg-light dark:bg-bg-dark">
-      <div className="bg-bg-card-light dark:bg-bg-card-dark p-6 sm:p-8 md:p-10 lg:p-12 rounded-xl shadow-lg max-w-md w-full border border-border-light dark:border-border-dark">
-        <h1 className="text-2xl sm:text-3xl font-semibold mb-2 bg-gradient-to-r from-primary-orange to-primary-yellow bg-clip-text text-transparent">
-          Create Admin Account
-        </h1>
-        <p className="text-sm sm:text-base text-text-muted-light dark:text-text-muted-dark mb-6 sm:mb-8">
-          Start managing your calendar with AI-powered SMS
-        </p>
+    <div className="min-h-screen flex items-center justify-center px-4 py-8 bg-gray-50 dark:bg-gray-900">
+      <Card className="max-w-md w-full">
+        <div className="space-y-6">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
+              <span className="bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">
+                Create Admin Account
+              </span>
+            </h1>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              Start managing your calendar with AI-powered SMS
+            </p>
+          </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5 mb-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <div className="mb-2">
+                  <Label htmlFor="firstName">First Name</Label>
+                </div>
+                <TextInput
+                  id="firstName"
+                  name="firstName"
+                  type="text"
+                  value={formData.firstName}
+                  onChange={handleChange}
+                  required
+                  color="gray"
+                />
+              </div>
+
+              <div>
+                <div className="mb-2">
+                  <Label htmlFor="lastName">Last Name</Label>
+                </div>
+                <TextInput
+                  id="lastName"
+                  name="lastName"
+                  type="text"
+                  value={formData.lastName}
+                  onChange={handleChange}
+                  required
+                  color="gray"
+                />
+              </div>
+            </div>
+
             <div>
-              <label htmlFor="firstName" className="block mb-2 text-sm font-medium text-text-dark dark:text-text-light">
-                First Name
-              </label>
-              <input
-                id="firstName"
-                name="firstName"
-                type="text"
-                value={formData.firstName}
+              <div className="mb-2">
+                <Label htmlFor="email">Email</Label>
+              </div>
+              <TextInput
+                id="email"
+                name="email"
+                type="email"
+                value={formData.email}
                 onChange={handleChange}
+                placeholder="you@example.com"
                 required
-                className="w-full px-3 py-2.5 sm:px-4 sm:py-3 bg-white/5 border border-border-light dark:border-border-dark rounded-lg text-text-dark dark:text-text-light text-sm sm:text-base focus:outline-none focus:border-primary-orange focus:ring-2 focus:ring-primary-orange/20 transition-all"
+                color="gray"
               />
             </div>
 
             <div>
-              <label htmlFor="lastName" className="block mb-2 text-sm font-medium text-text-dark dark:text-text-light">
-                Last Name
-              </label>
-              <input
-                id="lastName"
-                name="lastName"
-                type="text"
-                value={formData.lastName}
+              <div className="mb-2">
+                <Label htmlFor="phoneNumber">
+                  Phone Number
+                  <span className="ml-1 text-xs text-gray-500 dark:text-gray-400">
+                    (E.164 format: +1234567890)
+                  </span>
+                </Label>
+              </div>
+              <TextInput
+                id="phoneNumber"
+                name="phoneNumber"
+                type="tel"
+                value={formData.phoneNumber}
                 onChange={handleChange}
+                placeholder="+12345678900"
                 required
-                className="w-full px-3 py-2.5 sm:px-4 sm:py-3 bg-white/5 border border-border-light dark:border-border-dark rounded-lg text-text-dark dark:text-text-light text-sm sm:text-base focus:outline-none focus:border-primary-orange focus:ring-2 focus:ring-primary-orange/20 transition-all"
+                color="gray"
+              />
+              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                Must include country code (e.g., +1 for US)
+              </p>
+            </div>
+
+            <div>
+              <div className="mb-2">
+                <Label htmlFor="password">
+                  Password
+                  <span className="ml-1 text-xs text-gray-500 dark:text-gray-400">
+                    (Minimum 8 characters)
+                  </span>
+                </Label>
+              </div>
+              <TextInput
+                id="password"
+                name="password"
+                type="password"
+                value={formData.password}
+                onChange={handleChange}
+                placeholder="••••••••"
+                required
+                minLength={8}
+                color="gray"
               />
             </div>
-          </div>
 
-          <div>
-            <label htmlFor="email" className="block mb-2 text-sm font-medium text-text-dark dark:text-text-light">
-              Email
-            </label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-              className="w-full px-3 py-2.5 sm:px-4 sm:py-3 bg-white/5 border border-border-light dark:border-border-dark rounded-lg text-text-dark dark:text-text-light text-sm sm:text-base focus:outline-none focus:border-primary-orange focus:ring-2 focus:ring-primary-orange/20 transition-all"
-            />
-          </div>
+            {error && (
+              <Alert color="failure">
+                <span className="font-medium">Error!</span> {error}
+              </Alert>
+            )}
 
-          <div>
-            <label htmlFor="phoneNumber" className="block mb-2 text-sm font-medium text-text-dark dark:text-text-light">
-              Phone Number *
-            </label>
-            <input
-              id="phoneNumber"
-              name="phoneNumber"
-              type="tel"
-              value={formData.phoneNumber}
-              onChange={handleChange}
-              required
-              className="w-full px-3 py-2.5 sm:px-4 sm:py-3 bg-white/5 border border-border-light dark:border-border-dark rounded-lg text-text-dark dark:text-text-light text-sm sm:text-base focus:outline-none focus:border-primary-orange focus:ring-2 focus:ring-primary-orange/20 transition-all"
-              placeholder="+12345678900"
-            />
-            <small className="block mt-1.5 text-xs sm:text-sm text-text-muted-light dark:text-text-muted-dark">
-              Format: +1234567890 (E.164)
-            </small>
-          </div>
+            <Button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-gradient-to-r from-orange-500 to-amber-500 enabled:hover:from-orange-600 enabled:hover:to-amber-600"
+              size="lg"
+            >
+              {loading ? "Creating account..." : "Create Account"}
+            </Button>
+          </form>
 
-          <div>
-            <label htmlFor="password" className="block mb-2 text-sm font-medium text-text-dark dark:text-text-light">
-              Password
-            </label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              value={formData.password}
-              onChange={handleChange}
-              required
-              minLength={8}
-              className="w-full px-3 py-2.5 sm:px-4 sm:py-3 bg-white/5 border border-border-light dark:border-border-dark rounded-lg text-text-dark dark:text-text-light text-sm sm:text-base focus:outline-none focus:border-primary-orange focus:ring-2 focus:ring-primary-orange/20 transition-all"
-            />
-            <small className="block mt-1.5 text-xs sm:text-sm text-text-muted-light dark:text-text-muted-dark">
-              Minimum 8 characters
-            </small>
-          </div>
-
-          {error && (
-            <div className="bg-error/10 border-l-4 border-error px-3 py-2.5 sm:px-4 sm:py-3 rounded-md text-error text-sm">
-              {error}
-            </div>
-          )}
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-gradient-to-r from-primary-orange to-primary-yellow text-white px-5 py-2.5 sm:px-6 sm:py-3 rounded-lg font-semibold text-sm sm:text-base shadow-sm hover:-translate-y-0.5 hover:shadow-md transition-all disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none"
-          >
-            {loading ? "Creating account..." : "Create Account"}
-          </button>
-        </form>
-
-        <p className="text-center text-sm text-text-muted-light dark:text-text-muted-dark">
-          Already have an account?{" "}
-          <Link to="/login" className="text-primary-orange hover:text-primary-yellow font-medium transition-colors">
-            Sign in
-          </Link>
-        </p>
-      </div>
+          <p className="text-center text-sm text-gray-600 dark:text-gray-400">
+            Already have an account?{" "}
+            <Link to="/login" className="text-orange-500 hover:text-orange-600 font-medium">
+              Sign in
+            </Link>
+          </p>
+        </div>
+      </Card>
     </div>
   );
 };

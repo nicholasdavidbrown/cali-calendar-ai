@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Card, Label, TextInput, Select, Radio, Button, Alert } from "flowbite-react";
 import { useAuth } from "../hooks/useAuth";
 import { userAPI } from "../services/api";
 import Layout from "../components/Layout";
@@ -72,112 +73,118 @@ export const Settings: React.FC = () => {
   return (
     <Layout>
       <div className="max-w-3xl mx-auto">
-        <h1 className="text-3xl font-semibold mb-8 text-text-dark dark:text-text-light">Settings</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-6">
+          Settings
+        </h1>
 
-        <div className="bg-bg-card-light dark:bg-bg-card-dark border border-border-light dark:border-border-dark rounded-xl p-8 mt-8">
-          <form onSubmit={handleSubmit}>
-            <div className="mb-6">
-              <label htmlFor="phoneNumber" className="block mb-2 font-medium text-text-dark dark:text-text-light">
-                Phone Number *
-              </label>
-              <input
+        <Card>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <div className="mb-2">
+                <Label htmlFor="phoneNumber">
+                  Phone Number
+                  <span className="ml-1 text-xs text-gray-500 dark:text-gray-400">
+                    (E.164 format: +1234567890)
+                  </span>
+                </Label>
+              </div>
+              <TextInput
                 id="phoneNumber"
                 name="phoneNumber"
                 type="tel"
                 value={formData.phoneNumber}
                 onChange={handleChange}
-                required
-                className="w-full px-4 py-3 bg-white/5 border border-border-light dark:border-border-dark rounded-lg text-text-dark dark:text-text-light focus:outline-none focus:border-primary-orange focus:ring-2 focus:ring-primary-orange/20 transition-all"
                 placeholder="+12345678900"
+                required
+                color="gray"
               />
-              <small className="block mt-1 text-sm text-text-muted-light dark:text-text-muted-dark">
-                Format: +1234567890 (E.164)
-              </small>
+              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                Must include country code (e.g., +1 for US)
+              </p>
             </div>
 
-            <div className="mb-6">
-              <label htmlFor="timezone" className="block mb-2 font-medium text-text-dark dark:text-text-light">
-                Timezone
-              </label>
-              <select
+            <div>
+              <div className="mb-2">
+                <Label htmlFor="timezone">Timezone</Label>
+              </div>
+              <Select
                 id="timezone"
                 name="timezone"
                 value={formData.timezone}
                 onChange={handleChange}
-                className="w-full px-4 py-3 bg-white/5 border border-border-light dark:border-border-dark rounded-lg text-text-dark dark:text-text-light focus:outline-none focus:border-primary-orange focus:ring-2 focus:ring-primary-orange/20 transition-all"
+                color="gray"
               >
                 <option value="America/Los_Angeles">Pacific Time</option>
                 <option value="America/Denver">Mountain Time</option>
                 <option value="America/Chicago">Central Time</option>
                 <option value="America/New_York">Eastern Time</option>
-              </select>
+              </Select>
             </div>
 
-            <div className="mb-6">
-              <label htmlFor="smsTime" className="block mb-2 font-medium text-text-dark dark:text-text-light">
-                Daily SMS Time
-              </label>
-              <input
+            <div>
+              <div className="mb-2">
+                <Label htmlFor="smsTime">Daily SMS Time</Label>
+              </div>
+              <TextInput
                 id="smsTime"
                 name="smsTime"
                 type="time"
                 value={formData.smsTime}
                 onChange={handleChange}
-                className="w-full px-4 py-3 bg-white/5 border border-border-light dark:border-border-dark rounded-lg text-text-dark dark:text-text-light focus:outline-none focus:border-primary-orange focus:ring-2 focus:ring-primary-orange/20 transition-all"
+                color="gray"
               />
-              <small className="block mt-1 text-sm text-text-muted-light dark:text-text-muted-dark">
+              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                 When to receive daily calendar summary
-              </small>
+              </p>
             </div>
 
-            <div className="mb-6">
-              <label className="block mb-3 font-medium text-text-dark dark:text-text-light">
-                Message Style
-              </label>
-              <div className="flex flex-col gap-3">
+            <div>
+              <div className="mb-3">
+                <Label>Message Style</Label>
+              </div>
+              <fieldset className="flex flex-col gap-3">
                 {["professional", "witty", "sarcastic", "mission", "irwin", "tanda"].map(
                   (style) => (
-                    <label
-                      key={style}
-                      className="flex items-center gap-3 px-3 py-3 bg-white/5 border border-border-light dark:border-border-dark rounded-lg cursor-pointer transition-all hover:bg-primary-orange/5 hover:border-primary-orange"
-                    >
-                      <input
-                        type="radio"
+                    <div key={style} className="flex items-center gap-2">
+                      <Radio
+                        id={`style-${style}`}
                         name="messageStyle"
                         value={style}
                         checked={formData.messageStyle === style}
                         onChange={handleChange}
-                        className="w-4 h-4 accent-primary-orange"
+                        color="warning"
                       />
-                      <span className="text-text-dark dark:text-text-light">
+                      <Label htmlFor={`style-${style}`} className="cursor-pointer">
                         {style.charAt(0).toUpperCase() + style.slice(1)}
-                      </span>
-                    </label>
+                      </Label>
+                    </div>
                   )
                 )}
-              </div>
+              </fieldset>
             </div>
 
             {error && (
-              <div className="bg-error/10 border-l-4 border-error px-4 py-3 rounded-md text-error mb-4">
-                {error}
-              </div>
-            )}
-            {success && (
-              <div className="bg-success/10 border-l-4 border-success px-4 py-3 rounded-md text-success mb-4">
-                Settings updated successfully!
-              </div>
+              <Alert color="failure">
+                <span className="font-medium">Error!</span> {error}
+              </Alert>
             )}
 
-            <button
+            {success && (
+              <Alert color="success">
+                <span className="font-medium">Success!</span> Settings updated successfully!
+              </Alert>
+            )}
+
+            <Button
               type="submit"
               disabled={loading}
-              className="w-full bg-gradient-to-r from-primary-orange to-primary-yellow text-white px-6 py-3 rounded-lg font-semibold shadow-sm hover:-translate-y-0.5 hover:shadow-md transition-all disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none"
+              className="w-full bg-gradient-to-r from-orange-500 to-amber-500 enabled:hover:from-orange-600 enabled:hover:to-amber-600"
+              size="lg"
             >
               {loading ? "Saving..." : "Save Settings"}
-            </button>
+            </Button>
           </form>
-        </div>
+        </Card>
       </div>
     </Layout>
   );

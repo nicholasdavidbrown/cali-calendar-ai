@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Label, TextInput, Textarea, Checkbox, Button, Alert, Card } from "flowbite-react";
 import type { CalendarEvent, CreateEventData } from "../types";
 
 interface EventFormProps {
@@ -62,138 +63,135 @@ export const EventForm: React.FC<EventFormProps> = ({
 
   return (
     <div
-      className="fixed inset-0 bg-black/70 flex items-center justify-center p-8 z-50"
+      className="fixed inset-0 bg-gray-900/50 dark:bg-gray-900/80 flex items-center justify-center p-4 z-50"
       onClick={onCancel}
     >
-      <div
-        className="bg-bg-card-light dark:bg-bg-card-dark rounded-xl shadow-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-border-light dark:border-border-dark"
+      <Card
+        className="max-w-2xl w-full max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex justify-between items-center p-6 border-b border-border-light dark:border-border-dark">
-          <h2 className="text-2xl font-semibold text-text-dark dark:text-text-light">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
             {event ? "Edit Event" : "Create Event"}
           </h2>
           <button
             onClick={onCancel}
-            className="text-text-muted-light dark:text-text-muted-dark hover:text-text-dark dark:hover:text-text-light text-4xl leading-none w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors"
+            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-3xl leading-none"
           >
             ×
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6">
-          <div className="mb-6">
-            <label htmlFor="title" className="block mb-2 font-medium text-text-dark dark:text-text-light">
-              Title *
-            </label>
-            <input
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <div className="mb-2">
+              <Label htmlFor="title">Title</Label>
+            </div>
+            <TextInput
               id="title"
               name="title"
               type="text"
               value={formData.title}
               onChange={handleChange}
               required
-              className="w-full px-4 py-3 bg-white/5 border border-border-light dark:border-border-dark rounded-lg text-text-dark dark:text-text-light focus:outline-none focus:border-primary-orange focus:ring-2 focus:ring-primary-orange/20 transition-all"
+              color="gray"
             />
           </div>
 
-          <div className="mb-6">
-            <label htmlFor="description" className="block mb-2 font-medium text-text-dark dark:text-text-light">
-              Description
-            </label>
-            <textarea
+          <div>
+            <div className="mb-2">
+              <Label htmlFor="description">Description</Label>
+            </div>
+            <Textarea
               id="description"
               name="description"
               value={formData.description}
               onChange={handleChange}
-              className="w-full px-4 py-3 bg-white/5 border border-border-light dark:border-border-dark rounded-lg text-text-dark dark:text-text-light focus:outline-none focus:border-primary-orange focus:ring-2 focus:ring-primary-orange/20 transition-all"
               rows={3}
+              color="gray"
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4 mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label htmlFor="startTime" className="block mb-2 font-medium text-text-dark dark:text-text-light">
-                Start Time *
-              </label>
-              <input
+              <div className="mb-2">
+                <Label htmlFor="startTime">Start Time</Label>
+              </div>
+              <TextInput
                 id="startTime"
                 name="startTime"
                 type="datetime-local"
                 value={formData.startTime}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 bg-white/5 border border-border-light dark:border-border-dark rounded-lg text-text-dark dark:text-text-light focus:outline-none focus:border-primary-orange focus:ring-2 focus:ring-primary-orange/20 transition-all"
+                color="gray"
               />
             </div>
 
             <div>
-              <label htmlFor="endTime" className="block mb-2 font-medium text-text-dark dark:text-text-light">
-                End Time *
-              </label>
-              <input
+              <div className="mb-2">
+                <Label htmlFor="endTime">End Time</Label>
+              </div>
+              <TextInput
                 id="endTime"
                 name="endTime"
                 type="datetime-local"
                 value={formData.endTime}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 bg-white/5 border border-border-light dark:border-border-dark rounded-lg text-text-dark dark:text-text-light focus:outline-none focus:border-primary-orange focus:ring-2 focus:ring-primary-orange/20 transition-all"
+                color="gray"
               />
             </div>
           </div>
 
-          <div className="mb-6">
-            <label htmlFor="location" className="block mb-2 font-medium text-text-dark dark:text-text-light">
-              Location
-            </label>
-            <input
+          <div>
+            <div className="mb-2">
+              <Label htmlFor="location">Location</Label>
+            </div>
+            <TextInput
               id="location"
               name="location"
               type="text"
               value={formData.location}
               onChange={handleChange}
-              className="w-full px-4 py-3 bg-white/5 border border-border-light dark:border-border-dark rounded-lg text-text-dark dark:text-text-light focus:outline-none focus:border-primary-orange focus:ring-2 focus:ring-primary-orange/20 transition-all"
+              placeholder="Optional"
+              color="gray"
             />
           </div>
 
-          <div className="mb-6">
-            <label className="flex items-center gap-2 cursor-pointer text-text-dark dark:text-text-light">
-              <input
-                name="isAllDay"
-                type="checkbox"
-                checked={formData.isAllDay}
-                onChange={handleChange}
-                className="w-4 h-4 accent-primary-orange"
-              />
+          <div className="flex items-center gap-2">
+            <Checkbox
+              id="isAllDay"
+              name="isAllDay"
+              checked={formData.isAllDay}
+              onChange={handleChange}
+              color="warning"
+            />
+            <Label htmlFor="isAllDay" className="cursor-pointer">
               All day event
-            </label>
+            </Label>
           </div>
 
           {error && (
-            <div className="bg-error/10 border-l-4 border-error px-4 py-3 rounded-md text-error mb-4">
-              {error}
-            </div>
+            <Alert color="failure">
+              <span className="font-medium">Error!</span> {error}
+            </Alert>
           )}
 
-          <div className="flex gap-4 justify-end mt-6">
-            <button
-              type="button"
-              onClick={onCancel}
-              className="px-6 py-3 bg-bg-card-light dark:bg-bg-card-dark text-text-dark dark:text-text-light rounded-lg border border-border-light dark:border-border-dark hover:bg-bg-hover-light dark:hover:bg-bg-hover-dark transition-colors"
-            >
+          <div className="flex gap-4 justify-end pt-4">
+            <Button color="gray" onClick={onCancel}>
               Cancel
-            </button>
-            <button
+            </Button>
+            <Button
               type="submit"
               disabled={loading}
-              className="px-6 py-3 bg-gradient-to-r from-primary-orange to-primary-yellow text-white rounded-lg font-semibold shadow-sm hover:-translate-y-0.5 hover:shadow-md transition-all disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none"
+              className="bg-gradient-to-r from-orange-500 to-amber-500 enabled:hover:from-orange-600 enabled:hover:to-amber-600"
             >
               {loading ? "Saving..." : "Save Event"}
-            </button>
+            </Button>
           </div>
         </form>
-      </div>
+      </Card>
     </div>
   );
 };
