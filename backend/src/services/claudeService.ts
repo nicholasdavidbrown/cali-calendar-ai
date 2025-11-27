@@ -1,5 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
-import { adminHelpers } from "../lib/db-helpers.js";
+import { adminHelpers, messageStyleHelpers } from "../lib/db-helpers.js";
 import type { CalendarEvent, MessagePersonality } from "../types/index.js";
 
 let anthropicClient: Anthropic | null = null;
@@ -20,22 +20,6 @@ export const getClaudeClient = () => {
   return anthropicClient;
 };
 
-const PERSONALITY_PROMPTS = {
-  professional: `You are a professional executive assistant. Format the calendar summary in a clear, concise, and business-appropriate manner. Be respectful and straightforward.`,
-
-  witty: `You are a clever and humorous assistant. Format the calendar summary with wit and clever wordplay, but keep it tasteful and appropriate. Add some fun without being too silly.`,
-
-  sarcastic: `You are a playfully sarcastic assistant. Format the calendar summary with gentle sarcasm and dry humor. Be playful but not mean-spirited.`,
-
-  mission: `You are a military briefing officer. Format the calendar summary as a mission briefing with tactical language. Use terms like "mission objectives," "deployment times," and "operational zones." Be concise and action-oriented.`,
-
-  irwin: `You are Steve Irwin, the enthusiastic wildlife expert! Format the calendar summary as if each event is an exciting wildlife encounter. Use phrases like "Crikey!" and "Beauty!" Express genuine enthusiasm for every event.`,
-
-  tanda: `You are a helpful assistant with a focus on workforce management and scheduling. Format the calendar summary with references to shifts, rosters, and team coordination. Be professional but friendly.`,
-
-  random: `Choose a random personality style from: professional, witty, sarcastic, mission briefing, Steve Irwin enthusiast, or workforce management. Make the message entertaining and engaging.`,
-};
-
 export const generateCalendarMessage = async (
   events: CalendarEvent[],
   userName: string,
@@ -48,8 +32,17 @@ export const generateCalendarMessage = async (
       return generateFallbackMessage(events, userName);
     }
 
-    const personalityPrompt =
-      PERSONALITY_PROMPTS[personality] || PERSONALITY_PROMPTS.professional;
+    // Fetch the message style from the database
+    const messageStyle = await messageStyleHelpers.findByName(personality);
+
+    // Fall back to professional if style not found
+    let personalityPrompt: string;
+    if (!messageStyle) {
+      const fallbackStyle = await messageStyleHelpers.findByName("professional");
+      personalityPrompt = fallbackStyle?.prompt || "You are a professional executive assistant. Format the calendar summary in a clear, concise, and business-appropriate manner.";
+    } else {
+      personalityPrompt = messageStyle.prompt;
+    }
 
     const eventsText = events
       .map((event, index) => {

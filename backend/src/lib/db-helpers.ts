@@ -305,3 +305,99 @@ export const setupHelpers = {
     );
   },
 };
+
+// Message style helpers
+export const messageStyleHelpers = {
+  findAll: async (): Promise<any[]> => {
+    return db.all("SELECT * FROM message_styles ORDER BY sortOrder ASC, displayName ASC");
+  },
+
+  findActive: async (): Promise<any[]> => {
+    return db.all(
+      "SELECT * FROM message_styles WHERE isActive = 1 ORDER BY sortOrder ASC, displayName ASC"
+    );
+  },
+
+  findByName: async (name: string): Promise<any | undefined> => {
+    return db.get("SELECT * FROM message_styles WHERE name = ?", [name]);
+  },
+
+  findById: async (id: number): Promise<any | undefined> => {
+    return db.get("SELECT * FROM message_styles WHERE id = ?", [id]);
+  },
+
+  create: async (data: {
+    name: string;
+    displayName: string;
+    prompt: string;
+    description?: string;
+    sortOrder?: number;
+  }): Promise<any> => {
+    const result = await db.run(
+      `INSERT INTO message_styles (name, displayName, prompt, description, sortOrder)
+       VALUES (?, ?, ?, ?, ?)`,
+      [
+        data.name,
+        data.displayName,
+        data.prompt,
+        data.description || null,
+        data.sortOrder || 0,
+      ]
+    );
+
+    return messageStyleHelpers.findById(result.lastID);
+  },
+
+  update: async (
+    id: number,
+    data: {
+      displayName?: string;
+      prompt?: string;
+      description?: string;
+      isActive?: boolean;
+      sortOrder?: number;
+    }
+  ): Promise<any | undefined> => {
+    const fields: string[] = [];
+    const values: any[] = [];
+
+    if (data.displayName !== undefined) {
+      fields.push("displayName = ?");
+      values.push(data.displayName);
+    }
+    if (data.prompt !== undefined) {
+      fields.push("prompt = ?");
+      values.push(data.prompt);
+    }
+    if (data.description !== undefined) {
+      fields.push("description = ?");
+      values.push(data.description);
+    }
+    if (data.isActive !== undefined) {
+      fields.push("isActive = ?");
+      values.push(data.isActive ? 1 : 0);
+    }
+    if (data.sortOrder !== undefined) {
+      fields.push("sortOrder = ?");
+      values.push(data.sortOrder);
+    }
+
+    if (fields.length === 0) {
+      return messageStyleHelpers.findById(id);
+    }
+
+    fields.push("updatedAt = CURRENT_TIMESTAMP");
+    values.push(id);
+
+    await db.run(
+      `UPDATE message_styles SET ${fields.join(", ")} WHERE id = ?`,
+      values
+    );
+
+    return messageStyleHelpers.findById(id);
+  },
+
+  delete: async (id: number): Promise<void> => {
+    await db.run("DELETE FROM message_styles WHERE id = ?", [id]);
+  },
+};

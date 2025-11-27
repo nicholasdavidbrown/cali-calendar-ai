@@ -199,6 +199,35 @@ export interface SystemSetup {
   updatedAt: string;
 }
 
+// Message Style types
+export interface MessageStyle {
+  id: number;
+  name: string;
+  displayName: string;
+  prompt: string;
+  description: string | null;
+  isActive: boolean;
+  sortOrder: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateMessageStyleData {
+  name: string;
+  displayName: string;
+  prompt: string;
+  description?: string;
+  sortOrder?: number;
+}
+
+export interface UpdateMessageStyleData {
+  displayName?: string;
+  prompt?: string;
+  description?: string;
+  isActive?: boolean;
+  sortOrder?: number;
+}
+
 // Type unions and helpers
 export type MessagePersonality =
   | "professional"

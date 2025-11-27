@@ -12,6 +12,7 @@ import authRouter from "./routes/auth.js";
 import calendarRouter from "./routes/calendar.js";
 import smsRouter from "./routes/sms.js";
 import usersRouter from "./routes/users.js";
+import messageStylesRouter from "./routes/message-styles.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -74,6 +75,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/calendar", calendarRouter);
 app.use("/api/sms", smsRouter);
 app.use("/api/users", usersRouter);
+app.use("/api/message-styles", messageStylesRouter);
 
 // 404 handler for API routes
 app.use("/api", (req, res) => {
@@ -113,6 +115,7 @@ async function start() {
       console.log(`📅 Calendar endpoints: http://localhost:${PUBLIC_PORT}/api/calendar/*`);
       console.log(`💬 SMS endpoints: http://localhost:${PUBLIC_PORT}/api/sms/*`);
       console.log(`👤 User endpoints: http://localhost:${PUBLIC_PORT}/api/users/*`);
+      console.log(`🎨 Message style endpoints: http://localhost:${PUBLIC_PORT}/api/message-styles/*`);
       if (PUBLIC_PORT !== PORT) {
         console.log(`   (Container internal port: ${PORT})`);
       }

@@ -8,7 +8,7 @@ import {
   validatePhoneNumber,
 } from "../services/twilioService.js";
 import { generateCalendarMessage } from "../services/claudeService.js";
-import { smsHelpers, eventHelpers, userHelpers } from "../lib/db-helpers.js";
+import { smsHelpers, eventHelpers, userHelpers, messageStyleHelpers } from "../lib/db-helpers.js";
 import type { MessagePersonality } from "../types/index.js";
 
 const router = Router();
@@ -101,11 +101,30 @@ router.post("/send-daily-summary", async (req, res) => {
 
     const events = await eventHelpers.findUpcoming(userId, 24);
 
+    // Determine which message style to use
+    let selectedStyle = user.messageStyle;
+
+    // If user selected "random", pick a random active style (excluding "random" itself)
+    if (selectedStyle === "random") {
+      const activeStyles = await messageStyleHelpers.findActive();
+      // Filter out the "random" option itself
+      const nonRandomStyles = activeStyles.filter((style: any) => style.name !== "random");
+
+      if (nonRandomStyles.length > 0) {
+        const randomIndex = Math.floor(Math.random() * nonRandomStyles.length);
+        selectedStyle = nonRandomStyles[randomIndex].name;
+        console.log(`📝 Random style selected: ${selectedStyle}`);
+      } else {
+        // Fallback to professional if no other styles available
+        selectedStyle = "professional";
+      }
+    }
+
     // Generate AI-powered message using Claude
     const message = await generateCalendarMessage(
       events,
       user.firstName,
-      user.messageStyle as MessagePersonality
+      selectedStyle as MessagePersonality
     );
 
     const formatted = formatPhoneNumber(user.phoneNumber);
@@ -118,11 +137,12 @@ router.post("/send-daily-summary", async (req, res) => {
       });
     }
 
+    // Store the actual style used (not "random" but the selected one)
     await smsHelpers.create({
       phoneNumber: formatted,
       message,
       status: result.status || "sent",
-      messageStyle: user.messageStyle,
+      messageStyle: selectedStyle,
       userId,
       eventCount: events.length,
       twilioSid: result.sid,
@@ -133,6 +153,7 @@ router.post("/send-daily-summary", async (req, res) => {
       message: "Daily summary sent successfully",
       eventCount: events.length,
       sid: result.sid,
+      styleUsed: selectedStyle, // Include which style was used
     });
   } catch (error) {
     console.error("Send daily summary error:", error);

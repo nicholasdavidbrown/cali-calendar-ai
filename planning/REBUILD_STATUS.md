@@ -41,6 +41,7 @@
 6. ✅ `calendar_integrations` - OAuth tokens
 7. ✅ `admin_settings` - System configuration
 8. ✅ `system_setup` - Setup tracking
+9. ✅ `message_styles` - Configurable AI message personalities
 
 ### Phase 3: Authentication System ✅ COMPLETE (Backend)
 - [x] Install auth dependencies (bcrypt, jsonwebtoken, cookie-parser, express-validator, cors)
@@ -95,6 +96,24 @@
 - [x] Added user update helper to db-helpers
 - [x] Tested all 6 personality styles (professional, witty, sarcastic, mission, irwin, tanda)
 - [x] Uses Claude Sonnet 4.5 model (claude-sonnet-4-5-20250929)
+
+### Phase 6.5: Configurable Message Styles ✅ COMPLETE (Backend)
+- [x] Created `message_styles` database table with schema
+- [x] Added message style database helpers (findAll, findActive, findByName, create, update, delete)
+- [x] Migrated hardcoded personality prompts to database (auto-seeded on migration)
+- [x] Created message styles API endpoints:
+  - GET /api/message-styles - Get active styles (authenticated users)
+  - GET /api/message-styles/:id - Get specific style by ID
+  - GET /api/message-styles/admin/all - Get all styles including inactive (admin)
+  - POST /api/message-styles - Create new style (admin)
+  - PUT /api/message-styles/:id - Update style (admin)
+  - DELETE /api/message-styles/:id - Delete style (admin)
+- [x] Updated claudeService to fetch prompts from database instead of hardcoded
+- [x] Implemented random daily style selection (when user selects "random")
+- [x] SMS history logs actual style used (not "random" but the selected one)
+- [x] Default styles seeded: professional, witty, sarcastic, mission, irwin, tanda, random
+- [ ] Admin UI for managing message styles (Future: Phase 8+)
+- [ ] User UI dropdown populated from database (Future: Phase 8+)
 
 ### Phase 7: Family Sharing Features
 - [ ] Family member management
@@ -205,16 +224,27 @@ docker compose up --build
 - `/planning/REBUILD_PLAN_INDEX.md` - Overall project overview
 - `/planning/PHASE_5_ADJUSTMENT_ADMIN_SETUP.md` - **Admin Setup Wizard Plan & Integration**
 - `/planning/ADMIN_SETUP_IMPLEMENTATION.md` - **Admin Setup Implementation Summary**
+- `/planning/PHASE_6.5_MESSAGE_STYLES.md` - **Configurable Message Styles Guide**
 - `/planning/REBUILD_STATUS.md` - **Current status and progress tracking**
 - `/README.md` - Current project structure and scripts
 - `/docker-compose.yml` - Docker configuration
-- `/test-setup.js` - Admin setup wizard testing script
-- `/test-claude.js` - Claude AI integration testing script
+- `/tests/` - Test scripts and API test files
 
 ---
 
 **Last Updated:** 2025-11-27
-**Status:** Phase 6 Complete! AI Messaging with Claude integrated. Ready to begin Phase 7 - Family Sharing Features
+**Status:** Phase 6.5 Complete! Configurable Message Styles implemented. Ready to begin Phase 7 - Family Sharing Features
+
+**Phase 6.5 Completed (Configurable Message Styles):**
+- ✅ Database-backed message style system (`message_styles` table)
+- ✅ Message style CRUD API endpoints (admin + user access)
+- ✅ Auto-seeded default styles (7 styles: professional, witty, sarcastic, mission, irwin, tanda, random)
+- ✅ Database helpers for message style management
+- ✅ Updated claudeService to use database prompts
+- ✅ Random daily style selection (picks random active style when user selects "random")
+- ✅ SMS history tracking of actual style used
+- ✅ Ready for admin UI integration (Phase 8+)
+- ✅ Ready for user settings UI with dynamic dropdown (Phase 8+)
 
 **Phase 6 Completed (AI Messaging with Claude):**
 - ✅ Anthropic SDK integration (@anthropic-ai/sdk v0.71.0)

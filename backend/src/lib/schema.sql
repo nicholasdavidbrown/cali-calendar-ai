@@ -135,3 +135,18 @@ CREATE TABLE IF NOT EXISTS system_setup (
   createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
   updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Message styles table
+CREATE TABLE IF NOT EXISTS message_styles (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT UNIQUE NOT NULL,
+  displayName TEXT NOT NULL,
+  prompt TEXT NOT NULL,
+  description TEXT,
+  isActive INTEGER DEFAULT 1,
+  sortOrder INTEGER DEFAULT 0,
+  createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_message_styles_active ON message_styles(isActive, sortOrder);
