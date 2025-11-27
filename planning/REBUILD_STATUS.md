@@ -74,6 +74,17 @@
 - [x] Test SMS API endpoints
 - [x] Graceful handling when Twilio not configured
 
+### Phase 5.5: Admin Setup Wizard ✅ COMPLETE (Backend)
+- [x] Create setup helper functions (setupHelpers in db-helpers)
+- [x] Implement setup middleware (requireSetupComplete, requireSetupIncomplete)
+- [x] Create setup API routes (GET /status, POST /initialize)
+- [x] Create admin settings management routes (CRUD for API keys)
+- [x] Update registration to block until setup complete
+- [x] Modify seed script to only run in development mode
+- [x] Add auto-migration for existing installations
+- [x] Store ALL credentials in database (Twilio, Anthropic, Google OAuth, Microsoft OAuth)
+- [x] Test setup flow end-to-end
+
 ### Phase 6: AI Messaging with Claude
 - [ ] Integrate Anthropic Claude API
 - [ ] Implement personality styles
@@ -119,9 +130,13 @@ cali-calendar-ai/
 │   ├── REBUILD_PLAN_PHASES_1-4_SIMPLIFIED.md  # 👈 Use this!
 │   ├── REBUILD_PLAN_PHASES_5-7.md
 │   ├── REBUILD_PLAN_PHASES_8-11.md
-│   └── REBUILD_PLAN_PHASES_12-15.md
+│   ├── REBUILD_PLAN_PHASES_12-15.md
+│   ├── PHASE_5_ADJUSTMENT_ADMIN_SETUP.md      # 👈 Admin Setup Plan
+│   ├── ADMIN_SETUP_IMPLEMENTATION.md          # 👈 Implementation Summary
+│   └── REBUILD_STATUS.md
 ├── docker-compose.yml   # ✅ Docker configuration
 ├── Dockerfile           # ✅ Multi-stage build
+├── test-setup.js        # ✅ Admin setup wizard test script
 └── package.json         # ✅ Root scripts
 ```
 
@@ -183,13 +198,30 @@ docker compose up --build
 
 - `/planning/REBUILD_PLAN_PHASES_1-4_SIMPLIFIED.md` - **Primary guide for Phases 1-4**
 - `/planning/REBUILD_PLAN_INDEX.md` - Overall project overview
+- `/planning/PHASE_5_ADJUSTMENT_ADMIN_SETUP.md` - **Admin Setup Wizard Plan & Integration**
+- `/planning/ADMIN_SETUP_IMPLEMENTATION.md` - **Admin Setup Implementation Summary**
+- `/planning/REBUILD_STATUS.md` - **Current status and progress tracking**
 - `/README.md` - Current project structure and scripts
 - `/docker-compose.yml` - Docker configuration
+- `/test-setup.js` - Admin setup wizard testing script
 
 ---
 
-**Last Updated:** 2025-11-26
-**Status:** Phase 5 Complete! Ready to begin Phase 6 - AI Messaging with Claude
+**Last Updated:** 2025-11-27
+**Status:** Phase 5.5 Complete! Admin Setup Wizard implemented. Ready to begin Phase 6 - AI Messaging with Claude
+
+**Phase 5.5 Completed (Admin Setup Wizard):**
+- ✅ Setup helper functions in db-helpers.ts (5 functions: isSetupComplete, hasUsers, getSetupStatus, completeSetup, initializeSetup)
+- ✅ Setup middleware (requireSetupComplete, requireSetupIncomplete)
+- ✅ Setup API endpoints: GET /api/setup/status, POST /api/setup/initialize
+- ✅ Admin settings CRUD: GET/PUT/DELETE /api/admin/settings/:key
+- ✅ Database-backed credential storage (Twilio, Anthropic, Google OAuth, Microsoft OAuth)
+- ✅ Registration blocking until setup complete
+- ✅ Seed script development-mode only (NODE_ENV check)
+- ✅ Auto-migration for existing installations
+- ✅ Secret masking in settings API
+- ✅ Test script: test-setup.js
+- ✅ Documentation: planning/ADMIN_SETUP_IMPLEMENTATION.md, planning/PHASE_5_ADJUSTMENT_ADMIN_SETUP.md
 
 **Phase 5 Completed:**
 - ✅ Twilio SDK integration (v5.10.6)
@@ -217,6 +249,12 @@ docker compose up --build
 - ✅ Auth routes: POST /api/auth/register, POST /api/auth/login, POST /api/auth/logout, GET /api/auth/me, GET /api/auth/verify
 
 **Testing Credentials:**
-- Admin: admin@localhost / admin123
-- Test user: test2@example.com / Test1234
-- Register new users via: POST /api/auth/register
+- **Development Mode (after `yarn db:seed`):**
+  - Admin: admin@example.com / admin123
+  - Setup automatically marked complete
+- **Production Mode:**
+  - Use admin setup wizard at POST /api/setup/initialize
+  - Configure Twilio, Anthropic, Google, Microsoft credentials
+- **Regular Users:**
+  - Register via: POST /api/auth/register (only after setup complete)
+  - Test user: test2@example.com / Test1234 (if created previously)

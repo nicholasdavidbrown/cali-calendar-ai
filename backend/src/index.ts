@@ -5,6 +5,9 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import { db } from "./lib/database.js";
 import { runMigrations } from "./lib/migrate.js";
+import { setupHelpers } from "./lib/db-helpers.js";
+import setupRouter from "./routes/setup.js";
+import adminSettingsRouter from "./routes/admin-settings.js";
 import authRouter from "./routes/auth.js";
 import calendarRouter from "./routes/calendar.js";
 import smsRouter from "./routes/sms.js";
@@ -46,6 +49,16 @@ app.use(
 async function initDatabase() {
   await db.connect();
   await runMigrations();
+
+  // Initialize setup record if not exists
+  await setupHelpers.initializeSetup();
+
+  // Migration scenario: if users exist but setup isn't complete, auto-complete it
+  const status = await setupHelpers.getSetupStatus();
+  if (status.hasUsers && !status.isCompleted) {
+    console.log("ℹ️  Migrating existing installation - auto-completing setup");
+    await setupHelpers.completeSetup("migration");
+  }
 }
 
 // Health check
@@ -54,6 +67,8 @@ app.get("/health", (req, res) => {
 });
 
 // API Routes
+app.use("/api/setup", setupRouter);  // Setup wizard (public)
+app.use("/api/admin", adminSettingsRouter);  // Admin settings (admin only)
 app.use("/api/auth", authRouter);
 app.use("/api/calendar", calendarRouter);
 app.use("/api/sms", smsRouter);
@@ -90,6 +105,8 @@ async function start() {
     app.listen(PORT, () => {
       console.log(`🚀 Server running on http://localhost:${PUBLIC_PORT}`);
       console.log(`📱 Health check: http://localhost:${PUBLIC_PORT}/health`);
+      console.log(`⚙️  Setup endpoints: http://localhost:${PUBLIC_PORT}/api/setup/*`);
+      console.log(`🔧 Admin settings: http://localhost:${PUBLIC_PORT}/api/admin/*`);
       console.log(`🔐 Auth endpoints: http://localhost:${PUBLIC_PORT}/api/auth/*`);
       console.log(`📅 Calendar endpoints: http://localhost:${PUBLIC_PORT}/api/calendar/*`);
       console.log(`💬 SMS endpoints: http://localhost:${PUBLIC_PORT}/api/sms/*`);

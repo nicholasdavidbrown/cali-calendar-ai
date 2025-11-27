@@ -5,7 +5,7 @@ import {
   validatePasswordStrength,
 } from "../lib/password.js";
 import { generateToken } from "../lib/jwt.js";
-import { userHelpers } from "../lib/db-helpers.js";
+import { userHelpers, setupHelpers } from "../lib/db-helpers.js";
 import {
   registerValidation,
   loginValidation,
@@ -22,6 +22,16 @@ router.post(
   validateRequest,
   async (req: Request, res: Response) => {
     try {
+      // Check if setup is complete before allowing registration
+      const setupStatus = await setupHelpers.getSetupStatus();
+      if (!setupStatus.isCompleted) {
+        return res.status(403).json({
+          error: "System setup required",
+          setupRequired: true,
+          message: "Admin must complete system setup before users can register",
+        });
+      }
+
       const { email, password, firstName, lastName } = req.body;
 
       // Check if user exists

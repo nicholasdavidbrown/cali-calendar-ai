@@ -1,5 +1,5 @@
 import { db } from "./database.js";
-import type { User, CalendarEvent, FamilyMember } from "../types/index.js";
+import type { User, CalendarEvent, FamilyMember, SystemSetup } from "../types/index.js";
 
 // User helpers
 export const userHelpers = {
@@ -204,6 +204,63 @@ export const adminHelpers = {
     return db.all(
       "SELECT * FROM admin_settings WHERE category = ?",
       [category]
+    );
+  },
+};
+
+// System setup helpers
+export const setupHelpers = {
+  // Check if system setup is complete
+  isSetupComplete: async (): Promise<boolean> => {
+    const setup = await db.get<{ isCompleted: number }>(
+      "SELECT isCompleted FROM system_setup WHERE id = 1"
+    );
+    return setup?.isCompleted === 1;
+  },
+
+  // Check if any users exist
+  hasUsers: async (): Promise<boolean> => {
+    const result = await db.get<{ count: number }>(
+      "SELECT COUNT(*) as count FROM users"
+    );
+    return (result?.count || 0) > 0;
+  },
+
+  // Get detailed setup status
+  getSetupStatus: async (): Promise<{
+    isCompleted: boolean;
+    hasUsers: boolean;
+    adminEmail: string | null;
+    setupCompletedAt: string | null;
+  }> => {
+    const setup = await db.get<SystemSetup>(
+      "SELECT * FROM system_setup WHERE id = 1"
+    );
+    const hasUsers = await setupHelpers.hasUsers();
+
+    return {
+      isCompleted: setup?.isCompleted === 1,
+      hasUsers,
+      adminEmail: setup?.adminEmail || null,
+      setupCompletedAt: setup?.setupCompletedAt || null,
+    };
+  },
+
+  // Mark setup as complete
+  completeSetup: async (adminEmail: string): Promise<void> => {
+    await db.run(
+      `UPDATE system_setup
+       SET isCompleted = 1, adminEmail = ?, setupCompletedAt = CURRENT_TIMESTAMP,
+           updatedAt = CURRENT_TIMESTAMP
+       WHERE id = 1`,
+      [adminEmail]
+    );
+  },
+
+  // Initialize setup record if not exists
+  initializeSetup: async (): Promise<void> => {
+    await db.run(
+      `INSERT OR IGNORE INTO system_setup (id, isCompleted) VALUES (1, 0)`
     );
   },
 };

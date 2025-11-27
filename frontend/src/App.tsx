@@ -40,7 +40,7 @@ function App() {
         </a>
       </div>
       <h1>Cali Calendar AI</h1>
-      <p>Phase 3: Authentication System Complete ✅</p>
+      <p>Phase 5.5: Admin Setup Wizard Complete ✅</p>
 
       <div className="card">
         <h2>Backend Status</h2>
@@ -58,6 +58,30 @@ function App() {
       </div>
 
       <div className="info-section">
+        <div className="info-card">
+          <h3>⚙️ Admin Setup Endpoints</h3>
+          <div className="endpoint">
+            <code className="method get">GET</code>
+            <code className="path">/api/setup/status</code>
+            <span className="description">Check setup status</span>
+          </div>
+          <div className="endpoint">
+            <code className="method post">POST</code>
+            <code className="path">/api/setup/initialize</code>
+            <span className="description">Complete setup wizard</span>
+          </div>
+          <div className="endpoint">
+            <code className="method get">GET</code>
+            <code className="path">/api/admin/settings</code>
+            <span className="description">List all settings (admin)</span>
+          </div>
+          <div className="endpoint">
+            <code className="method put">PUT</code>
+            <code className="path">/api/admin/settings/:key</code>
+            <span className="description">Update setting (admin)</span>
+          </div>
+        </div>
+
         <div className="info-card">
           <h3>🔐 Authentication Endpoints</h3>
           <div className="endpoint">
@@ -80,10 +104,48 @@ function App() {
             <code className="path">/api/auth/logout</code>
             <span className="description">Logout user</span>
           </div>
+        </div>
+
+        <div className="info-card">
+          <h3>📅 Calendar Endpoints</h3>
           <div className="endpoint">
             <code className="method get">GET</code>
-            <code className="path">/api/auth/verify</code>
-            <span className="description">Verify JWT token</span>
+            <code className="path">/api/calendar/events</code>
+            <span className="description">Get all events</span>
+          </div>
+          <div className="endpoint">
+            <code className="method post">POST</code>
+            <code className="path">/api/calendar/events</code>
+            <span className="description">Create event</span>
+          </div>
+          <div className="endpoint">
+            <code className="method put">PUT</code>
+            <code className="path">/api/calendar/events/:id</code>
+            <span className="description">Update event</span>
+          </div>
+          <div className="endpoint">
+            <code className="method delete">DELETE</code>
+            <code className="path">/api/calendar/events/:id</code>
+            <span className="description">Delete event</span>
+          </div>
+        </div>
+
+        <div className="info-card">
+          <h3>💬 SMS Endpoints</h3>
+          <div className="endpoint">
+            <code className="method post">POST</code>
+            <code className="path">/api/sms/test</code>
+            <span className="description">Send test SMS</span>
+          </div>
+          <div className="endpoint">
+            <code className="method get">GET</code>
+            <code className="path">/api/sms/history</code>
+            <span className="description">Get SMS history</span>
+          </div>
+          <div className="endpoint">
+            <code className="method post">POST</code>
+            <code className="path">/api/sms/send-daily-summary</code>
+            <span className="description">Send daily summary</span>
           </div>
         </div>
 
@@ -110,8 +172,9 @@ function App() {
             <li>✅ Phase 1: Shared Types Setup</li>
             <li>✅ Phase 2: Database Setup (8 tables)</li>
             <li>✅ Phase 3: Authentication System</li>
-            <li>⏳ Phase 4: Calendar Events (Manual CRUD)</li>
-            <li>⏳ Phase 5: SMS Notifications</li>
+            <li>✅ Phase 4: Calendar Events (Manual CRUD)</li>
+            <li>✅ Phase 5: SMS Notifications (Twilio)</li>
+            <li>✅ Phase 5.5: Admin Setup Wizard</li>
             <li>⏳ Phase 6: AI Messaging with Claude</li>
             <li>⏳ Phase 7: Family Sharing</li>
           </ul>
