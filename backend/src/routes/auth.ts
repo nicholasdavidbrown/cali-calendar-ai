@@ -1,4 +1,5 @@
 import { Router, Request, Response } from "express";
+import { body } from "express-validator";
 import {
   hashPassword,
   comparePassword,
@@ -7,13 +8,47 @@ import {
 import { generateToken } from "../lib/jwt.js";
 import { userHelpers, setupHelpers } from "../lib/db-helpers.js";
 import {
-  registerValidation,
   loginValidation,
   validateRequest,
 } from "../lib/validation.js";
 import { authenticate } from "../middleware/auth.js";
+import {
+  createGroup,
+  addUserToGroup,
+  validatePushoverUserKey,
+  validateApiToken,
+  verifyCredentials,
+} from "../services/pushoverService.js";
 
 const router = Router();
+
+// Register validation with Pushover credentials
+const registerValidation = [
+  body("email").isEmail().normalizeEmail().withMessage("Valid email required"),
+  body("password").isLength({ min: 8 }).withMessage("Password must be at least 8 characters"),
+  body("firstName").trim().notEmpty().withMessage("First name required"),
+  body("lastName").trim().notEmpty().withMessage("Last name required"),
+  body("pushoverApiToken")
+    .trim()
+    .notEmpty()
+    .withMessage("Pushover API token required")
+    .custom((value) => {
+      if (!validateApiToken(value)) {
+        throw new Error("Invalid Pushover API token format");
+      }
+      return true;
+    }),
+  body("pushoverUserKey")
+    .trim()
+    .notEmpty()
+    .withMessage("Pushover user key required")
+    .custom((value) => {
+      if (!validatePushoverUserKey(value)) {
+        throw new Error("Invalid Pushover user key format");
+      }
+      return true;
+    }),
+];
 
 // Register new user
 router.post(
@@ -32,7 +67,7 @@ router.post(
         });
       }
 
-      const { email, password, firstName, lastName } = req.body;
+      const { email, password, firstName, lastName, pushoverApiToken, pushoverUserKey } = req.body;
 
       // Check if user exists
       const existingUser = await userHelpers.findByEmail(email);
@@ -46,16 +81,50 @@ router.post(
         return res.status(400).json({ errors: passwordCheck.errors });
       }
 
+      // Verify Pushover credentials before creating user
+      const credentialCheck = await verifyCredentials(pushoverApiToken, pushoverUserKey);
+      if (!credentialCheck.success) {
+        return res.status(400).json({
+          error: "Invalid Pushover credentials",
+          details: credentialCheck.error,
+        });
+      }
+
+      // Create Pushover group for this user
+      const groupResult = await createGroup(pushoverApiToken, `${firstName} ${lastName} - Cali Calendar`);
+      if (!groupResult.success || !groupResult.groupKey) {
+        return res.status(500).json({
+          error: "Failed to create Pushover group",
+          details: groupResult.error,
+        });
+      }
+
+      // Add user to their own group
+      const addResult = await addUserToGroup(pushoverApiToken, groupResult.groupKey, pushoverUserKey);
+      if (!addResult.success) {
+        return res.status(500).json({
+          error: "Failed to add user to Pushover group",
+          details: addResult.error,
+        });
+      }
+
       // Hash password
       const hashedPassword = await hashPassword(password);
 
-      // Create user
+      // Create user with Pushover credentials
       const user = await userHelpers.create({
         email,
         password: hashedPassword,
         firstName,
         lastName,
         isAdmin: false,
+      });
+
+      // Update user with Pushover credentials
+      await userHelpers.update(user.id, {
+        pushoverApiToken,
+        pushoverUserKey,
+        pushoverGroupKey: groupResult.groupKey,
       });
 
       // Generate JWT
@@ -81,6 +150,7 @@ router.post(
           firstName: user.firstName,
           lastName: user.lastName,
           isAdmin: user.isAdmin,
+          pushoverConfigured: true,
         },
         token,
       });
@@ -169,9 +239,10 @@ router.get("/me", authenticate, async (req, res) => {
       lastName: user.lastName,
       phoneNumber: user.phoneNumber,
       timezone: user.timezone,
-      smsTime: user.smsTime,
+      notificationTime: (user as any).notificationTime || user.smsTime, // Handle both old and new field names
       messageStyle: user.messageStyle,
       isAdmin: user.isAdmin,
+      pushoverConfigured: !!(user as any).pushoverGroupKey,
       createdAt: user.createdAt,
     });
   } catch (error) {

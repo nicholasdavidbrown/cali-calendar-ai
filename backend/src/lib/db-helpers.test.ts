@@ -227,14 +227,14 @@ describe('Family Helpers', () => {
     it('should create a family member', async () => {
       const member = await familyHelpers.create({
         name: 'John Doe',
-        phoneNumber: '+1234567890',
+        pushoverUserKey: 'aBcDeFgHiJkLmNoPqRsTuVwXyZ1234',
         relationship: 'Father',
         userId,
       });
 
       expect(member.id).toBeDefined();
       expect(member.name).toBe('John Doe');
-      expect(member.phoneNumber).toBe('+1234567890');
+      expect(member.pushoverUserKey).toBe('aBcDeFgHiJkLmNoPqRsTuVwXyZ1234');
       expect(member.relationship).toBe('Father');
       expect(member.isActive).toBe(1); // SQLite stores true as 1
     });
@@ -244,12 +244,12 @@ describe('Family Helpers', () => {
     beforeEach(async () => {
       await familyHelpers.create({
         name: 'Member 1',
-        phoneNumber: '+1111111111',
+        pushoverUserKey: 'aBcDeFgHiJkLmNoPqRsTuVwXyZ1111',
         userId,
       });
       await familyHelpers.create({
         name: 'Member 2',
-        phoneNumber: '+2222222222',
+        pushoverUserKey: 'aBcDeFgHiJkLmNoPqRsTuVwXyZ2222',
         userId,
       });
     });
@@ -265,12 +265,12 @@ describe('Family Helpers', () => {
     beforeEach(async () => {
       const member1 = await familyHelpers.create({
         name: 'Active Member',
-        phoneNumber: '+1111111111',
+        pushoverUserKey: 'aBcDeFgHiJkLmNoPqRsTuVwXyZ1111',
         userId,
       });
       const member2 = await familyHelpers.create({
         name: 'Inactive Member',
-        phoneNumber: '+2222222222',
+        pushoverUserKey: 'aBcDeFgHiJkLmNoPqRsTuVwXyZ2222',
         userId,
       });
       // Deactivate second member
@@ -289,7 +289,7 @@ describe('Family Helpers', () => {
     it('should toggle member active status', async () => {
       const member = await familyHelpers.create({
         name: 'Toggle Member',
-        phoneNumber: '+1234567890',
+        pushoverUserKey: 'aBcDeFgHiJkLmNoPqRsTuVwXyZ1234',
         userId,
       });
 

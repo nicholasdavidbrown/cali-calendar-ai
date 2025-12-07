@@ -66,14 +66,16 @@
 - [ ] Add event deletion (Future: Phase 8+)
 - [ ] Build calendar view (Future: Phase 8+)
 
-### Phase 5: SMS Notification System ✅ COMPLETE (Backend)
-- [x] Integrate Twilio SDK
-- [x] Create SMS service with Twilio integration
-- [x] Create SMS routes (test, history, daily summary)
-- [x] Implement phone number validation and formatting
-- [x] Track SMS history in database
-- [x] Test SMS API endpoints
-- [x] Graceful handling when Twilio not configured
+### Phase 5: SMS Notification System ✅ COMPLETE (Backend) -> **TO BE REPLACED**
+> **Note:** Phase 5 will be replaced with Pushover notifications. See `PHASE_5_PUSHOVER_REPLACEMENT.md`
+
+- [x] ~~Integrate Twilio SDK~~ -> Will be removed
+- [x] ~~Create SMS service with Twilio integration~~ -> Will become Pushover service
+- [x] ~~Create SMS routes (test, history, daily summary)~~ -> Will become notification routes
+- [x] ~~Implement phone number validation and formatting~~ -> Will become Pushover user key validation
+- [x] ~~Track SMS history in database~~ -> Will become notification_history
+- [x] ~~Test SMS API endpoints~~ -> Will need re-testing
+- [x] ~~Graceful handling when Twilio not configured~~ -> Will handle missing Pushover config
 
 ### Phase 5.5: Admin Setup Wizard ✅ COMPLETE (Backend)
 - [x] Create setup helper functions (setupHelpers in db-helpers)
@@ -225,6 +227,7 @@ docker compose up --build
 - `/planning/PHASE_5_ADJUSTMENT_ADMIN_SETUP.md` - **Admin Setup Wizard Plan & Integration**
 - `/planning/ADMIN_SETUP_IMPLEMENTATION.md` - **Admin Setup Implementation Summary**
 - `/planning/PHASE_6.5_MESSAGE_STYLES.md` - **Configurable Message Styles Guide**
+- `/planning/PHASE_5_PUSHOVER_REPLACEMENT.md` - **Pushover Notification System (replaces Twilio SMS)**
 - `/planning/REBUILD_STATUS.md` - **Current status and progress tracking**
 - `/README.md` - Current project structure and scripts
 - `/docker-compose.yml` - Docker configuration
@@ -232,8 +235,8 @@ docker compose up --build
 
 ---
 
-**Last Updated:** 2025-11-27
-**Status:** Phase 6.5 Complete! Configurable Message Styles implemented. Ready to begin Phase 7 - Family Sharing Features
+**Last Updated:** 2025-12-07
+**Status:** Phase 6.5 Complete! Ready to implement Pushover replacement (Phase 5 replacement) before Phase 7
 
 **Phase 6.5 Completed (Configurable Message Styles):**
 - ✅ Database-backed message style system (`message_styles` table)
@@ -271,15 +274,21 @@ docker compose up --build
 - ✅ Test script: test-setup.js
 - ✅ Documentation: planning/ADMIN_SETUP_IMPLEMENTATION.md, planning/PHASE_5_ADJUSTMENT_ADMIN_SETUP.md
 
-**Phase 5 Completed:**
-- ✅ Twilio SDK integration (v5.10.6)
-- ✅ SMS service with Twilio API integration
-- ✅ Phone number validation and E.164 formatting
-- ✅ SMS routes: POST /api/sms/test, GET /api/sms/history, POST /api/sms/send-daily-summary
-- ✅ SMS history tracking in database
-- ✅ Graceful error handling when Twilio not configured
-- ✅ Comprehensive API testing
-- ✅ Test files created: test-sms-api.http, test-sms.js
+**Phase 5 (Original - TO BE REPLACED):**
+- ~~Twilio SDK integration (v5.10.6)~~ -> Removing Twilio
+- ~~SMS service with Twilio API integration~~ -> Replacing with Pushover
+- ~~Phone number validation and E.164 formatting~~ -> Replacing with Pushover user key validation
+- ~~SMS routes: POST /api/sms/test, GET /api/sms/history, POST /api/sms/send-daily-summary~~ -> Becoming /api/notifications/*
+- See `PHASE_5_PUSHOVER_REPLACEMENT.md` for new implementation plan
+
+**Phase 5 Replacement (Pushover) - PENDING:**
+- [ ] Create Pushover service with Groups API
+- [ ] Each user provides API token + user key on registration
+- [ ] App creates Pushover group per user
+- [ ] Family members added to user's Pushover group
+- [ ] Notifications sent to group (all members receive)
+- [ ] Rename sms_history -> notification_history
+- [ ] Rename sms routes -> notification routes
 
 **Phase 4 Completed:**
 - ✅ Calendar event CRUD routes (GET, POST, PUT, DELETE)

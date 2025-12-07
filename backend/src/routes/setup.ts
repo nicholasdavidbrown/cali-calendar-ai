@@ -43,9 +43,7 @@ router.post(
     body("lastName").trim().notEmpty().withMessage("Last name required"),
 
     // Integration credentials (all optional)
-    body("twilioAccountSid").optional().trim(),
-    body("twilioAuthToken").optional().trim(),
-    body("twilioPhoneNumber").optional().trim(),
+    // Note: Pushover credentials are per-user, not global admin settings
     body("anthropicApiKey").optional().trim(),
     body("googleClientId").optional().trim(),
     body("googleClientSecret").optional().trim(),
@@ -60,9 +58,6 @@ router.post(
         password,
         firstName,
         lastName,
-        twilioAccountSid,
-        twilioAuthToken,
-        twilioPhoneNumber,
         anthropicApiKey,
         googleClientId,
         googleClientSecret,
@@ -97,10 +92,8 @@ router.post(
       });
 
       // Store integration credentials in admin_settings
+      // Note: Pushover credentials are per-user (stored in users table), not global
       const credentials = [
-        { key: "twilio_account_sid", value: twilioAccountSid, category: "twilio" },
-        { key: "twilio_auth_token", value: twilioAuthToken, category: "twilio" },
-        { key: "twilio_phone_number", value: twilioPhoneNumber, category: "twilio" },
         { key: "anthropic_api_key", value: anthropicApiKey, category: "ai" },
         { key: "google_client_id", value: googleClientId, category: "oauth" },
         { key: "google_client_secret", value: googleClientSecret, category: "oauth" },

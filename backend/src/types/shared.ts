@@ -7,13 +7,18 @@ export interface User {
   lastName: string;
   phoneNumber: string | null;
   timezone: string;
-  smsTime: string; // HH:MM format
+  notificationTime: string; // HH:MM format (was smsTime)
   messageStyle: string;
+  pushoverApiToken: string | null;
+  pushoverUserKey: string | null;
+  pushoverGroupKey: string | null;
   isActive: boolean;
   isAdmin: boolean;
   createdAt: string;
   updatedAt: string;
   lastLoginAt: string | null;
+  // Legacy field alias
+  smsTime?: string; // Deprecated, use notificationTime
 }
 
 export interface UserResponse {
@@ -23,9 +28,10 @@ export interface UserResponse {
   lastName: string;
   phoneNumber: string | null;
   timezone: string;
-  smsTime: string;
+  notificationTime: string;
   messageStyle: string;
   isAdmin: boolean;
+  pushoverConfigured: boolean;
   createdAt: string;
 }
 
@@ -78,7 +84,7 @@ export interface UpdateEventData {
 export interface FamilyMember {
   id: number;
   name: string;
-  phoneNumber: string;
+  pushoverUserKey: string;
   relationship: string | null;
   isActive: boolean;
   joinedVia: string | null;
@@ -90,20 +96,20 @@ export interface FamilyMember {
 
 export interface CreateFamilyMemberData {
   name: string;
-  phoneNumber: string;
+  pushoverUserKey: string;
   relationship?: string;
   userId: number;
   joinedVia?: string;
 }
 
-// SMS History types
-export interface SmsHistory {
+// Notification History types (was SMS History)
+export interface NotificationHistory {
   id: number;
-  phoneNumber: string;
+  groupKey: string;
   message: string;
-  status: SmsStatus;
+  status: NotificationStatus;
   messageStyle: string;
-  twilioSid: string | null;
+  externalId: string | null; // Pushover request ID (was twilioSid)
   errorCode: string | null;
   errorMessage: string | null;
   userId: number;
@@ -112,17 +118,22 @@ export interface SmsHistory {
   deliveredAt: string | null;
 }
 
-export interface CreateSmsHistoryData {
-  phoneNumber: string;
+export interface CreateNotificationHistoryData {
+  groupKey: string;
   message: string;
-  status: SmsStatus;
+  status: NotificationStatus;
   messageStyle: string;
   userId: number;
   eventCount?: number;
-  twilioSid?: string;
+  externalId?: string;
 }
 
-export type SmsStatus = "sent" | "delivered" | "failed" | "queued";
+export type NotificationStatus = "sent" | "delivered" | "failed" | "queued";
+
+// Legacy type aliases for backward compatibility
+export type SmsHistory = NotificationHistory;
+export type SmsStatus = NotificationStatus;
+export type CreateSmsHistoryData = CreateNotificationHistoryData;
 
 // Join Code types
 export interface JoinCode {

@@ -1,4 +1,4 @@
-import type { MessagePersonality, CalendarSource, CalendarProvider, SmsStatus } from "./shared.js";
+import type { MessagePersonality, CalendarSource, CalendarProvider, NotificationStatus } from "./shared.js";
 
 // Message personality styles
 export const MESSAGE_PERSONALITIES: readonly MessagePersonality[] = [
@@ -26,13 +26,16 @@ export const CALENDAR_PROVIDERS: readonly CalendarProvider[] = [
   "timetree",
 ] as const;
 
-// SMS statuses
-export const SMS_STATUSES: readonly SmsStatus[] = [
+// Notification statuses (was SMS_STATUSES)
+export const NOTIFICATION_STATUSES: readonly NotificationStatus[] = [
   "sent",
   "delivered",
   "failed",
   "queued",
 ] as const;
+
+// Legacy alias
+export const SMS_STATUSES = NOTIFICATION_STATUSES;
 
 // Timezones
 export const TIMEZONES: readonly string[] = [
@@ -59,7 +62,7 @@ export const TIMEZONES: readonly string[] = [
 // Default values
 export const DEFAULTS = {
   TIMEZONE: "America/Los_Angeles",
-  SMS_TIME: "07:00",
+  NOTIFICATION_TIME: "07:00",
   MESSAGE_STYLE: "professional" as MessagePersonality,
   JWT_EXPIRES_IN: "7d",
   SALT_ROUNDS: 10,
@@ -71,18 +74,16 @@ export const DEFAULTS = {
 // Admin setting categories
 export const ADMIN_SETTING_CATEGORIES = {
   API_KEYS: "api_keys",
-  SMS: "sms",
+  NOTIFICATIONS: "notifications", // was SMS
   EMAIL: "email",
   SYSTEM: "system",
   INTEGRATIONS: "integrations",
 } as const;
 
 // Admin setting keys
+// Note: Pushover credentials are stored per-user, not as admin settings
 export const ADMIN_SETTING_KEYS = {
   ANTHROPIC_API_KEY: "anthropic_api_key",
-  TWILIO_ACCOUNT_SID: "twilio_account_sid",
-  TWILIO_AUTH_TOKEN: "twilio_auth_token",
-  TWILIO_PHONE_NUMBER: "twilio_phone_number",
   GOOGLE_CLIENT_ID: "google_client_id",
   GOOGLE_CLIENT_SECRET: "google_client_secret",
   MICROSOFT_CLIENT_ID: "microsoft_client_id",
@@ -126,10 +127,11 @@ export const ERROR_MESSAGES = {
     UPDATE_FAILED: "Failed to update family member",
     DELETE_FAILED: "Failed to remove family member",
   },
-  SMS: {
-    SEND_FAILED: "Failed to send SMS",
-    INVALID_PHONE: "Invalid phone number format",
+  NOTIFICATION: {
+    SEND_FAILED: "Failed to send notification",
+    INVALID_USER_KEY: "Invalid Pushover user key format",
     NO_RECIPIENTS: "No active recipients found",
+    NOT_CONFIGURED: "Pushover not configured",
   },
   SYSTEM: {
     DATABASE_ERROR: "Database error occurred",
@@ -161,9 +163,9 @@ export const SUCCESS_MESSAGES = {
     UPDATED: "Family member updated successfully",
     DELETED: "Family member removed successfully",
   },
-  SMS: {
-    SENT: "SMS sent successfully",
-    TEST_SENT: "Test SMS sent successfully",
+  NOTIFICATION: {
+    SENT: "Notification sent successfully",
+    TEST_SENT: "Test notification sent successfully",
   },
   SETTINGS: {
     UPDATED: "Settings updated successfully",
@@ -175,6 +177,9 @@ export const SUCCESS_MESSAGES = {
 export const VALIDATION_PATTERNS = {
   EMAIL: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
   PHONE_E164: /^\+?[1-9]\d{1,14}$/,
+  PUSHOVER_USER_KEY: /^[a-zA-Z0-9]{30}$/,
+  PUSHOVER_API_TOKEN: /^[a-zA-Z0-9]{30}$/,
+  PUSHOVER_GROUP_KEY: /^g[a-zA-Z0-9]{29}$/,
   TIME_24H: /^([01]\d|2[0-3]):([0-5]\d)$/,
   JOIN_CODE: /^[A-Z0-9]{6}$/,
 } as const;

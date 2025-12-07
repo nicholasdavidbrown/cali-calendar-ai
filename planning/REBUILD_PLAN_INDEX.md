@@ -13,7 +13,8 @@ This rebuild plan is divided into 4 comprehensive documents:
 
 ### Part 2: REBUILD_PLAN_PHASES_5-7.md
 **Core Features**
-- **Phase 5:** SMS Notification System (Twilio integration)
+- **Phase 5:** ~~SMS Notification System (Twilio integration)~~ **REPLACED** -> See PHASE_5_PUSHOVER_REPLACEMENT.md
+- **Phase 5 (NEW):** Pushover Notification System (Push notifications with Groups API)
 - **Phase 6:** AI Messaging with Claude (Anthropic API with personality styles)
 - **Phase 7:** Family Sharing Features (Invite codes, QR codes, family management)
 
@@ -60,20 +61,22 @@ By the end of all 15 phases, you will have:
 - ✅ Multi-source event aggregation
 - ✅ Automatic sync scheduling
 
-### SMS Notifications
-- ✅ Twilio SMS integration
+### Push Notifications (Pushover)
+- ✅ Pushover push notification integration (replaces Twilio SMS)
+- ✅ Per-user Pushover API token and group management
 - ✅ AI-powered message generation with Claude
 - ✅ 6 personality styles + daily random rotation
 - ✅ Automated daily summaries
-- ✅ Manual test SMS capability
-- ✅ SMS history tracking
+- ✅ Manual test notification capability
+- ✅ Notification history tracking
+- ✅ Family members added to user's Pushover group
 
 ### Family Sharing
 - ✅ Family member management
 - ✅ Invite codes with QR generation
 - ✅ Public join page (no auth required)
 - ✅ Family member activation/deactivation
-- ✅ Multi-recipient SMS broadcasts
+- ✅ Group notifications (all family members via Pushover group)
 
 ### Admin Features
 - ✅ System statistics dashboard
@@ -178,7 +181,7 @@ npm run dev
 - **bcrypt** - Password hashing
 - **jsonwebtoken** - JWT authentication
 - **@anthropic-ai/sdk** - Claude AI
-- **twilio** - SMS sending
+- **pushover** - Push notifications (native fetch, no SDK)
 - **googleapis** - Google Calendar API
 - **@microsoft/microsoft-graph-client** - Microsoft Calendar API
 - **puppeteer** - TimeTree scraping
@@ -251,10 +254,10 @@ If you're new to any of these technologies, we recommend learning them in this o
 - Check cookie settings (httpOnly, sameSite)
 - Ensure CORS credentials: true
 
-**SMS not sending**
-- Test Twilio credentials in Admin Settings
-- Verify phone number format (E.164)
-- Check Twilio account balance
+**Notifications not sending**
+- Verify Pushover API token and user key on user account
+- Check Pushover group was created during registration
+- Test via Pushover app on device
 
 **Claude AI not responding**
 - Test API key in Admin Settings
@@ -269,7 +272,7 @@ If you're new to any of these technologies, we recommend learning them in this o
 - [React Documentation](https://react.dev)
 - [Express Documentation](https://expressjs.com)
 - [Anthropic Claude API](https://docs.anthropic.com)
-- [Twilio SMS API](https://www.twilio.com/docs/sms)
+- [Pushover API](https://pushover.net/api)
 - [Google Calendar API](https://developers.google.com/calendar)
 - [Microsoft Graph API](https://learn.microsoft.com/en-us/graph/)
 

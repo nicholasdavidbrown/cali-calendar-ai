@@ -3,31 +3,20 @@ import { body } from "express-validator";
 import { authenticate } from "../middleware/auth.js";
 import { validateRequest } from "../lib/validation.js";
 import {
-  sendSMS,
-  formatPhoneNumber,
-  validatePhoneNumber,
-} from "../services/twilioService.js";
+  sendNotification,
+  sendTestNotification,
+  validatePushoverUserKey,
+} from "../services/pushoverService.js";
 import { generateCalendarMessage } from "../services/claudeService.js";
-import { smsHelpers, eventHelpers, userHelpers, messageStyleHelpers } from "../lib/db-helpers.js";
+import { notificationHelpers, eventHelpers, userHelpers, messageStyleHelpers } from "../lib/db-helpers.js";
 import type { MessagePersonality } from "../types/index.js";
 
 const router = Router();
 router.use(authenticate);
 
-// Send test SMS
+// Send test notification
 router.post(
   "/test",
-  [
-    body("phoneNumber")
-      .optional()
-      .custom((value) => {
-        if (!validatePhoneNumber(value)) {
-          throw new Error("Invalid phone number format");
-        }
-        return true;
-      }),
-  ],
-  validateRequest,
   async (req: Request, res: Response) => {
     try {
       const userId = req.user!.id;
@@ -37,55 +26,64 @@ router.post(
         return res.status(404).json({ error: "User not found" });
       }
 
-      const phoneNumber = req.body.phoneNumber || user.phoneNumber;
-
-      if (!phoneNumber) {
-        return res.status(400).json({ error: "Phone number required" });
+      if (!user.pushoverApiToken || !user.pushoverUserKey) {
+        return res.status(400).json({
+          error: "Pushover not configured",
+          details: "Please configure your Pushover API token and user key in settings"
+        });
       }
 
-      const formatted = formatPhoneNumber(phoneNumber);
-      const message = `🧪 Test SMS from Cali Calendar AI\n\nThis is a test message to verify your SMS configuration is working correctly.`;
+      const message = `🧪 Test Notification from Cali Calendar AI\n\nThis is a test message to verify your Pushover configuration is working correctly.`;
 
-      const result = await sendSMS({ to: formatted, message });
+      // Send directly to user (not via group) for testing
+      const result = await sendTestNotification(
+        user.pushoverApiToken,
+        user.pushoverUserKey,
+        message,
+        "Cali Calendar Test"
+      );
 
       if (!result.success) {
         return res.status(500).json({
-          error: "Failed to send SMS",
+          error: "Failed to send notification",
           details: result.error,
         });
       }
 
-      await smsHelpers.create({
-        phoneNumber: formatted,
-        message,
-        status: result.status || "sent",
-        messageStyle: "professional",
-        userId,
-        twilioSid: result.sid,
-      });
+      // Store in history if user has a group key
+      if (user.pushoverGroupKey) {
+        await notificationHelpers.create({
+          groupKey: user.pushoverGroupKey,
+          message,
+          status: "sent",
+          messageStyle: "professional",
+          userId,
+          externalId: result.requestId,
+        });
+      }
 
       res.json({
         success: true,
-        message: "Test SMS sent successfully",
-        sid: result.sid,
+        message: "Test notification sent successfully",
+        requestId: result.requestId,
       });
     } catch (error) {
-      console.error("Test SMS error:", error);
-      res.status(500).json({ error: "Failed to send test SMS" });
+      console.error("Test notification error:", error);
+      res.status(500).json({ error: "Failed to send test notification" });
     }
   }
 );
 
-// Get SMS history
+// Get notification history
 router.get("/history", async (req, res) => {
   try {
     const userId = req.user!.id;
     const limit = parseInt(req.query.limit as string) || 50;
-    const history = await smsHelpers.findByUserId(userId, limit);
+    const history = await notificationHelpers.findByUserId(userId, limit);
     res.json(history);
   } catch (error) {
-    console.error("Get SMS history error:", error);
-    res.status(500).json({ error: "Failed to fetch SMS history" });
+    console.error("Get notification history error:", error);
+    res.status(500).json({ error: "Failed to fetch notification history" });
   }
 });
 
@@ -95,8 +93,15 @@ router.post("/send-daily-summary", async (req, res) => {
     const userId = req.user!.id;
     const user = await userHelpers.findById(userId);
 
-    if (!user || !user.phoneNumber) {
-      return res.status(400).json({ error: "Phone number not configured" });
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    if (!user.pushoverApiToken || !user.pushoverGroupKey) {
+      return res.status(400).json({
+        error: "Pushover not configured",
+        details: "Please configure your Pushover credentials and ensure a group is set up"
+      });
     }
 
     const events = await eventHelpers.findUpcoming(userId, 24);
@@ -127,32 +132,37 @@ router.post("/send-daily-summary", async (req, res) => {
       selectedStyle as MessagePersonality
     );
 
-    const formatted = formatPhoneNumber(user.phoneNumber);
-    const result = await sendSMS({ to: formatted, message });
+    // Send notification to group (reaches user + all family members)
+    const result = await sendNotification({
+      apiToken: user.pushoverApiToken,
+      groupKey: user.pushoverGroupKey,
+      message,
+      title: "Daily Calendar Summary",
+    });
 
     if (!result.success) {
       return res.status(500).json({
-        error: "Failed to send SMS",
+        error: "Failed to send notification",
         details: result.error,
       });
     }
 
     // Store the actual style used (not "random" but the selected one)
-    await smsHelpers.create({
-      phoneNumber: formatted,
+    await notificationHelpers.create({
+      groupKey: user.pushoverGroupKey,
       message,
-      status: result.status || "sent",
+      status: "sent",
       messageStyle: selectedStyle,
       userId,
       eventCount: events.length,
-      twilioSid: result.sid,
+      externalId: result.requestId,
     });
 
     res.json({
       success: true,
       message: "Daily summary sent successfully",
       eventCount: events.length,
-      sid: result.sid,
+      requestId: result.requestId,
       styleUsed: selectedStyle, // Include which style was used
     });
   } catch (error) {

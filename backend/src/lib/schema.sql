@@ -7,8 +7,11 @@ CREATE TABLE IF NOT EXISTS users (
   lastName TEXT NOT NULL,
   phoneNumber TEXT,
   timezone TEXT DEFAULT 'America/Los_Angeles',
-  smsTime TEXT DEFAULT '07:00',
+  notificationTime TEXT DEFAULT '07:00',
   messageStyle TEXT DEFAULT 'professional',
+  pushoverApiToken TEXT,
+  pushoverUserKey TEXT,
+  pushoverGroupKey TEXT,
   isActive INTEGER DEFAULT 1,
   isAdmin INTEGER DEFAULT 0,
   createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -42,7 +45,7 @@ CREATE INDEX IF NOT EXISTS idx_calendar_events_source ON calendar_events(source)
 CREATE TABLE IF NOT EXISTS family_members (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT NOT NULL,
-  phoneNumber TEXT NOT NULL,
+  pushoverUserKey TEXT NOT NULL,
   relationship TEXT,
   isActive INTEGER DEFAULT 1,
   joinedVia TEXT,
@@ -54,16 +57,16 @@ CREATE TABLE IF NOT EXISTS family_members (
 );
 
 CREATE INDEX IF NOT EXISTS idx_family_members_user ON family_members(userId);
-CREATE INDEX IF NOT EXISTS idx_family_members_phone ON family_members(phoneNumber);
+CREATE INDEX IF NOT EXISTS idx_family_members_pushover ON family_members(pushoverUserKey);
 
--- SMS history table
-CREATE TABLE IF NOT EXISTS sms_history (
+-- Notification history table (was sms_history)
+CREATE TABLE IF NOT EXISTS notification_history (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  phoneNumber TEXT NOT NULL,
+  groupKey TEXT NOT NULL,
   message TEXT NOT NULL,
   status TEXT NOT NULL,
   messageStyle TEXT NOT NULL,
-  twilioSid TEXT UNIQUE,
+  externalId TEXT UNIQUE,
   errorCode TEXT,
   errorMessage TEXT,
   userId INTEGER NOT NULL,
@@ -73,8 +76,8 @@ CREATE TABLE IF NOT EXISTS sms_history (
   FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE
 );
 
-CREATE INDEX IF NOT EXISTS idx_sms_history_user ON sms_history(userId, sentAt);
-CREATE INDEX IF NOT EXISTS idx_sms_history_status ON sms_history(status);
+CREATE INDEX IF NOT EXISTS idx_notification_history_user ON notification_history(userId, sentAt);
+CREATE INDEX IF NOT EXISTS idx_notification_history_status ON notification_history(status);
 
 -- Join codes table
 CREATE TABLE IF NOT EXISTS join_codes (

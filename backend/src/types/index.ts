@@ -31,12 +31,15 @@ export function isCalendarProvider(value: any): value is import("./shared.js").C
 }
 
 /**
- * Type guard to check if a value is a valid SmsStatus
+ * Type guard to check if a value is a valid NotificationStatus
  */
-export function isSmsStatus(value: any): value is import("./shared.js").SmsStatus {
-  const { SMS_STATUSES } = require("./constants.js");
-  return SMS_STATUSES.includes(value);
+export function isNotificationStatus(value: any): value is import("./shared.js").NotificationStatus {
+  const { NOTIFICATION_STATUSES } = require("./constants.js");
+  return NOTIFICATION_STATUSES.includes(value);
 }
+
+// Legacy alias
+export const isSmsStatus = isNotificationStatus;
 
 /**
  * Convert SQLite boolean (0 or 1) to JavaScript boolean

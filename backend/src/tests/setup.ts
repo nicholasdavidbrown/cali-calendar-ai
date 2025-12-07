@@ -33,7 +33,7 @@ beforeEach(async () => {
     'users',
     'calendar_events',
     'family_members',
-    'sms_history',
+    'notification_history',
     'join_codes',
     'calendar_integrations',
     'admin_settings',

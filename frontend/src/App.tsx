@@ -131,20 +131,20 @@ function App() {
         </div>
 
         <div className="info-card">
-          <h3>💬 SMS Endpoints</h3>
+          <h3>🔔 Notification Endpoints</h3>
           <div className="endpoint">
             <code className="method post">POST</code>
-            <code className="path">/api/sms/test</code>
-            <span className="description">Send test SMS</span>
+            <code className="path">/api/notifications/test</code>
+            <span className="description">Send test notification</span>
           </div>
           <div className="endpoint">
             <code className="method get">GET</code>
-            <code className="path">/api/sms/history</code>
-            <span className="description">Get SMS history</span>
+            <code className="path">/api/notifications/history</code>
+            <span className="description">Get notification history</span>
           </div>
           <div className="endpoint">
             <code className="method post">POST</code>
-            <code className="path">/api/sms/send-daily-summary</code>
+            <code className="path">/api/notifications/send-daily-summary</code>
             <span className="description">Send daily summary (AI-powered)</span>
           </div>
         </div>
@@ -157,7 +157,7 @@ function App() {
             <span className="description">Update user settings</span>
           </div>
           <p style={{ fontSize: "0.85em", marginTop: "0.5rem", opacity: 0.8 }}>
-            Update: phoneNumber, timezone, smsTime, messageStyle
+            Update: timezone, notificationTime, messageStyle
           </p>
           <p style={{ fontSize: "0.85em", marginTop: "0.25rem", opacity: 0.8 }}>
             Personalities: professional, witty, sarcastic, mission, irwin, tanda, random
@@ -176,7 +176,7 @@ function App() {
             Open SQLite Web Viewer
           </a>
           <p style={{ fontSize: "0.9em", marginTop: "1rem", opacity: 0.8 }}>
-            View tables: users, calendar_events, family_members, sms_history,
+            View tables: users, calendar_events, family_members, notification_history,
             join_codes, calendar_integrations, admin_settings, system_setup
           </p>
         </div>
@@ -188,7 +188,7 @@ function App() {
             <li>✅ Phase 2: Database Setup (8 tables)</li>
             <li>✅ Phase 3: Authentication System</li>
             <li>✅ Phase 4: Calendar Events (Manual CRUD)</li>
-            <li>✅ Phase 5: SMS Notifications (Twilio)</li>
+            <li>✅ Phase 5: Push Notifications (Pushover)</li>
             <li>✅ Phase 5.5: Admin Setup Wizard</li>
             <li>✅ Phase 6: AI Messaging with Claude</li>
             <li>⏳ Phase 7: Family Sharing</li>

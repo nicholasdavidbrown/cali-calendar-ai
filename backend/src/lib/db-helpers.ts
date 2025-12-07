@@ -37,8 +37,11 @@ export const userHelpers = {
   update: async (id: number, data: Partial<{
     phoneNumber: string | null;
     timezone: string;
-    smsTime: string;
+    notificationTime: string;
     messageStyle: string;
+    pushoverApiToken: string | null;
+    pushoverUserKey: string | null;
+    pushoverGroupKey: string | null;
   }>): Promise<User | undefined> => {
     const fields: string[] = [];
     const values: any[] = [];
@@ -51,13 +54,25 @@ export const userHelpers = {
       fields.push("timezone = ?");
       values.push(data.timezone);
     }
-    if (data.smsTime !== undefined) {
-      fields.push("smsTime = ?");
-      values.push(data.smsTime);
+    if (data.notificationTime !== undefined) {
+      fields.push("notificationTime = ?");
+      values.push(data.notificationTime);
     }
     if (data.messageStyle !== undefined) {
       fields.push("messageStyle = ?");
       values.push(data.messageStyle);
+    }
+    if (data.pushoverApiToken !== undefined) {
+      fields.push("pushoverApiToken = ?");
+      values.push(data.pushoverApiToken);
+    }
+    if (data.pushoverUserKey !== undefined) {
+      fields.push("pushoverUserKey = ?");
+      values.push(data.pushoverUserKey);
+    }
+    if (data.pushoverGroupKey !== undefined) {
+      fields.push("pushoverGroupKey = ?");
+      values.push(data.pushoverGroupKey);
     }
 
     if (fields.length === 0) {
@@ -152,16 +167,24 @@ export const familyHelpers = {
     );
   },
 
+  findById: async (id: number): Promise<FamilyMember | undefined> => {
+    return db.get<FamilyMember>(
+      "SELECT * FROM family_members WHERE id = ?",
+      [id]
+    );
+  },
+
   create: async (data: {
     name: string;
-    phoneNumber: string;
+    pushoverUserKey: string;
     relationship?: string;
     userId: number;
+    joinedVia?: string;
   }): Promise<FamilyMember> => {
     const result = await db.run(
-      `INSERT INTO family_members (name, phoneNumber, relationship, userId)
-       VALUES (?, ?, ?, ?)`,
-      [data.name, data.phoneNumber, data.relationship || null, data.userId]
+      `INSERT INTO family_members (name, pushoverUserKey, relationship, userId, joinedVia)
+       VALUES (?, ?, ?, ?, ?)`,
+      [data.name, data.pushoverUserKey, data.relationship || null, data.userId, data.joinedVia || null]
     );
 
     return (await db.get<FamilyMember>(
@@ -172,46 +195,53 @@ export const familyHelpers = {
 
   toggleActive: async (id: number, isActive: boolean): Promise<void> => {
     await db.run(
-      "UPDATE family_members SET isActive = ? WHERE id = ?",
+      "UPDATE family_members SET isActive = ?, updatedAt = CURRENT_TIMESTAMP WHERE id = ?",
       [isActive ? 1 : 0, id]
     );
   },
+
+  delete: async (id: number): Promise<void> => {
+    await db.run("DELETE FROM family_members WHERE id = ?", [id]);
+  },
 };
 
-// SMS history helpers
-export const smsHelpers = {
+// Notification history helpers (was smsHelpers)
+export const notificationHelpers = {
   create: async (data: {
-    phoneNumber: string;
+    groupKey: string;
     message: string;
     status: string;
     messageStyle: string;
     userId: number;
     eventCount?: number;
-    twilioSid?: string;
+    externalId?: string;
   }): Promise<void> => {
     await db.run(
-      `INSERT INTO sms_history
-       (phoneNumber, message, status, messageStyle, userId, eventCount, twilioSid)
+      `INSERT INTO notification_history
+       (groupKey, message, status, messageStyle, userId, eventCount, externalId)
        VALUES (?, ?, ?, ?, ?, ?, ?)`,
       [
-        data.phoneNumber,
+        data.groupKey,
         data.message,
         data.status,
         data.messageStyle,
         data.userId,
         data.eventCount || 0,
-        data.twilioSid || null,
+        data.externalId || null,
       ]
     );
   },
 
   findByUserId: async (userId: number, limit: number = 50): Promise<any[]> => {
     return db.all(
-      "SELECT * FROM sms_history WHERE userId = ? ORDER BY sentAt DESC LIMIT ?",
+      "SELECT * FROM notification_history WHERE userId = ? ORDER BY sentAt DESC LIMIT ?",
       [userId, limit]
     );
   },
 };
+
+// Legacy alias for backward compatibility during migration
+export const smsHelpers = notificationHelpers;
 
 // Admin settings helpers
 export const adminHelpers = {
@@ -280,7 +310,7 @@ export const setupHelpers = {
     const hasUsers = await setupHelpers.hasUsers();
 
     return {
-      isCompleted: setup?.isCompleted === 1,
+      isCompleted: (setup?.isCompleted as unknown as number) === 1,
       hasUsers,
       adminEmail: setup?.adminEmail || null,
       setupCompletedAt: setup?.setupCompletedAt || null,

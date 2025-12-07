@@ -10,7 +10,7 @@ import setupRouter from "./routes/setup.js";
 import adminSettingsRouter from "./routes/admin-settings.js";
 import authRouter from "./routes/auth.js";
 import calendarRouter from "./routes/calendar.js";
-import smsRouter from "./routes/sms.js";
+import notificationsRouter from "./routes/notifications.js";
 import usersRouter from "./routes/users.js";
 import messageStylesRouter from "./routes/message-styles.js";
 
@@ -73,7 +73,7 @@ app.use("/api/setup", setupRouter);  // Setup wizard (public)
 app.use("/api/admin", adminSettingsRouter);  // Admin settings (admin only)
 app.use("/api/auth", authRouter);
 app.use("/api/calendar", calendarRouter);
-app.use("/api/sms", smsRouter);
+app.use("/api/notifications", notificationsRouter);  // Pushover notifications
 app.use("/api/users", usersRouter);
 app.use("/api/message-styles", messageStylesRouter);
 
@@ -113,7 +113,7 @@ async function start() {
       console.log(`🔧 Admin settings: http://localhost:${PUBLIC_PORT}/api/admin/*`);
       console.log(`🔐 Auth endpoints: http://localhost:${PUBLIC_PORT}/api/auth/*`);
       console.log(`📅 Calendar endpoints: http://localhost:${PUBLIC_PORT}/api/calendar/*`);
-      console.log(`💬 SMS endpoints: http://localhost:${PUBLIC_PORT}/api/sms/*`);
+      console.log(`🔔 Notification endpoints: http://localhost:${PUBLIC_PORT}/api/notifications/*`);
       console.log(`👤 User endpoints: http://localhost:${PUBLIC_PORT}/api/users/*`);
       console.log(`🎨 Message style endpoints: http://localhost:${PUBLIC_PORT}/api/message-styles/*`);
       if (PUBLIC_PORT !== PORT) {
