@@ -7,11 +7,11 @@
 
 ## 🚀 Roadmap
 
-I would not advise using it in it's current state, but over the next week or so I will do the following:
+I would not advise using it in it's current state, but in the future I will do the following:
 - Add branch patterns for open source
 - Setup releases (version 0.x.x)
 - Correct the mongodb backend service
-- Create an admin area in the UI to put your AI API token (Anthropic claude initially) & SMS sending token (Twilio initially).
+- Create an admin area in the UI to put your AI API token (Anthropic claude initially) & Pushover notifications
 - Create a plan to merge Timetree calendar app into the history (because I use this app shared with my parner) - This may be that we find a Timetree to Outlook merger & use that.
 - Other calendar support (or at lease make it modular enough for someone to extend it)
 - A guide for those new to self-hosting software, so you can set and forget on your own PC or deploy to your own cloud infrastructure.
